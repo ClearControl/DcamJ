@@ -6,7 +6,6 @@ import org.bridj.CRuntime;
 import org.bridj.FlagSet;
 import org.bridj.IntValuedEnum;
 import org.bridj.Pointer;
-import org.bridj.TypedPointer;
 import org.bridj.ann.CLong;
 import org.bridj.ann.Library;
 import org.bridj.ann.Name;
@@ -25,7 +24,7 @@ public class DcamapiLibrary {
 	}
 	/**
 	 * enum values<br>
-	 * <i>native declaration : lib/dcam/inc/dcamapi.h:71</i>
+	 * <i>native declaration : lib\dcam\inc\dcamapi.h:71</i>
 	 */
 	public enum DCAMERR implements IntValuedEnum<DCAMERR > {
 		/**
@@ -201,7 +200,7 @@ public class DcamapiLibrary {
 	};
 	/**
 	 * enum values<br>
-	 * <i>native declaration : lib/dcam/inc/dcamapi.h:171</i>
+	 * <i>native declaration : lib\dcam\inc\dcamapi.h:171</i>
 	 */
 	public enum DCAM_USERDATAKIND implements IntValuedEnum<DCAM_USERDATAKIND > {
 		DCAM_USERDATAKIND_FRAME(0),
@@ -223,7 +222,7 @@ public class DcamapiLibrary {
 	};
 	/**
 	 * enum values<br>
-	 * <i>native declaration : lib/dcam/inc/dcamapi.h:179</i>
+	 * <i>native declaration : lib\dcam\inc\dcamapi.h:179</i>
 	 */
 	public enum DCAM_PIXELTYPE implements IntValuedEnum<DCAM_PIXELTYPE > {
 		DCAM_PIXELTYPE_NONE(0),
@@ -252,7 +251,7 @@ public class DcamapiLibrary {
 	};
 	/**
 	 * enum values<br>
-	 * <i>native declaration : lib/dcam/inc/dcamapi.h:198</i>
+	 * <i>native declaration : lib\dcam\inc\dcamapi.h:198</i>
 	 */
 	public enum DCAMBUF_ATTACHKIND implements IntValuedEnum<DCAMBUF_ATTACHKIND > {
 		DCAMBUF_ATTACHKIND_TIMESTAMP(1),
@@ -274,7 +273,7 @@ public class DcamapiLibrary {
 	/**
 	 * --- status --- **<br>
 	 * enum values<br>
-	 * <i>native declaration : lib/dcam/inc/dcamapi.h:206</i>
+	 * <i>native declaration : lib\dcam\inc\dcamapi.h:206</i>
 	 */
 	public enum DCAMCAP_STATUS implements IntValuedEnum<DCAMCAP_STATUS > {
 		DCAMCAP_STATUS_ERROR(0),
@@ -304,7 +303,7 @@ public class DcamapiLibrary {
 	};
 	/**
 	 * enum values<br>
-	 * <i>native declaration : lib/dcam/inc/dcamapi.h:226</i>
+	 * <i>native declaration : lib\dcam\inc\dcamapi.h:226</i>
 	 */
 	public enum DCAMWAIT_EVENT implements IntValuedEnum<DCAMWAIT_EVENT > {
 		DCAMCAP_EVENT_TRANSFERRED(1),
@@ -344,7 +343,7 @@ public class DcamapiLibrary {
 	/**
 	 * --- dcamcap_start --- **<br>
 	 * enum values<br>
-	 * <i>native declaration : lib/dcam/inc/dcamapi.h:254</i>
+	 * <i>native declaration : lib\dcam\inc\dcamapi.h:254</i>
 	 */
 	public enum DCAMCAP_START implements IntValuedEnum<DCAMCAP_START > {
 		DCAMCAP_START_SEQUENCE(-1),
@@ -366,7 +365,7 @@ public class DcamapiLibrary {
 	/**
 	 * --- string id --- **<br>
 	 * enum values<br>
-	 * <i>native declaration : lib/dcam/inc/dcamapi.h:262</i>
+	 * <i>native declaration : lib\dcam\inc\dcamapi.h:262</i>
 	 */
 	public enum DCAM_IDSTR implements IntValuedEnum<DCAM_IDSTR > {
 		DCAM_IDSTR_BUS(67109121),
@@ -399,7 +398,7 @@ public class DcamapiLibrary {
 	/**
 	 * --- wait timeout --- **<br>
 	 * enum values<br>
-	 * <i>native declaration : lib/dcam/inc/dcamapi.h:283</i>
+	 * <i>native declaration : lib\dcam\inc\dcamapi.h:283</i>
 	 */
 	public enum DCAMWAIT_TIMEOUT implements IntValuedEnum<DCAMWAIT_TIMEOUT > {
 		DCAMWAIT_TIMEOUT_INFINITE(-2147483648),
@@ -421,7 +420,7 @@ public class DcamapiLibrary {
 	};
 	/**
 	 * enum values<br>
-	 * <i>native declaration : lib/dcam/inc/dcamapi.h:300</i>
+	 * <i>native declaration : lib\dcam\inc\dcamapi.h:300</i>
 	 */
 	public enum DCAM_METADATAKIND implements IntValuedEnum<DCAM_METADATAKIND > {
 		DCAM_METADATAKIND_USERDATATEXT(1),
@@ -443,7 +442,7 @@ public class DcamapiLibrary {
 	};
 	/**
 	 * enum values<br>
-	 * <i>native declaration : lib/dcam/inc/dcamapi.h:308</i>
+	 * <i>native declaration : lib\dcam\inc\dcamapi.h:308</i>
 	 */
 	public enum DCAMREC_STATUSFLAG implements IntValuedEnum<DCAMREC_STATUSFLAG > {
 		DCAMREC_STATUSFLAG_NONE(0),
@@ -464,442 +463,7 @@ public class DcamapiLibrary {
 	};
 	/**
 	 * enum values<br>
-	 * <i>native declaration : lib/dcam/inc/dcamapi3.h:127</i>
-	 */
-	public enum DCAM_DATATYPE implements IntValuedEnum<DCAM_DATATYPE > {
-		DCAM_DATATYPE_NONE(0),
-		/// bit 0
-		DCAM_DATATYPE_UINT8(1),
-		/// bit 1
-		DCAM_DATATYPE_UINT16(2),
-		/// bit 2
-		DCAM_DATATYPE_UINT12(4),
-		/**
-		 * [[ internal ]]<br>
-		 * bit 3
-		 */
-		DCAM_DATATYPE_UINT32(8),
-		/// bit 12
-		DCAM_DATATYPE_UINT8_EVEN(8192),
-		/**
-		 * [[ internal ]]<br>
-		 * bit 13
-		 */
-		DCAM_DATATYPE_UINT8_ODD(16384),
-		/// bit 16,  8bit mosaic
-		DCAM_DATATYPE_MOSAIC8(65536),
-		/// bit 17, 16bit mosaic
-		DCAM_DATATYPE_MOSAIC16(131072),
-		/// bit 18,  8bit*3, [ r0, g0, b0], [r1, g1, b1]
-		DCAM_DATATYPE_RGB24(262144),
-		/// bit 20, 16bit*3, [ r0, g0, b0], [r1, g1, b1]
-		DCAM_DATATYPE_RGB48(1048576),
-		/**
-		 * about U and V, signal level is from -128 to 128, data value is from 0x00 to 0xFF<br>
-		 * 8bit, [ u0, y0, y1, v0, y2, y3 ], [u4, y4, y5, v4, v6, y7],
-		 */
-		DCAM_DATATYPE_YUV411(16777216),
-		/// 8bit, [ u0, y0, v0, y1 ], [u2, y2, v2, v3 ],
-		DCAM_DATATYPE_YUV422(33554432),
-		/// 8bit, [ u0, y0, v0 ], [ u1, y1, v1 ],
-		DCAM_DATATYPE_YUV444(67108864),
-		/**
-		 * for backward compatibility<br>
-		 * bit 4
-		 */
-		DCAM_DATATYPE_INT8(16),
-		/// bit 5
-		DCAM_DATATYPE_INT16(32),
-		/// bit 7
-		DCAM_DATATYPE_INT32(128),
-		/// bit 10,  8bit*3, [ b0, g0, r0], [b1, g1, r1]
-		DCAM_DATATYPE_BGR24(1024),
-		/// bit 12, 16bit*3, [ b0, g0, r0], [b1, g1, r1]
-		DCAM_DATATYPE_BGR48(4096),
-		/// bit 28
-		DCAM_DATATYPE_UINT16_EVEN(268435456),
-		/**
-		 * [[ internal ]]<br>
-		 * bit 29
-		 */
-		DCAM_DATATYPE_UINT16_ODD(536870912),
-		/**
-		 * [[ internal ]]<br>
-		 * bit 30
-		 */
-		DCAM_DATATYPE_UINT12_EVEN(1073741824),
-		/**
-		 * [[ internal ]]<br>
-		 * bit 31
-		 */
-		DCAM_DATATYPE_UINT12_ODD(-2147483648),
-		_end_of_dcam_datatype(-2147483648 + 1);
-		DCAM_DATATYPE(long value) {
-			this.value = value;
-		}
-		public final long value;
-		public long value() {
-			return this.value;
-		}
-		public Iterator<DCAM_DATATYPE > iterator() {
-			return Collections.singleton(this).iterator();
-		}
-		public static IntValuedEnum<DCAM_DATATYPE > fromValue(int value) {
-			return FlagSet.fromValue(value, values());
-		}
-	};
-	/**
-	 * enum values<br>
-	 * <i>native declaration : lib/dcam/inc/dcamapi3.h:168</i>
-	 */
-	public enum DCAM_BITSTYPE implements IntValuedEnum<DCAM_BITSTYPE > {
-		/// /
-		DCAM_BITSTYPE_NONE(0),
-		/// /
-		DCAM_BITSTYPE_INDEX8(1),
-		/// /
-		DCAM_BITSTYPE_RGB16(2),
-		/**
-		 * /<br>
-		 * 8bit, [ b0, g0, r0]
-		 */
-		DCAM_BITSTYPE_RGB24(4),
-		/// /
-		DCAM_BITSTYPE_RGB32(8),
-		_end_of_dcam_bitstype(8 + 1);
-		DCAM_BITSTYPE(long value) {
-			this.value = value;
-		}
-		public final long value;
-		public long value() {
-			return this.value;
-		}
-		public Iterator<DCAM_BITSTYPE > iterator() {
-			return Collections.singleton(this).iterator();
-		}
-		public static IntValuedEnum<DCAM_BITSTYPE > fromValue(int value) {
-			return FlagSet.fromValue(value, values());
-		}
-	};
-	/**
-	 * enum values<br>
-	 * <i>native declaration : lib/dcam/inc/dcamapi3.h:182</i>
-	 */
-	public enum DCAM_CAPTUREMODE implements IntValuedEnum<DCAM_CAPTUREMODE > {
-		DCAM_CAPTUREMODE_SNAP(0),
-		DCAM_CAPTUREMODE_SEQUENCE(1),
-		_end_of_dcam_capturemode(2);
-		DCAM_CAPTUREMODE(long value) {
-			this.value = value;
-		}
-		public final long value;
-		public long value() {
-			return this.value;
-		}
-		public Iterator<DCAM_CAPTUREMODE > iterator() {
-			return Collections.singleton(this).iterator();
-		}
-		public static IntValuedEnum<DCAM_CAPTUREMODE > fromValue(int value) {
-			return FlagSet.fromValue(value, values());
-		}
-	};
-	public static final int DCAM_QUERYCAPABILITY_FUNCTIONS = (int)0;
-	public static final int DCAM_QUERYCAPABILITY_DATATYPE = (int)1;
-	public static final int DCAM_QUERYCAPABILITY_BITSTYPE = (int)2;
-	public static final int DCAM_QUERYCAPABILITY_EVENTS = (int)3;
-	public static final int DCAM_QUERYCAPABILITY_AREA = (int)4;
-	/// [[ internal ]]
-	public static final int _DCAM_QUERYCAPABILITY_FGTRIGGERS = (int)5;
-	/// [[ internal ]]
-	public static final int _DCAM_QUERYCAPABILITY_TRIGGERSOURCES = (int)6;
-	public static final int DCAM_CAPABILITY_BINNING2 = (int)2;
-	public static final int DCAM_CAPABILITY_BINNING4 = (int)4;
-	public static final int DCAM_CAPABILITY_BINNING8 = (int)8;
-	public static final int DCAM_CAPABILITY_BINNING16 = (int)16;
-	public static final int DCAM_CAPABILITY_BINNING32 = (int)32;
-	public static final int DCAM_CAPABILITY_TRIGGER_EDGE = (int)256;
-	public static final int DCAM_CAPABILITY_TRIGGER_LEVEL = (int)512;
-	public static final int DCAM_CAPABILITY_TRIGGER_MULTISHOT_SENSITIVE = (int)1024;
-	public static final int DCAM_CAPABILITY_TRIGGER_CYCLE_DELAY = (int)2048;
-	public static final int DCAM_CAPABILITY_TRIGGER_SOFTWARE = (int)4096;
-	public static final int DCAM_CAPABILITY_TRIGGER_FASTREPETITION = (int)8192;
-	public static final int DCAM_CAPABILITY_TRIGGER_TDI = (int)16384;
-	public static final int DCAM_CAPABILITY_TRIGGER_TDIINTERNAL = (int)32768;
-	public static final int DCAM_CAPABILITY_TRIGGER_POSI = (int)65536;
-	public static final int DCAM_CAPABILITY_TRIGGER_NEGA = (int)131072;
-	public static final int DCAM_CAPABILITY_TRIGGER_START = (int)262144;
-	/// reserved = 0x00400000,
-	public static final int DCAM_CAPABILITY_TRIGGER_SYNCREADOUT = (int)8388608;
-	public static final int DCAM_CAPABILITY_BINNING6 = (int)16777216;
-	public static final int DCAM_CAPABILITY_BINNING12 = (int)33554432;
-	/// --- from 2.1.2 --- **
-	public static final int DCAM_CAPABILITY_ATTACHBUFFER = (int)1048576;
-	public static final int DCAM_CAPABILITY_RAWDATA = (int)2097152;
-	/**
-	 * [[ ver:3200- ]]<br>
-	 * [[ ver:3200- ]]
-	 */
-	public static final int DCAM_CAPABILITY_LOCK_USERMEMORY = (int)67108864;
-	public static final int DCAM_CAPABILITY_ALL = (int)129498942;
-	public static final int DCAM_UPDATE_RESOLUTION = (int)1;
-	public static final int DCAM_UPDATE_AREA = (int)2;
-	public static final int DCAM_UPDATE_DATATYPE = (int)4;
-	public static final int DCAM_UPDATE_BITSTYPE = (int)8;
-	public static final int DCAM_UPDATE_EXPOSURE = (int)16;
-	public static final int DCAM_UPDATE_TRIGGER = (int)32;
-	public static final int DCAM_UPDATE_DATARANGE = (int)64;
-	public static final int DCAM_UPDATE_DATAFRAMEBYTES = (int)128;
-	/// reserved
-	public static final int DCAM_UPDATE_PROPERTY = (int)256;
-	public static final int DCAM_UPDATE_ALL = (int)511;
-	public static final int DCAM_TRIGMODE_INTERNAL = (int)1;
-	public static final int DCAM_TRIGMODE_EDGE = (int)2;
-	public static final int DCAM_TRIGMODE_LEVEL = (int)4;
-	public static final int DCAM_TRIGMODE_MULTISHOT_SENSITIVE = (int)8;
-	public static final int DCAM_TRIGMODE_CYCLE_DELAY = (int)16;
-	public static final int DCAM_TRIGMODE_SOFTWARE = (int)32;
-	public static final int DCAM_TRIGMODE_FASTREPETITION = (int)64;
-	public static final int DCAM_TRIGMODE_TDI = (int)128;
-	public static final int DCAM_TRIGMODE_TDIINTERNAL = (int)256;
-	public static final int DCAM_TRIGMODE_START = (int)512;
-	public static final int DCAM_TRIGMODE_SYNCREADOUT = (int)1024;
-	/// [[ internal ]]
-	public static final int _DCAM_TRIGMODE_MULTIGATE = (int)2048;
-	/// [[ internal ]]
-	public static final int _DCAM_TRIGMODE_MULTIGATE_LEVEL = (int)4096;
-	public static final int DCAM_TRIGPOL_NEGATIVE = (int)0;
-	public static final int DCAM_TRIGPOL_POSITIVE = (int)1;
-	/// _DWORD* 		 param,   bytesize = byte size to receive IDs
-	public static final int DCAM_IDMSG_QUERYPARAMCOUNT = (int)512;
-	/// const DCAM_HDR_PARAM* param,   bytesize = sizeof( parameters);
-	public static final int DCAM_IDMSG_SETPARAM = (int)513;
-	/// DCAM_HDR_PARAM* param,   bytesize = sizeof( parameters);
-	public static final int DCAM_IDMSG_GETPARAM = (int)514;
-	/// DCAM_HDR_PARAM* param,   bytesize = sizeof( parameters);
-	public static final int DCAM_IDMSG_SETGETPARAM = (int)515;
-	/// _DWORD			 param[], bytesize = sizeof( param );
-	public static final int DCAM_IDMSG_QUERYPARAMID = (int)516;
-	public static final int DCAM_IDPARAM_RGBRATIO = (int)-1073446430;
-	public static final int DCAM_IDPARAM_FEATURE = (int)-1073741343;
-	public static final int DCAM_IDPARAM_FEATURE_INQ = (int)-2147483231;
-	public static final int DCAM_IDPARAM_SUBARRAY = (int)-1073741342;
-	public static final int DCAM_IDPARAM_SUBARRAY_INQ = (int)-2147483230;
-	public static final int DCAM_IDPARAM_FRAME_READOUT_TIME_INQ = (int)-2147483229;
-	public static final int DCAM_IDPARAM_SCANMODE_INQ = (int)-2147483228;
-	public static final int DCAM_IDPARAM_SCANMODE = (int)-1073741340;
-	public static final int DCAM_IDPARAM_GATING_INQ = (int)-2147483227;
-	public static final int DCAM_IDPARAM_GATING = (int)-1073741339;
-	public static final int DCAM_IDPARAM_C4742_95 = (int)-1073643039;
-	public static final int DCAM_IDPARAM_C4742_95ER = (int)-1073643038;
-	public static final int DCAM_IDPARAM_C7300_10 = (int)-1073643037;
-	public static final int DCAM_IDPARAM_C4880 = (int)-1073643035;
-	public static final int DCAM_IDPARAM_C8000 = (int)-1073643034;
-	public static final int DCAM_IDPARAM_C8484 = (int)-1073643033;
-	public static final int DCAM_IDPARAM_C4742_98BT = (int)-1073643032;
-	public static final int DCAM_IDPARAM_C4742_95HR = (int)-1073643031;
-	public static final int DCAM_IDPARAM_C7190_2X = (int)-1073643030;
-	public static final int DCAM_IDPARAM_C8000_20 = (int)-1073643029;
-	public static final int DCAM_IDPARAM_C7780 = (int)-1073643028;
-	public static final int DCAM_IDPARAM_C4742_98 = (int)-1073577491;
-	public static final int DCAM_IDPARAM_C4742_98ER = (int)-1073643026;
-	public static final int DCAM_IDPARAM_C7390 = (int)-1073643025;
-	public static final int DCAM_IDPARAM_C8190 = (int)-1073577503;
-	public static final int DCAM_IDPARAM_C7190_10 = (int)-1073577502;
-	public static final int DCAM_IDPARAM_C8000_10 = (int)-1073577501;
-	public static final int DCAM_IDPARAM_C4880_80 = (int)-1073577499;
-	public static final int DCAM_IDPARAM_C7780ADJ = (int)-1073577498;
-	public static final int DCAM_IDPARAM_C8484_00C = (int)-1073577497;
-	public static final int DCAM_IDPARAM_C7770 = (int)-1073577496;
-	public static final int DCAM_IDPARAM_C7770_LUT = (int)-1073577495;
-	public static final int DCAM_IDPARAM_C4880_SSDUNIV = (int)-1073577494;
-	public static final int DCAM_IDPARAM_C8133 = (int)-1073577492;
-	public static final int DCAM_IDPARAM_XRAYLINE = (int)-1073577492;
-	public static final int DCAM_IDPARAM_PCDIG = (int)-1073511964;
-	public static final int DCAM_IDPARAM_PCDIG_INQ = (int)-2147253852;
-	public static final int DCAM_IDPARAM_ICPCI = (int)-1073511963;
-	public static final int DCAM_IDPARAM_ICPCI_INQ = (int)-2147253851;
-	public static final int DCAM_IDPARAM_IQV50 = (int)-1073511962;
-	public static final int DCAM_IDPARAM_IQV50_LUT = (int)-1073511961;
-	public static final int DCAM_IDPARAM_IQV50_STATUS = (int)-2147253848;
-	public static final int DCAM_IDPARAM_GRAPHIN = (int)-1073511959;
-	public static final int DCAM_IDPARAM_DiSCS = (int)-1073511958;
-	public static final int DCAM_IDPARAM_ORCAERSP1 = (int)-1073511957;
-	public static final int dcamparam_feature_featureid = (int)1;
-	public static final int dcamparam_feature_flags = (int)2;
-	public static final int dcamparam_feature_featurevalue = (int)4;
-	public static final int dcamparam_featureinq_featureid = (int)1;
-	public static final int dcamparam_featureinq_capflags = (int)2;
-	public static final int dcamparam_featureinq_min = (int)4;
-	public static final int dcamparam_featureinq_max = (int)8;
-	public static final int dcamparam_featureinq_step = (int)16;
-	public static final int dcamparam_featureinq_defaultvalue = (int)32;
-	public static final int dcamparam_featureinq_units = (int)64;
-	public static final int DCAM_IDFEATURE_INITIALIZE = (int)0;
-	public static final int DCAM_IDFEATURE_BRIGHTNESS = (int)1;
-	public static final int DCAM_IDFEATURE_GAIN = (int)2;
-	public static final int DCAM_IDFEATURE_CONTRAST = (int)2;
-	public static final int DCAM_IDFEATURE_HUE = (int)3;
-	public static final int DCAM_IDFEATURE_SATURATION = (int)4;
-	public static final int DCAM_IDFEATURE_SHARPNESS = (int)5;
-	public static final int DCAM_IDFEATURE_GAMMA = (int)6;
-	public static final int DCAM_IDFEATURE_WHITEBALANCE = (int)7;
-	public static final int DCAM_IDFEATURE_PAN = (int)8;
-	public static final int DCAM_IDFEATURE_TILT = (int)9;
-	public static final int DCAM_IDFEATURE_ZOOM = (int)10;
-	public static final int DCAM_IDFEATURE_IRIS = (int)11;
-	public static final int DCAM_IDFEATURE_FOCUS = (int)12;
-	public static final int DCAM_IDFEATURE_AUTOEXPOSURE = (int)13;
-	public static final int DCAM_IDFEATURE_SHUTTER = (int)14;
-	public static final int DCAM_IDFEATURE_EXPOSURETIME = (int)14;
-	public static final int DCAM_IDFEATURE_TEMPERATURE = (int)15;
-	public static final int DCAM_IDFEATURE_OPTICALFILTER = (int)16;
-	public static final int DCAM_IDFEATURE_MECHANICALSHUTTER = (int)16;
-	public static final int DCAM_IDFEATURE_LIGHTMODE = (int)17;
-	public static final int DCAM_IDFEATURE_OFFSET = (int)18;
-	public static final int DCAM_IDFEATURE_CONTRASTOFFSET = (int)18;
-	public static final int DCAM_IDFEATURE_CONTRASTGAIN = (int)19;
-	public static final int DCAM_IDFEATURE_AMPLIFIERGAIN = (int)20;
-	public static final int DCAM_IDFEATURE_TEMPERATURETARGET = (int)21;
-	public static final int DCAM_IDFEATURE_SENSITIVITY = (int)22;
-	public static final int DCAM_IDFEATURE_TRIGGERTIMES = (int)23;
-	public static final int dcamparam_subarray_hpos = (int)1;
-	public static final int dcamparam_subarray_vpos = (int)2;
-	public static final int dcamparam_subarray_hsize = (int)4;
-	public static final int dcamparam_subarray_vsize = (int)8;
-	public static final int dcamparam_subarrayinq_binning = (int)1;
-	public static final int dcamparam_subarrayinq_hmax = (int)2;
-	public static final int dcamparam_subarrayinq_vmax = (int)4;
-	public static final int dcamparam_subarrayinq_hposunit = (int)8;
-	public static final int dcamparam_subarrayinq_vposunit = (int)16;
-	public static final int dcamparam_subarrayinq_hunit = (int)32;
-	public static final int dcamparam_subarrayinq_vunit = (int)64;
-	public static final int dcamparam_framereadouttimeinq_framereadouttime = (int)1;
-	public static final int dcamparam_scanmode_speed = (int)1;
-	public static final int dcamparam_scanmode_special = (int)2;
-	/**
-	 * enum values<br>
-	 * <i>native declaration : lib/dcam/inc/dcamapi3.h:844</i>
-	 */
-	public enum _dcamparam_scanmode_speed implements IntValuedEnum<_dcamparam_scanmode_speed > {
-		dcamparam_scanmode_speed_slowest(1),
-		dcamparam_scanmode_speed_fastest(255);
-		_dcamparam_scanmode_speed(long value) {
-			this.value = value;
-		}
-		public final long value;
-		public long value() {
-			return this.value;
-		}
-		public Iterator<_dcamparam_scanmode_speed > iterator() {
-			return Collections.singleton(this).iterator();
-		}
-		public static IntValuedEnum<_dcamparam_scanmode_speed > fromValue(int value) {
-			return FlagSet.fromValue(value, values());
-		}
-	};
-	/**
-	 * enum values<br>
-	 * <i>native declaration : lib/dcam/inc/dcamapi3.h:850</i>
-	 */
-	public enum _dcamparam_scanmode_spcial implements IntValuedEnum<_dcamparam_scanmode_spcial > {
-		dcamparam_scanmode_special_slitscan(1);
-		_dcamparam_scanmode_spcial(long value) {
-			this.value = value;
-		}
-		public final long value;
-		public long value() {
-			return this.value;
-		}
-		public Iterator<_dcamparam_scanmode_spcial > iterator() {
-			return Collections.singleton(this).iterator();
-		}
-		public static IntValuedEnum<_dcamparam_scanmode_spcial > fromValue(int value) {
-			return FlagSet.fromValue(value, values());
-		}
-	};
-	public static final int dcamparam_scanmodeinq_speedmax = (int)1;
-	public static final int dcamparam_scanmodeinq_special = (int)2;
-	/**
-	 * enum values<br>
-	 * <i>native declaration : lib/dcam/inc/dcamapi3.h:889</i>
-	 */
-	public enum _dcamparam_gatinginq implements IntValuedEnum<_dcamparam_gatinginq > {
-		dcamparam_gatinginq_capflags(1),
-		dcamparam_gatinginq_trigmode(2),
-		dcamparam_gatinginq_intervalmin(4),
-		dcamparam_gatinginq_intervalmax(8),
-		dcamparam_gatinginq_intervalstep(16),
-		dcamparam_gatinginq_delaymin(32),
-		dcamparam_gatinginq_delaymax(64),
-		dcamparam_gatinginq_delaystep(128),
-		dcamparam_gatinginq_widthmin(256),
-		dcamparam_gatinginq_widthmax(512),
-		dcamparam_gatinginq_widthstep(1024),
-		dcamparam_gatinginq_intervalystep((int)DcamapiLibrary._dcamparam_gatinginq.dcamparam_gatinginq_intervalstep.value());
-		_dcamparam_gatinginq(long value) {
-			this.value = value;
-		}
-		public final long value;
-		public long value() {
-			return this.value;
-		}
-		public Iterator<_dcamparam_gatinginq > iterator() {
-			return Collections.singleton(this).iterator();
-		}
-		public static IntValuedEnum<_dcamparam_gatinginq > fromValue(int value) {
-			return FlagSet.fromValue(value, values());
-		}
-	};
-	/**
-	 * enum values<br>
-	 * <i>native declaration : lib/dcam/inc/dcamapi3.h:905</i>
-	 */
-	public enum _dcamparam_gating_flag implements IntValuedEnum<_dcamparam_gating_flag > {
-		dcamparam_gating_flag_off(1),
-		dcamparam_gating_flag_continuous(2),
-		dcamparam_gating_flag_single(4);
-		_dcamparam_gating_flag(long value) {
-			this.value = value;
-		}
-		public final long value;
-		public long value() {
-			return this.value;
-		}
-		public Iterator<_dcamparam_gating_flag > iterator() {
-			return Collections.singleton(this).iterator();
-		}
-		public static IntValuedEnum<_dcamparam_gating_flag > fromValue(int value) {
-			return FlagSet.fromValue(value, values());
-		}
-	};
-	/**
-	 * enum values<br>
-	 * <i>native declaration : lib/dcam/inc/dcamapi3.h:921</i>
-	 */
-	public enum _dcamparam_gating implements IntValuedEnum<_dcamparam_gating > {
-		dcamparam_gating_flags(1),
-		dcamparam_gating_interval(2),
-		dcamparam_gating_delay(4),
-		dcamparam_gating_width(8);
-		_dcamparam_gating(long value) {
-			this.value = value;
-		}
-		public final long value;
-		public long value() {
-			return this.value;
-		}
-		public Iterator<_dcamparam_gating > iterator() {
-			return Collections.singleton(this).iterator();
-		}
-		public static IntValuedEnum<_dcamparam_gating > fromValue(int value) {
-			return FlagSet.fromValue(value, values());
-		}
-	};
-	public static final int dcamparam_rgbratio_exposure = (int)1;
-	public static final int dcamparam_rgbratio_gain = (int)2;
-	/**
-	 * enum values<br>
-	 * <i>native declaration : lib/dcam/inc/dcamprop.h</i>
+	 * <i>native declaration : lib\dcam\inc\dcamprop.h</i>
 	 */
 	public enum DCAMPROPOPTION implements IntValuedEnum<DCAMPROPOPTION > {
 		/**
@@ -946,7 +510,7 @@ public class DcamapiLibrary {
 	};
 	/**
 	 * enum values<br>
-	 * <i>native declaration : lib/dcam/inc/dcamprop.h</i>
+	 * <i>native declaration : lib\dcam\inc\dcamprop.h</i>
 	 */
 	public enum DCAMPROPATTRIBUTE implements IntValuedEnum<DCAMPROPATTRIBUTE > {
 		/// supporting information of DCAM_PROPERTYATTR
@@ -1028,7 +592,7 @@ public class DcamapiLibrary {
 	};
 	/**
 	 * enum values<br>
-	 * <i>native declaration : lib/dcam/inc/dcamprop.h</i>
+	 * <i>native declaration : lib\dcam\inc\dcamprop.h</i>
 	 */
 	public enum DCAMPROPATTRIBUTE2 implements IntValuedEnum<DCAMPROPATTRIBUTE2 > {
 		/// supporting information of DCAM_PROPERTYATTR
@@ -1052,7 +616,7 @@ public class DcamapiLibrary {
 	};
 	/**
 	 * enum values<br>
-	 * <i>native declaration : lib/dcam/inc/dcamprop.h</i>
+	 * <i>native declaration : lib\dcam\inc\dcamprop.h</i>
 	 */
 	public enum DCAMPROPUNIT implements IntValuedEnum<DCAMPROPUNIT > {
 		/// sec
@@ -1084,7 +648,7 @@ public class DcamapiLibrary {
 	};
 	/**
 	 * enum values<br>
-	 * <i>native declaration : lib/dcam/inc/dcamprop.h</i>
+	 * <i>native declaration : lib\dcam\inc\dcamprop.h</i>
 	 */
 	public enum DCAMPROPMODEVALUE implements IntValuedEnum<DCAMPROPMODEVALUE > {
 		/**
@@ -1704,7 +1268,7 @@ public class DcamapiLibrary {
 	};
 	/**
 	 * enum values<br>
-	 * <i>native declaration : lib/dcam/inc/dcamprop.h</i>
+	 * <i>native declaration : lib\dcam\inc\dcamprop.h</i>
 	 */
 	public enum DCAMIDPROP implements IntValuedEnum<DCAMIDPROP > {
 		/**
@@ -2279,133 +1843,58 @@ public class DcamapiLibrary {
 			return FlagSet.fromValue(value, values());
 		}
 	};
-	/// <i>native declaration : lib/dcam/inc/dcamapi3.h</i>
-	public static final int DCAM_FEATURE_FLAGS_STEPPING_INCONSISTENT = (int)262144;
-	/// <i>native declaration : lib/dcam/inc/dcamapi3.h</i>
-	public static final int DCAM_FEATURE_FLAGS_READ_OUT = (int)65536;
-	/// <i>native declaration : lib/dcam/inc/dcamapi3.h</i>
-	public static final int DCAM_FEATURE_FLAGS_OFF = (int)33554432;
-	/// <i>native declaration : lib/dcam/inc/dcamapi3.h</i>
-	public static final int DCAM_IDFEATURE_OFFSET_MAC = (int)4097;
-	/// <i>native declaration : lib/dcam/inc/dcamapi3.h</i>
-	public static final int DCAM_FEATURE_FLAGS_MECHANICALSHUTTER_AUTO = (int)16777217;
-	/// <i>native declaration : lib/dcam/inc/dcamapi3.h</i>
-	public static final int DCAM_FEATURE_FLAGS_ONE_PUSH = (int)1048576;
-	/// <i>native declaration : lib/dcam/inc/dcamapi3.h</i>
-	public static final int DCAM_FEATURE_FLAGS_AUTO = (int)1;
 	/**
 	 * define<br>
 	 * Conversion Error : null<br>
 	 * SKIPPED:<br>
-	 * <i>native declaration : lib/dcam/inc/dcamapi.h</i><br>
+	 * <i>native declaration : lib\dcam\inc\dcamapi.h</i><br>
 	 * = 0
 	 */
-	/**
-	 * define<br>
-	 * Conversion Error : null<br>
-	 * SKIPPED:<br>
-	 * <i>native declaration : lib/dcam/inc/dcamapi.h</i><br>
-	 * = "|apiver=latest"
-	 */
-	/// <i>native declaration : lib/dcam/inc/dcamapi3.h</i>
-	public static final int DCAM_FEATURE_FLAGS_MECHANICALSHUTTER_OPEN = (int)33554432;
-	/// <i>native declaration : lib/dcam/inc/dcamapi3.h</i>
-	public static final int DCAM_IDMSG_SOFTWARE_TRIGGER = (int)1024;
-	/// <i>native declaration : lib/dcam/inc/dcamapi3.h</i>
-	public static final String DCAMINIT_APIVER_LATEST = (String)"|apiver=latest";
-	/// <i>native declaration : lib/dcam/inc/dcamapi3.h</i>
-	public static final int DCAM_FEATURE_FLAGS_ONOFF = (int)131072;
-	/// <i>native declaration : lib/dcam/inc/dcamapi3.h</i>
-	public static final int DCAM_IDPARAM_C4742_95NRK = (int)-1073577500;
-	/**
-	 * define<br>
-	 * Conversion Error : null<br>
-	 * SKIPPED:<br>
-	 * <i>native declaration : lib/dcam/inc/dcamapi3.h</i><br>
-	 * = "|apiver=latest"
-	 */
-	/// <i>native declaration : lib/dcam/inc/dcamapi.h</i>
+	/// <i>native declaration : lib\dcam\inc\dcamapi.h</i>
 	public static final int DCAMAPI_VER = (int)4000;
-	/// <i>native declaration : lib/dcam/inc/dcamapi3.h</i>
-	public static final String DCAMINIT_DEFAULT = (String)"|apiver=latest";
-	/// <i>native declaration : lib/dcam/inc/dcamapi3.h</i>
-	public static final int FALSE = (int)0;
-	/// <i>native declaration : lib/dcam/inc/dcamapi3.h</i>
-	public static final int DCAM_FEATURE_FLAGS_COOLING_ONOFF = (int)131072;
-	/**
-	 * define<br>
-	 * Conversion Error : null<br>
-	 * SKIPPED:<br>
-	 * <i>native declaration : lib/dcam/inc/dcamapi3.h</i><br>
-	 * = 0
-	 */
-	/// <i>native declaration : lib/dcam/inc/dcamapi3.h</i>
-	public static final int DCAM_FEATURE_FLAGS_MANUAL = (int)2;
-	/// <i>native declaration : lib/dcam/inc/dcamapi3.h</i>
-	public static final int DCAM_FEATURE_FLAGS_COOLING_ON = (int)16777216;
-	/// <i>native declaration : lib/dcam/inc/dcamapi3.h</i>
-	public static final int DCAM_FEATURE_FLAGS_DEFAULT_OFF = (int)16777216;
-	/// <i>native declaration : lib/dcam/inc/dcamapi3.h</i>
-	public static final int DCAM_CAPABILITY_TRIGGER_SOFTWARE_C7780 = (int)524288;
-	/// <i>native declaration : lib/dcam/inc/dcamapi3.h</i>
-	public static final int DCAM_FEATURE_FLAGS_MECHANICALSHUTTER_CLOSE = (int)16777218;
-	/// <i>native declaration : lib/dcam/inc/dcamapi.h</i>
+	/// <i>native declaration : lib\dcam\inc\dcamapi.h</i>
 	public static final int DCAMAPI_INITOPTION_QUICKLOCK = (int)16711809;
-	/// <i>native declaration : lib/dcam/inc/dcamapi3.h</i>
-	public static final int DCAM_FEATURE_FLAGS_COOLING_OFF = (int)33554432;
-	/// <i>native declaration : lib/dcam/inc/dcamapi3.h</i>
-	public static final int DCAM_FEATURE_FLAGS_IMMEDIATE = (int)67108864;
-	/// <i>native declaration : lib/dcam/inc/dcamapi3.h</i>
-	public static final int TRUE = (int)1;
-	/// <i>native declaration : lib/dcam/inc/dcamapi3.h</i>
-	public static final int DCAM_FEATURE_FLAGS_DEFAULT_ON = (int)33554432;
-	/// <i>native declaration : lib/dcam/inc/dcamapi3.h</i>
-	public static final int DCAM_FEATURE_FLAGS_ON = (int)16777216;
-	/// <i>native declaration : lib/dcam/inc/dcamapi3.h</i>
-	public static final int DCAM_FEATURE_FLAGS_DEFAULT = (int)131072;
-	/// <i>native declaration : lib/dcam/inc/dcamapi3.h</i>
-	public static final String DCAMINIT_APIVER_0310 = (String)"|apiver=310";
 	/**
 	 * Initialize, uninitialize and misc.<br>
 	 * Original signature : <code>DCAMERR dcamapi_init(DCAMAPI_INIT*)</code><br>
-	 * <i>native declaration : lib/dcam/inc/dcamapi.h:583</i>
+	 * <i>native declaration : lib\dcam\inc\dcamapi.h:583</i>
 	 */
 	@Name("dcamapi_init") 
 	public static native IntValuedEnum<DcamapiLibrary.DCAMERR > dcamapiInit(Pointer<DCAMAPI_INIT > param);
 	/**
 	 * Original signature : <code>DCAMERR dcamapi_uninit()</code><br>
-	 * <i>native declaration : lib/dcam/inc/dcamapi.h:584</i>
+	 * <i>native declaration : lib\dcam\inc\dcamapi.h:584</i>
 	 */
 	@Name("dcamapi_uninit") 
 	public static native IntValuedEnum<DcamapiLibrary.DCAMERR > dcamapiUninit();
 	/**
 	 * Original signature : <code>DCAMERR dcamdev_open(DCAMDEV_OPEN*)</code><br>
-	 * <i>native declaration : lib/dcam/inc/dcamapi.h:585</i>
+	 * <i>native declaration : lib\dcam\inc\dcamapi.h:585</i>
 	 */
 	@Name("dcamdev_open") 
 	public static native IntValuedEnum<DcamapiLibrary.DCAMERR > dcamdevOpen(Pointer<DCAMDEV_OPEN > param);
 	/**
 	 * Original signature : <code>DCAMERR dcamdev_close(HDCAM)</code><br>
-	 * <i>native declaration : lib/dcam/inc/dcamapi.h:586</i>
+	 * <i>native declaration : lib\dcam\inc\dcamapi.h:586</i>
 	 */
 	@Name("dcamdev_close") 
 	public static native IntValuedEnum<DcamapiLibrary.DCAMERR > dcamdevClose(Pointer<HDCAM_struct > h);
 	/**
 	 * ( HDCAM h, HWND hWnd, _DWORD reserved DCAM_DEFAULT_ARG );<br>
 	 * Original signature : <code>DCAMERR dcamdev_showpanel(HDCAM, long)</code><br>
-	 * <i>native declaration : lib/dcam/inc/dcamapi.h:587</i>
+	 * <i>native declaration : lib\dcam\inc\dcamapi.h:587</i>
 	 */
 	@Name("dcamdev_showpanel") 
 	public static native IntValuedEnum<DcamapiLibrary.DCAMERR > dcamdevShowpanel(Pointer<HDCAM_struct > h, @CLong long iKind);
 	/**
 	 * Original signature : <code>DCAMERR dcamdev_getcapability(HDCAM, DCAMDEV_CAPABILITY*)</code><br>
-	 * <i>native declaration : lib/dcam/inc/dcamapi.h:588</i>
+	 * <i>native declaration : lib\dcam\inc\dcamapi.h:588</i>
 	 */
 	@Name("dcamdev_getcapability") 
 	public static native IntValuedEnum<DcamapiLibrary.DCAMERR > dcamdevGetcapability(Pointer<HDCAM_struct > h, Pointer<DCAMDEV_CAPABILITY > param);
 	/**
 	 * Original signature : <code>DCAMERR dcamdev_getstring(HDCAM, DCAMDEV_STRING*)</code><br>
-	 * <i>native declaration : lib/dcam/inc/dcamapi.h:589</i>
+	 * <i>native declaration : lib\dcam\inc\dcamapi.h:589</i>
 	 */
 	@Name("dcamdev_getstring") 
 	public static native IntValuedEnum<DcamapiLibrary.DCAMERR > dcamdevGetstring(Pointer<HDCAM_struct > h, Pointer<DCAMDEV_STRING > param);
@@ -2413,595 +1902,277 @@ public class DcamapiLibrary {
 	 * Buffer control<br>
 	 * call dcambuf_release() to free.<br>
 	 * Original signature : <code>DCAMERR dcambuf_alloc(HDCAM, long)</code><br>
-	 * <i>native declaration : lib/dcam/inc/dcamapi.h:592</i>
+	 * <i>native declaration : lib\dcam\inc\dcamapi.h:592</i>
 	 */
 	@Name("dcambuf_alloc") 
 	public static native IntValuedEnum<DcamapiLibrary.DCAMERR > dcambufAlloc(Pointer<HDCAM_struct > h, @CLong long framecount);
 	/**
 	 * Original signature : <code>DCAMERR dcambuf_attach(HDCAM, const DCAMBUF_ATTACH*)</code><br>
-	 * <i>native declaration : lib/dcam/inc/dcamapi.h:593</i>
+	 * <i>native declaration : lib\dcam\inc\dcamapi.h:593</i>
 	 */
 	@Name("dcambuf_attach") 
 	public static native IntValuedEnum<DcamapiLibrary.DCAMERR > dcambufAttach(Pointer<HDCAM_struct > h, Pointer<DCAMBUF_ATTACH > param);
 	/**
 	 * Original signature : <code>DCAMERR dcambuf_release(HDCAM, long)</code><br>
-	 * <i>native declaration : lib/dcam/inc/dcamapi.h:594</i>
+	 * <i>native declaration : lib\dcam\inc\dcamapi.h:594</i>
 	 */
 	@Name("dcambuf_release") 
 	public static native IntValuedEnum<DcamapiLibrary.DCAMERR > dcambufRelease(Pointer<HDCAM_struct > h, @CLong long iKind);
 	/**
 	 * Original signature : <code>DCAMERR dcambuf_lockframe(HDCAM, DCAM_FRAME*)</code><br>
-	 * <i>native declaration : lib/dcam/inc/dcamapi.h:595</i>
+	 * <i>native declaration : lib\dcam\inc\dcamapi.h:595</i>
 	 */
 	@Name("dcambuf_lockframe") 
 	public static native IntValuedEnum<DcamapiLibrary.DCAMERR > dcambufLockframe(Pointer<HDCAM_struct > h, Pointer<DCAM_FRAME > pFrame);
 	/**
 	 * Original signature : <code>DCAMERR dcambuf_copyframe(HDCAM, DCAM_FRAME*)</code><br>
-	 * <i>native declaration : lib/dcam/inc/dcamapi.h:596</i>
+	 * <i>native declaration : lib\dcam\inc\dcamapi.h:596</i>
 	 */
 	@Name("dcambuf_copyframe") 
 	public static native IntValuedEnum<DcamapiLibrary.DCAMERR > dcambufCopyframe(Pointer<HDCAM_struct > h, Pointer<DCAM_FRAME > pFrame);
 	/**
 	 * Original signature : <code>DCAMERR dcambuf_copymetadata(HDCAM, DCAM_METADATAHDR*)</code><br>
-	 * <i>native declaration : lib/dcam/inc/dcamapi.h:597</i>
+	 * <i>native declaration : lib\dcam\inc\dcamapi.h:597</i>
 	 */
 	@Name("dcambuf_copymetadata") 
 	public static native IntValuedEnum<DcamapiLibrary.DCAMERR > dcambufCopymetadata(Pointer<HDCAM_struct > h, Pointer<DCAM_METADATAHDR > hdr);
 	/**
 	 * Capturing<br>
 	 * Original signature : <code>DCAMERR dcamcap_start(HDCAM, long)</code><br>
-	 * <i>native declaration : lib/dcam/inc/dcamapi.h:600</i>
+	 * <i>native declaration : lib\dcam\inc\dcamapi.h:600</i>
 	 */
 	@Name("dcamcap_start") 
 	public static native IntValuedEnum<DcamapiLibrary.DCAMERR > dcamcapStart(Pointer<HDCAM_struct > h, @CLong long mode);
 	/**
 	 * Original signature : <code>DCAMERR dcamcap_stop(HDCAM)</code><br>
-	 * <i>native declaration : lib/dcam/inc/dcamapi.h:601</i>
+	 * <i>native declaration : lib\dcam\inc\dcamapi.h:601</i>
 	 */
 	@Name("dcamcap_stop") 
 	public static native IntValuedEnum<DcamapiLibrary.DCAMERR > dcamcapStop(Pointer<HDCAM_struct > h);
 	/**
 	 * Loic: was long*<br>
 	 * Original signature : <code>DCAMERR dcamcap_status(HDCAM, DCAMCAP_STATUS*)</code><br>
-	 * <i>native declaration : lib/dcam/inc/dcamapi.h:602</i>
+	 * <i>native declaration : lib\dcam\inc\dcamapi.h:602</i>
 	 */
 	@Name("dcamcap_status") 
 	public static native IntValuedEnum<DcamapiLibrary.DCAMERR > dcamcapStatus(Pointer<HDCAM_struct > h, Pointer<IntValuedEnum<DcamapiLibrary.DCAMCAP_STATUS > > pStatus);
 	/**
 	 * Original signature : <code>DCAMERR dcamcap_transferinfo(HDCAM, DCAMCAP_TRANSFERINFO*)</code><br>
-	 * <i>native declaration : lib/dcam/inc/dcamapi.h:603</i>
+	 * <i>native declaration : lib\dcam\inc\dcamapi.h:603</i>
 	 */
 	@Name("dcamcap_transferinfo") 
 	public static native IntValuedEnum<DcamapiLibrary.DCAMERR > dcamcapTransferinfo(Pointer<HDCAM_struct > h, Pointer<DCAMCAP_TRANSFERINFO > param);
 	/**
 	 * Original signature : <code>DCAMERR dcamcap_firetrigger(HDCAM, long)</code><br>
-	 * <i>native declaration : lib/dcam/inc/dcamapi.h:604</i>
+	 * <i>native declaration : lib\dcam\inc\dcamapi.h:604</i>
 	 */
 	@Name("dcamcap_firetrigger") 
 	public static native IntValuedEnum<DcamapiLibrary.DCAMERR > dcamcapFiretrigger(Pointer<HDCAM_struct > h, @CLong long iKind);
 	/**
 	 * Original signature : <code>DCAMERR dcamcap_record(HDCAM, HDCAMREC)</code><br>
-	 * <i>native declaration : lib/dcam/inc/dcamapi.h:605</i>
+	 * <i>native declaration : lib\dcam\inc\dcamapi.h:605</i>
 	 */
 	@Name("dcamcap_record") 
 	public static native IntValuedEnum<DcamapiLibrary.DCAMERR > dcamcapRecord(Pointer<HDCAM_struct > h, Pointer<HDCAMREC_struct > hrec);
 	/**
 	 * Wait abort handle control<br>
 	 * Original signature : <code>DCAMERR dcamwait_open(DCAMWAIT_OPEN*)</code><br>
-	 * <i>native declaration : lib/dcam/inc/dcamapi.h:608</i>
+	 * <i>native declaration : lib\dcam\inc\dcamapi.h:608</i>
 	 */
 	@Name("dcamwait_open") 
 	public static native IntValuedEnum<DcamapiLibrary.DCAMERR > dcamwaitOpen(Pointer<DCAMWAIT_OPEN > param);
 	/**
 	 * Original signature : <code>DCAMERR dcamwait_close(HDCAMWAIT)</code><br>
-	 * <i>native declaration : lib/dcam/inc/dcamapi.h:609</i>
+	 * <i>native declaration : lib\dcam\inc\dcamapi.h:609</i>
 	 */
 	@Name("dcamwait_close") 
 	public static native IntValuedEnum<DcamapiLibrary.DCAMERR > dcamwaitClose(Pointer<HDCAMWAIT_struct > hWait);
 	/**
 	 * Original signature : <code>DCAMERR dcamwait_start(HDCAMWAIT, DCAMWAIT_START*)</code><br>
-	 * <i>native declaration : lib/dcam/inc/dcamapi.h:610</i>
+	 * <i>native declaration : lib\dcam\inc\dcamapi.h:610</i>
 	 */
 	@Name("dcamwait_start") 
 	public static native IntValuedEnum<DcamapiLibrary.DCAMERR > dcamwaitStart(Pointer<HDCAMWAIT_struct > hWait, Pointer<DCAMWAIT_START > param);
 	/**
 	 * Original signature : <code>DCAMERR dcamwait_abort(HDCAMWAIT)</code><br>
-	 * <i>native declaration : lib/dcam/inc/dcamapi.h:611</i>
+	 * <i>native declaration : lib\dcam\inc\dcamapi.h:611</i>
 	 */
 	@Name("dcamwait_abort") 
 	public static native IntValuedEnum<DcamapiLibrary.DCAMERR > dcamwaitAbort(Pointer<HDCAMWAIT_struct > hWait);
 	/**
 	 * Original signature : <code>DCAMERR dcamrec_openA(DCAMREC_OPENA*)</code><br>
-	 * <i>native declaration : lib/dcam/inc/dcamapi.h:615</i>
+	 * <i>native declaration : lib\dcam\inc\dcamapi.h:615</i>
 	 */
 	@Name("dcamrec_openA") 
 	public static native IntValuedEnum<DcamapiLibrary.DCAMERR > dcamrecOpenA(Pointer<DCAMREC_OPENA > param);
 	/**
 	 * Original signature : <code>DCAMERR dcamrec_openW(DCAMREC_OPENW*)</code><br>
-	 * <i>native declaration : lib/dcam/inc/dcamapi.h:616</i>
+	 * <i>native declaration : lib\dcam\inc\dcamapi.h:616</i>
 	 */
 	@Name("dcamrec_openW") 
 	public static native IntValuedEnum<DcamapiLibrary.DCAMERR > dcamrecOpenW(Pointer<DCAMREC_OPENW > param);
 	/**
 	 * Original signature : <code>DCAMERR dcamrec_close(HDCAMREC)</code><br>
-	 * <i>native declaration : lib/dcam/inc/dcamapi.h:630</i>
+	 * <i>native declaration : lib\dcam\inc\dcamapi.h:630</i>
 	 */
 	@Name("dcamrec_close") 
 	public static native IntValuedEnum<DcamapiLibrary.DCAMERR > dcamrecClose(Pointer<HDCAMREC_struct > hrec);
 	/**
 	 * Original signature : <code>DCAMERR dcamrec_lockframe(HDCAMREC, DCAM_FRAME*)</code><br>
-	 * <i>native declaration : lib/dcam/inc/dcamapi.h:631</i>
+	 * <i>native declaration : lib\dcam\inc\dcamapi.h:631</i>
 	 */
 	@Name("dcamrec_lockframe") 
 	public static native IntValuedEnum<DcamapiLibrary.DCAMERR > dcamrecLockframe(Pointer<HDCAMREC_struct > hrec, Pointer<DCAM_FRAME > pFrame);
 	/**
 	 * Original signature : <code>DCAMERR dcamrec_copyframe(HDCAMREC, DCAM_FRAME*)</code><br>
-	 * <i>native declaration : lib/dcam/inc/dcamapi.h:632</i>
+	 * <i>native declaration : lib\dcam\inc\dcamapi.h:632</i>
 	 */
 	@Name("dcamrec_copyframe") 
 	public static native IntValuedEnum<DcamapiLibrary.DCAMERR > dcamrecCopyframe(Pointer<HDCAMREC_struct > hrec, Pointer<DCAM_FRAME > pFrame);
 	/**
 	 * Original signature : <code>DCAMERR dcamrec_writemetadata(HDCAMREC, const DCAM_METADATAHDR*)</code><br>
-	 * <i>native declaration : lib/dcam/inc/dcamapi.h:633</i>
+	 * <i>native declaration : lib\dcam\inc\dcamapi.h:633</i>
 	 */
 	@Name("dcamrec_writemetadata") 
 	public static native IntValuedEnum<DcamapiLibrary.DCAMERR > dcamrecWritemetadata(Pointer<HDCAMREC_struct > hrec, Pointer<DCAM_METADATAHDR > hdr);
 	/**
 	 * Original signature : <code>DCAMERR dcamrec_lockmetadata(HDCAMREC, DCAM_METADATAHDR*)</code><br>
-	 * <i>native declaration : lib/dcam/inc/dcamapi.h:634</i>
+	 * <i>native declaration : lib\dcam\inc\dcamapi.h:634</i>
 	 */
 	@Name("dcamrec_lockmetadata") 
 	public static native IntValuedEnum<DcamapiLibrary.DCAMERR > dcamrecLockmetadata(Pointer<HDCAMREC_struct > hrec, Pointer<DCAM_METADATAHDR > hdr);
 	/**
 	 * Original signature : <code>DCAMERR dcamrec_copymetadata(HDCAMREC, DCAM_METADATAHDR*)</code><br>
-	 * <i>native declaration : lib/dcam/inc/dcamapi.h:635</i>
+	 * <i>native declaration : lib\dcam\inc\dcamapi.h:635</i>
 	 */
 	@Name("dcamrec_copymetadata") 
 	public static native IntValuedEnum<DcamapiLibrary.DCAMERR > dcamrecCopymetadata(Pointer<HDCAMREC_struct > hrec, Pointer<DCAM_METADATAHDR > hdr);
 	/**
 	 * Original signature : <code>DCAMERR dcamrec_lockmetadatablock(HDCAMREC, DCAM_METADATABLOCKHDR*)</code><br>
-	 * <i>native declaration : lib/dcam/inc/dcamapi.h:636</i>
+	 * <i>native declaration : lib\dcam\inc\dcamapi.h:636</i>
 	 */
 	@Name("dcamrec_lockmetadatablock") 
 	public static native IntValuedEnum<DcamapiLibrary.DCAMERR > dcamrecLockmetadatablock(Pointer<HDCAMREC_struct > hrec, Pointer<DCAM_METADATABLOCKHDR > hdr);
 	/**
 	 * Original signature : <code>DCAMERR dcamrec_copymetadatablock(HDCAMREC, DCAM_METADATABLOCKHDR*)</code><br>
-	 * <i>native declaration : lib/dcam/inc/dcamapi.h:637</i>
+	 * <i>native declaration : lib\dcam\inc\dcamapi.h:637</i>
 	 */
 	@Name("dcamrec_copymetadatablock") 
 	public static native IntValuedEnum<DcamapiLibrary.DCAMERR > dcamrecCopymetadatablock(Pointer<HDCAMREC_struct > hrec, Pointer<DCAM_METADATABLOCKHDR > hdr);
 	/**
 	 * Original signature : <code>DCAMERR dcamrec_pause(HDCAMREC)</code><br>
-	 * <i>native declaration : lib/dcam/inc/dcamapi.h:639</i>
+	 * <i>native declaration : lib\dcam\inc\dcamapi.h:639</i>
 	 */
 	@Name("dcamrec_pause") 
 	public static native IntValuedEnum<DcamapiLibrary.DCAMERR > dcamrecPause(Pointer<HDCAMREC_struct > hrec);
 	/**
 	 * Original signature : <code>DCAMERR dcamrec_resume(HDCAMREC)</code><br>
-	 * <i>native declaration : lib/dcam/inc/dcamapi.h:640</i>
+	 * <i>native declaration : lib\dcam\inc\dcamapi.h:640</i>
 	 */
 	@Name("dcamrec_resume") 
 	public static native IntValuedEnum<DcamapiLibrary.DCAMERR > dcamrecResume(Pointer<HDCAMREC_struct > hrec);
 	/**
 	 * Original signature : <code>DCAMERR dcamrec_status(HDCAMREC, DCAMREC_STATUS*)</code><br>
-	 * <i>native declaration : lib/dcam/inc/dcamapi.h:641</i>
+	 * <i>native declaration : lib\dcam\inc\dcamapi.h:641</i>
 	 */
 	@Name("dcamrec_status") 
 	public static native IntValuedEnum<DcamapiLibrary.DCAMERR > dcamrecStatus(Pointer<HDCAMREC_struct > hrec, Pointer<DCAMREC_STATUS > pStatus);
 	/**
-	 * Original signature : <code>int32 dcam_getlasterror(HDCAM, char*, _DWORD)</code><br>
-	 * <i>native declaration : lib/dcam/inc/dcamapi3.h:284</i>
-	 */
-	@Name("dcam_getlasterror") 
-	public static native int dcamGetlasterror(Pointer<HDCAM_struct > h, Pointer<Byte > buf, @CLong long bytesize);
-	/**
-	 * Original signature : <code>BOOL dcam_init(void*, int32*, const char*)</code><br>
-	 * <i>native declaration : lib/dcam/inc/dcamapi3.h:288</i>
-	 */
-	@Name("dcam_init") 
-	public static native int dcamInit(Pointer<? > reserved1, Pointer<Integer > pCount, Pointer<Byte > option);
-	/**
-	 * Original signature : <code>BOOL dcam_uninit(void*, const char*)</code><br>
-	 * <i>native declaration : lib/dcam/inc/dcamapi3.h:289</i>
-	 */
-	@Name("dcam_uninit") 
-	public static native int dcamUninit(Pointer<? > reserved1, Pointer<Byte > reserved2);
-	/**
-	 * Original signature : <code>BOOL dcam_getmodelinfo(int32, int32, char*, _DWORD)</code><br>
-	 * <i>native declaration : lib/dcam/inc/dcamapi3.h:290</i>
-	 */
-	@Name("dcam_getmodelinfo") 
-	public static native int dcamGetmodelinfo(int index, int dwStringID, Pointer<Byte > buf, @CLong long bytesize);
-	/**
-	 * Original signature : <code>BOOL dcam_open(HDCAM*, int32, const char*)</code><br>
-	 * <i>native declaration : lib/dcam/inc/dcamapi3.h:292</i>
-	 */
-	@Name("dcam_open") 
-	public static native int dcamOpen(Pointer<Pointer<HDCAM_struct > > ph, int index, Pointer<Byte > reserved);
-	/**
-	 * Original signature : <code>BOOL dcam_close(HDCAM)</code><br>
-	 * <i>native declaration : lib/dcam/inc/dcamapi3.h:293</i>
-	 */
-	@Name("dcam_close") 
-	public static native int dcamClose(Pointer<HDCAM_struct > h);
-	/**
-	 * Original signature : <code>BOOL dcam_getstring(HDCAM, int32, char*, _DWORD)</code><br>
-	 * <i>native declaration : lib/dcam/inc/dcamapi3.h:297</i>
-	 */
-	@Name("dcam_getstring") 
-	public static native int dcamGetstring(Pointer<HDCAM_struct > h, int dwStringID, Pointer<Byte > buf, @CLong long bytesize);
-	/**
-	 * Original signature : <code>BOOL dcam_getcapability(HDCAM, _DWORD*, _DWORD)</code><br>
-	 * <i>native declaration : lib/dcam/inc/dcamapi3.h:298</i>
-	 */
-	@Name("dcam_getcapability") 
-	public static native int dcamGetcapability(Pointer<HDCAM_struct > h, Pointer<CLong > pCapability, @CLong long dwCapTypeID);
-	/**
-	 * Original signature : <code>BOOL dcam_getdatatype(HDCAM, DCAM_DATATYPE*)</code><br>
-	 * <i>native declaration : lib/dcam/inc/dcamapi3.h:300</i>
-	 */
-	@Name("dcam_getdatatype") 
-	public static native int dcamGetdatatype(Pointer<HDCAM_struct > h, Pointer<IntValuedEnum<DcamapiLibrary.DCAM_DATATYPE > > pType);
-	/**
-	 * Original signature : <code>BOOL dcam_getbitstype(HDCAM, DCAM_BITSTYPE*)</code><br>
-	 * <i>native declaration : lib/dcam/inc/dcamapi3.h:301</i>
-	 */
-	@Name("dcam_getbitstype") 
-	public static native int dcamGetbitstype(Pointer<HDCAM_struct > h, Pointer<IntValuedEnum<DcamapiLibrary.DCAM_BITSTYPE > > pType);
-	/**
-	 * Original signature : <code>BOOL dcam_setdatatype(HDCAM, DCAM_DATATYPE)</code><br>
-	 * <i>native declaration : lib/dcam/inc/dcamapi3.h:302</i>
-	 */
-	@Name("dcam_setdatatype") 
-	public static native int dcamSetdatatype(Pointer<HDCAM_struct > h, IntValuedEnum<DcamapiLibrary.DCAM_DATATYPE > type);
-	/**
-	 * Original signature : <code>BOOL dcam_setbitstype(HDCAM, DCAM_BITSTYPE)</code><br>
-	 * <i>native declaration : lib/dcam/inc/dcamapi3.h:303</i>
-	 */
-	@Name("dcam_setbitstype") 
-	public static native int dcamSetbitstype(Pointer<HDCAM_struct > h, IntValuedEnum<DcamapiLibrary.DCAM_BITSTYPE > type);
-	/**
-	 * Original signature : <code>BOOL dcam_getdatasize(HDCAM, SIZE*)</code><br>
-	 * <i>native declaration : lib/dcam/inc/dcamapi3.h:306</i>
-	 */
-	@Name("dcam_getdatasize") 
-	public static native int dcamGetdatasize(Pointer<HDCAM_struct > h, Pointer<DcamapiLibrary.SIZE > pSize);
-	/**
-	 * Original signature : <code>BOOL dcam_getbitssize(HDCAM, SIZE*)</code><br>
-	 * <i>native declaration : lib/dcam/inc/dcamapi3.h:307</i>
-	 */
-	@Name("dcam_getbitssize") 
-	public static native int dcamGetbitssize(Pointer<HDCAM_struct > h, Pointer<DcamapiLibrary.SIZE > pSize);
-	/**
-	 * Original signature : <code>BOOL dcam_getdatasizeex(HDCAM, DCAM_SIZE*)</code><br>
-	 * <i>native declaration : lib/dcam/inc/dcamapi3.h:311</i>
-	 */
-	@Name("dcam_getdatasizeex") 
-	public static native int dcamGetdatasizeex(Pointer<HDCAM_struct > h, Pointer<DCAM_SIZE > pSize);
-	/**
-	 * Original signature : <code>BOOL dcam_getbitssizeex(HDCAM, DCAM_SIZE*)</code><br>
-	 * <i>native declaration : lib/dcam/inc/dcamapi3.h:312</i>
-	 */
-	@Name("dcam_getbitssizeex") 
-	public static native int dcamGetbitssizeex(Pointer<HDCAM_struct > h, Pointer<DCAM_SIZE > pSize);
-	/**
-	 * Original signature : <code>BOOL dcam_queryupdate(HDCAM, _DWORD*, _DWORD)</code><br>
-	 * <i>native declaration : lib/dcam/inc/dcamapi3.h:317</i>
-	 */
-	@Name("dcam_queryupdate") 
-	public static native int dcamQueryupdate(Pointer<HDCAM_struct > h, Pointer<CLong > pFlag, @CLong long reserved);
-	/**
-	 * Original signature : <code>BOOL dcam_getbinning(HDCAM, int32*)</code><br>
-	 * <i>native declaration : lib/dcam/inc/dcamapi3.h:319</i>
-	 */
-	@Name("dcam_getbinning") 
-	public static native int dcamGetbinning(Pointer<HDCAM_struct > h, Pointer<Integer > pBinning);
-	/**
-	 * Original signature : <code>BOOL dcam_getexposuretime(HDCAM, double*)</code><br>
-	 * <i>native declaration : lib/dcam/inc/dcamapi3.h:320</i>
-	 */
-	@Name("dcam_getexposuretime") 
-	public static native int dcamGetexposuretime(Pointer<HDCAM_struct > h, Pointer<Double > pSec);
-	/**
-	 * Original signature : <code>BOOL dcam_gettriggermode(HDCAM, int32*)</code><br>
-	 * <i>native declaration : lib/dcam/inc/dcamapi3.h:321</i>
-	 */
-	@Name("dcam_gettriggermode") 
-	public static native int dcamGettriggermode(Pointer<HDCAM_struct > h, Pointer<Integer > pMode);
-	/**
-	 * Original signature : <code>BOOL dcam_gettriggerpolarity(HDCAM, int32*)</code><br>
-	 * <i>native declaration : lib/dcam/inc/dcamapi3.h:322</i>
-	 */
-	@Name("dcam_gettriggerpolarity") 
-	public static native int dcamGettriggerpolarity(Pointer<HDCAM_struct > h, Pointer<Integer > pPolarity);
-	/**
-	 * Original signature : <code>BOOL dcam_setbinning(HDCAM, int32)</code><br>
-	 * <i>native declaration : lib/dcam/inc/dcamapi3.h:324</i>
-	 */
-	@Name("dcam_setbinning") 
-	public static native int dcamSetbinning(Pointer<HDCAM_struct > h, int binning);
-	/**
-	 * Original signature : <code>BOOL dcam_setexposuretime(HDCAM, double)</code><br>
-	 * <i>native declaration : lib/dcam/inc/dcamapi3.h:325</i>
-	 */
-	@Name("dcam_setexposuretime") 
-	public static native int dcamSetexposuretime(Pointer<HDCAM_struct > h, double sec);
-	/**
-	 * Original signature : <code>BOOL dcam_settriggermode(HDCAM, int32)</code><br>
-	 * <i>native declaration : lib/dcam/inc/dcamapi3.h:326</i>
-	 */
-	@Name("dcam_settriggermode") 
-	public static native int dcamSettriggermode(Pointer<HDCAM_struct > h, int mode);
-	/**
-	 * Original signature : <code>BOOL dcam_settriggerpolarity(HDCAM, int32)</code><br>
-	 * <i>native declaration : lib/dcam/inc/dcamapi3.h:327</i>
-	 */
-	@Name("dcam_settriggerpolarity") 
-	public static native int dcamSettriggerpolarity(Pointer<HDCAM_struct > h, int polarity);
-	/**
-	 * [[ ver:3500- ]]<br>
-	 * Original signature : <code>BOOL dcam_lockusermemory(HDCAM, void*, void*)</code><br>
-	 * <i>native declaration : lib/dcam/inc/dcamapi3.h:333</i>
-	 */
-	@Name("dcam_lockusermemory") 
-	public static native int dcamLockusermemory(Pointer<HDCAM_struct > h, Pointer<? > buftop, Pointer<? > buflast);
-	/**
-	 * [[ ver:3500- ]]<br>
-	 * Original signature : <code>BOOL dcam_unlockusermemory(HDCAM, void*, void*)</code><br>
-	 * <i>native declaration : lib/dcam/inc/dcamapi3.h:334</i>
-	 */
-	@Name("dcam_unlockusermemory") 
-	public static native int dcamUnlockusermemory(Pointer<HDCAM_struct > h, Pointer<? > buftop, Pointer<? > buflast);
-	/**
-	 * Original signature : <code>BOOL dcam_precapture(HDCAM, DCAM_CAPTUREMODE)</code><br>
-	 * <i>native declaration : lib/dcam/inc/dcamapi3.h:338</i>
-	 */
-	@Name("dcam_precapture") 
-	public static native int dcamPrecapture(Pointer<HDCAM_struct > h, IntValuedEnum<DcamapiLibrary.DCAM_CAPTUREMODE > mode);
-	/**
-	 * Original signature : <code>BOOL dcam_getdatarange(HDCAM, int32*, int32*)</code><br>
-	 * <i>native declaration : lib/dcam/inc/dcamapi3.h:339</i>
-	 */
-	@Name("dcam_getdatarange") 
-	public static native int dcamGetdatarange(Pointer<HDCAM_struct > h, Pointer<Integer > pMax, Pointer<Integer > pMin);
-	/**
-	 * Original signature : <code>BOOL dcam_getdataframebytes(HDCAM, _DWORD*)</code><br>
-	 * <i>native declaration : lib/dcam/inc/dcamapi3.h:340</i>
-	 */
-	@Name("dcam_getdataframebytes") 
-	public static native int dcamGetdataframebytes(Pointer<HDCAM_struct > h, Pointer<CLong > pSize);
-	/**
-	 * Original signature : <code>BOOL dcam_allocframe(HDCAM, int32)</code><br>
-	 * <i>native declaration : lib/dcam/inc/dcamapi3.h:342</i>
-	 */
-	@Name("dcam_allocframe") 
-	public static native int dcamAllocframe(Pointer<HDCAM_struct > h, int framecount);
-	/**
-	 * Original signature : <code>BOOL dcam_getframecount(HDCAM, int32*)</code><br>
-	 * <i>native declaration : lib/dcam/inc/dcamapi3.h:343</i>
-	 */
-	@Name("dcam_getframecount") 
-	public static native int dcamGetframecount(Pointer<HDCAM_struct > h, Pointer<Integer > pFrame);
-	/**
-	 * Original signature : <code>BOOL dcam_capture(HDCAM)</code><br>
-	 * <i>native declaration : lib/dcam/inc/dcamapi3.h:345</i>
-	 */
-	@Name("dcam_capture") 
-	public static native int dcamCapture(Pointer<HDCAM_struct > h);
-	/**
-	 * [[ future ]]<br>
-	 * Original signature : <code>BOOL dcam_captureex(HDCAM, int32)</code><br>
-	 * <i>native declaration : lib/dcam/inc/dcamapi3.h:346</i>
-	 */
-	@Name("dcam_captureex") 
-	public static native int dcamCaptureex(Pointer<HDCAM_struct > h, int iFrame);
-	/**
-	 * Original signature : <code>BOOL dcam_idle(HDCAM)</code><br>
-	 * <i>native declaration : lib/dcam/inc/dcamapi3.h:347</i>
-	 */
-	@Name("dcam_idle") 
-	public static native int dcamIdle(Pointer<HDCAM_struct > h);
-	/**
-	 * Original signature : <code>BOOL dcam_wait(HDCAM, _DWORD*, _DWORD, HDCAMSIGNAL)</code><br>
-	 * <i>native declaration : lib/dcam/inc/dcamapi3.h:348</i>
-	 */
-	@Name("dcam_wait") 
-	public static native int dcamWait(Pointer<HDCAM_struct > h, Pointer<CLong > pCode, @CLong long timeout, DcamapiLibrary.HDCAMSIGNAL abortsignal);
-	/**
-	 * Original signature : <code>BOOL dcam_getstatus(HDCAM, _DWORD*)</code><br>
-	 * <i>native declaration : lib/dcam/inc/dcamapi3.h:350</i>
-	 */
-	@Name("dcam_getstatus") 
-	public static native int dcamGetstatus(Pointer<HDCAM_struct > h, Pointer<CLong > pStatus);
-	/**
-	 * Original signature : <code>BOOL dcam_gettransferinfo(HDCAM, int32*, int32*)</code><br>
-	 * <i>native declaration : lib/dcam/inc/dcamapi3.h:351</i>
-	 */
-	@Name("dcam_gettransferinfo") 
-	public static native int dcamGettransferinfo(Pointer<HDCAM_struct > h, Pointer<Integer > pNewestFrameIndex, Pointer<Integer > pFrameCount);
-	/**
-	 * Original signature : <code>BOOL dcam_freeframe(HDCAM)</code><br>
-	 * <i>native declaration : lib/dcam/inc/dcamapi3.h:353</i>
-	 */
-	@Name("dcam_freeframe") 
-	public static native int dcamFreeframe(Pointer<HDCAM_struct > h);
-	/**
-	 * Original signature : <code>BOOL dcam_attachbuffer(HDCAM, void**, _DWORD)</code><br>
-	 * <i>native declaration : lib/dcam/inc/dcamapi3.h:357</i>
-	 */
-	@Name("dcam_attachbuffer") 
-	public static native int dcamAttachbuffer(Pointer<HDCAM_struct > h, Pointer<Pointer<? > > frames, @CLong long size);
-	/**
-	 * Original signature : <code>BOOL dcam_releasebuffer(HDCAM)</code><br>
-	 * <i>native declaration : lib/dcam/inc/dcamapi3.h:358</i>
-	 */
-	@Name("dcam_releasebuffer") 
-	public static native int dcamReleasebuffer(Pointer<HDCAM_struct > h);
-	/**
-	 * Original signature : <code>BOOL dcam_lockdata(HDCAM, void**, int32*, int32)</code><br>
-	 * <i>native declaration : lib/dcam/inc/dcamapi3.h:362</i>
-	 */
-	@Name("dcam_lockdata") 
-	public static native int dcamLockdata(Pointer<HDCAM_struct > h, Pointer<Pointer<? > > pTop, Pointer<Integer > pRowbytes, int frame);
-	/**
-	 * Original signature : <code>BOOL dcam_lockbits(HDCAM, BYTE**, int32*, int32)</code><br>
-	 * <i>native declaration : lib/dcam/inc/dcamapi3.h:363</i>
-	 */
-	@Name("dcam_lockbits") 
-	public static native int dcamLockbits(Pointer<HDCAM_struct > h, Pointer<Pointer<Byte > > pTop, Pointer<Integer > pRowbytes, int frame);
-	/**
-	 * Original signature : <code>BOOL dcam_unlockdata(HDCAM)</code><br>
-	 * <i>native declaration : lib/dcam/inc/dcamapi3.h:364</i>
-	 */
-	@Name("dcam_unlockdata") 
-	public static native int dcamUnlockdata(Pointer<HDCAM_struct > h);
-	/**
-	 * Original signature : <code>BOOL dcam_unlockbits(HDCAM)</code><br>
-	 * <i>native declaration : lib/dcam/inc/dcamapi3.h:365</i>
-	 */
-	@Name("dcam_unlockbits") 
-	public static native int dcamUnlockbits(Pointer<HDCAM_struct > h);
-	/**
-	 * Original signature : <code>BOOL dcam_setbitsinputlutrange(HDCAM, int32, int32)</code><br>
-	 * <i>native declaration : lib/dcam/inc/dcamapi3.h:369</i>
-	 */
-	@Name("dcam_setbitsinputlutrange") 
-	public static native int dcamSetbitsinputlutrange(Pointer<HDCAM_struct > h, int inMax, int inMin);
-	/**
-	 * Original signature : <code>BOOL dcam_setbitsoutputlutrange(HDCAM, BYTE, BYTE)</code><br>
-	 * <i>native declaration : lib/dcam/inc/dcamapi3.h:370</i>
-	 */
-	@Name("dcam_setbitsoutputlutrange") 
-	public static native int dcamSetbitsoutputlutrange(Pointer<HDCAM_struct > h, byte outMax, byte outMin);
-	/**
-	 * Original signature : <code>BOOL dcam_extended(HDCAM, _ui32, void*, _DWORD)</code><br>
-	 * <i>native declaration : lib/dcam/inc/dcamapi3.h:378</i>
-	 */
-	@Name("dcam_extended") 
-	public static native int dcamExtended(Pointer<HDCAM_struct > h, int iCmd, Pointer<? > param, @CLong long size);
-	/**
-	 * --- software trigger --- **<br>
-	 * Original signature : <code>BOOL dcam_firetrigger(HDCAM)</code><br>
-	 * <i>native declaration : lib/dcam/inc/dcamapi3.h:381</i>
-	 */
-	@Name("dcam_firetrigger") 
-	public static native int dcamFiretrigger(Pointer<HDCAM_struct > h);
-	/**
-	 * [[ future ]]<br>
-	 * Original signature : <code>BOOL dcam_resettrigger(HDCAM)</code><br>
-	 * <i>native declaration : lib/dcam/inc/dcamapi3.h:382</i>
-	 */
-	@Name("dcam_resettrigger") 
-	public static native int dcamResettrigger(Pointer<HDCAM_struct > h);
-	/**
 	 * DCAM-API 4.0<br>
 	 * Original signature : <code>DCAMERR dcamprop_getattr(HDCAM, DCAM_PROPERTYATTR*)</code><br>
-	 * <i>native declaration : lib/dcam/inc/dcamprop.h:81</i>
+	 * <i>native declaration : lib\dcam\inc\dcamprop.h:81</i>
 	 */
 	@Name("dcamprop_getattr") 
 	public static native IntValuedEnum<DcamapiLibrary.DCAMERR > dcampropGetattr(Pointer<HDCAM_struct > h, Pointer<DCAM_PROPERTYATTR > param);
 	/**
 	 * Original signature : <code>DCAMERR dcamprop_getvalue(HDCAM, DCAMIDPROP, double*)</code><br>
-	 * <i>native declaration : lib/dcam/inc/dcamprop.h:82</i>
+	 * <i>native declaration : lib\dcam\inc\dcamprop.h:82</i>
 	 */
 	@Name("dcamprop_getvalue") 
 	public static native IntValuedEnum<DcamapiLibrary.DCAMERR > dcampropGetvalue(Pointer<HDCAM_struct > h, IntValuedEnum<DcamapiLibrary.DCAMIDPROP > iProp, Pointer<Double > pValue);
 	/**
 	 * Original signature : <code>DCAMERR dcamprop_setvalue(HDCAM, long, double)</code><br>
-	 * <i>native declaration : lib/dcam/inc/dcamprop.h:83</i>
+	 * <i>native declaration : lib\dcam\inc\dcamprop.h:83</i>
 	 */
 	@Name("dcamprop_setvalue") 
 	public static native IntValuedEnum<DcamapiLibrary.DCAMERR > dcampropSetvalue(Pointer<HDCAM_struct > h, @CLong long iProp, double fValue);
 	/**
 	 * Original signature : <code>DCAMERR dcamprop_setgetvalue(HDCAM, long, double*, long)</code><br>
-	 * <i>native declaration : lib/dcam/inc/dcamprop.h:84</i>
+	 * <i>native declaration : lib\dcam\inc\dcamprop.h:84</i>
 	 */
 	@Name("dcamprop_setgetvalue") 
 	public static native IntValuedEnum<DcamapiLibrary.DCAMERR > dcampropSetgetvalue(Pointer<HDCAM_struct > h, @CLong long iProp, Pointer<Double > pValue, @CLong long option);
 	/**
 	 * Original signature : <code>DCAMERR dcamprop_queryvalue(HDCAM, long, double*, long)</code><br>
-	 * <i>native declaration : lib/dcam/inc/dcamprop.h:85</i>
+	 * <i>native declaration : lib\dcam\inc\dcamprop.h:85</i>
 	 */
 	@Name("dcamprop_queryvalue") 
 	public static native IntValuedEnum<DcamapiLibrary.DCAMERR > dcampropQueryvalue(Pointer<HDCAM_struct > h, @CLong long iProp, Pointer<Double > pValue, @CLong long option);
 	/**
 	 * Original signature : <code>DCAMERR dcamprop_getnextid(HDCAM, long*, long)</code><br>
-	 * <i>native declaration : lib/dcam/inc/dcamprop.h:86</i>
+	 * <i>native declaration : lib\dcam\inc\dcamprop.h:86</i>
 	 */
 	@Name("dcamprop_getnextid") 
 	public static native IntValuedEnum<DcamapiLibrary.DCAMERR > dcampropGetnextid(Pointer<HDCAM_struct > h, Pointer<CLong > pProp, @CLong long option);
 	/**
 	 * Original signature : <code>DCAMERR dcamprop_getname(HDCAM, long, char*, long)</code><br>
-	 * <i>native declaration : lib/dcam/inc/dcamprop.h:87</i>
+	 * <i>native declaration : lib\dcam\inc\dcamprop.h:87</i>
 	 */
 	@Name("dcamprop_getname") 
 	public static native IntValuedEnum<DcamapiLibrary.DCAMERR > dcampropGetname(Pointer<HDCAM_struct > h, @CLong long iProp, Pointer<Byte > text, @CLong long textbytes);
 	/**
 	 * Original signature : <code>DCAMERR dcamprop_getvaluetext(HDCAM, DCAM_PROPERTYVALUETEXT*)</code><br>
-	 * <i>native declaration : lib/dcam/inc/dcamprop.h:88</i>
+	 * <i>native declaration : lib\dcam\inc\dcamprop.h:88</i>
 	 */
 	@Name("dcamprop_getvaluetext") 
 	public static native IntValuedEnum<DcamapiLibrary.DCAMERR > dcampropGetvaluetext(Pointer<HDCAM_struct > h, Pointer<DCAM_PROPERTYVALUETEXT > param);
 	/**
 	 * DCAM-API 3.0<br>
 	 * Original signature : <code>BOOL dcam_getpropertyattr(HDCAM, DCAM_PROPERTYATTR*)</code><br>
-	 * <i>native declaration : lib/dcam/inc/dcamprop.h:95</i>
+	 * <i>native declaration : lib\dcam\inc\dcamprop.h:95</i>
 	 */
 	@Name("dcam_getpropertyattr") 
 	public static native int dcamGetpropertyattr(Pointer<HDCAM_struct > h, Pointer<DCAM_PROPERTYATTR > param);
 	/**
 	 * Original signature : <code>BOOL dcam_getpropertyvalue(HDCAM, long, double*)</code><br>
-	 * <i>native declaration : lib/dcam/inc/dcamprop.h:96</i>
+	 * <i>native declaration : lib\dcam\inc\dcamprop.h:96</i>
 	 */
 	@Name("dcam_getpropertyvalue") 
 	public static native int dcamGetpropertyvalue(Pointer<HDCAM_struct > h, @CLong long iProp, Pointer<Double > pValue);
 	/**
 	 * Original signature : <code>BOOL dcam_setpropertyvalue(HDCAM, long, double)</code><br>
-	 * <i>native declaration : lib/dcam/inc/dcamprop.h:97</i>
+	 * <i>native declaration : lib\dcam\inc\dcamprop.h:97</i>
 	 */
 	@Name("dcam_setpropertyvalue") 
 	public static native int dcamSetpropertyvalue(Pointer<HDCAM_struct > h, @CLong long iProp, double fValue);
 	/**
 	 * Original signature : <code>BOOL dcam_setgetpropertyvalue(HDCAM, long, double*, long)</code><br>
-	 * <i>native declaration : lib/dcam/inc/dcamprop.h:99</i>
+	 * <i>native declaration : lib\dcam\inc\dcamprop.h:99</i>
 	 */
 	@Name("dcam_setgetpropertyvalue") 
 	public static native int dcamSetgetpropertyvalue(Pointer<HDCAM_struct > h, @CLong long iProp, Pointer<Double > pValue, @CLong long option);
 	/**
 	 * Original signature : <code>BOOL dcam_querypropertyvalue(HDCAM, long, double*, long)</code><br>
-	 * <i>native declaration : lib/dcam/inc/dcamprop.h:100</i>
+	 * <i>native declaration : lib\dcam\inc\dcamprop.h:100</i>
 	 */
 	@Name("dcam_querypropertyvalue") 
 	public static native int dcamQuerypropertyvalue(Pointer<HDCAM_struct > h, @CLong long iProp, Pointer<Double > pValue, @CLong long option);
 	/**
 	 * Original signature : <code>BOOL dcam_getnextpropertyid(HDCAM, long*, long)</code><br>
-	 * <i>native declaration : lib/dcam/inc/dcamprop.h:102</i>
+	 * <i>native declaration : lib\dcam\inc\dcamprop.h:102</i>
 	 */
 	@Name("dcam_getnextpropertyid") 
 	public static native int dcamGetnextpropertyid(Pointer<HDCAM_struct > h, Pointer<CLong > pProp, @CLong long option);
 	/**
 	 * Original signature : <code>BOOL dcam_getpropertyname(HDCAM, long, char*, long)</code><br>
-	 * <i>native declaration : lib/dcam/inc/dcamprop.h:103</i>
+	 * <i>native declaration : lib\dcam\inc\dcamprop.h:103</i>
 	 */
 	@Name("dcam_getpropertyname") 
 	public static native int dcamGetpropertyname(Pointer<HDCAM_struct > h, @CLong long iProp, Pointer<Byte > text, @CLong long textbytes);
 	/**
 	 * Original signature : <code>BOOL dcam_getpropertyvaluetext(HDCAM, DCAM_PROPERTYVALUETEXT*)</code><br>
-	 * <i>native declaration : lib/dcam/inc/dcamprop.h:104</i>
+	 * <i>native declaration : lib\dcam\inc\dcamprop.h:104</i>
 	 */
 	@Name("dcam_getpropertyvaluetext") 
 	public static native int dcamGetpropertyvaluetext(Pointer<HDCAM_struct > h, Pointer<DCAM_PROPERTYVALUETEXT > param);
-	public static class HDCAMSIGNAL extends TypedPointer {
-		public HDCAMSIGNAL(long address) {
-			super(address);
-		}
-		public HDCAMSIGNAL(Pointer address) {
-			super(address);
-		}
-	};
-	/// Undefined type
-	/// Undefined type
-	public static interface SIZE {
-		
-	};
 }

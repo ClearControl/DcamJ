@@ -660,7 +660,7 @@ DCAMERR DCAMAPI dcamrec_status			( HDCAMREC hrec, DCAMREC_STATUS* pStatus );
 
 #if ! defined(DCAMAPI_VERMIN) || DCAMAPI_VERMIN <= 3200
 
-#include "dcamapi3.h"
+//#include "dcamapi3.h"
 
 #endif // ! defined(DCAMAPI_VERMIN) || DCAMAPI_VERMIN <= 3200
 

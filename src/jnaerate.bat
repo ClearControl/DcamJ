@@ -1,1 +1,0 @@
- java -jar jnaerator.jar config.jnaerator

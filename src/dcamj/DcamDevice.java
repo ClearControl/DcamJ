@@ -4,41 +4,38 @@ import static org.bridj.Pointer.allocateBytes;
 import static org.bridj.Pointer.pointerTo;
 import static org.junit.Assert.assertTrue;
 
-import java.util.ArrayList;
-import java.util.Stack;
+import java.io.Closeable;
 
 import org.bridj.BridJ;
-import org.bridj.CLong;
 import org.bridj.IntValuedEnum;
 import org.bridj.Pointer;
 
 import dcamapi.DCAMCAP_TRANSFERINFO;
 import dcamapi.DCAMDEV_OPEN;
 import dcamapi.DCAMDEV_STRING;
-import dcamapi.DCAMWAIT_OPEN;
-import dcamapi.DCAMWAIT_START;
 import dcamapi.DcamapiLibrary;
 import dcamapi.DcamapiLibrary.DCAMCAP_START;
 import dcamapi.DcamapiLibrary.DCAMCAP_STATUS;
 import dcamapi.DcamapiLibrary.DCAMERR;
 import dcamapi.DcamapiLibrary.DCAMIDPROP;
-import dcamapi.DcamapiLibrary.DCAMWAIT_EVENT;
 import dcamapi.DcamapiLibrary.DCAM_IDSTR;
 import dcamapi.HDCAM_struct;
 
-public class DcamDevice extends DcamBase
+public class DcamDevice extends DcamBase implements Closeable
 {
-	private final int mDeviceID;
+	private long mDeviceID;
 
 	private DcamWait mDcamWait;
 	private DcamBufferControl mDcamBufferControl;
-	
+
 	public DcamDevice(int pDeviceID)
 	{
 		super();
 		mDeviceID = pDeviceID;
+		open();
 	}
 
+	@SuppressWarnings("deprecation")
 	final Pointer<HDCAM_struct> getHDCAMPointer()
 	{
 		return Pointer.pointerToAddress(mDeviceID, HDCAM_struct.class);
@@ -99,18 +96,24 @@ public class DcamDevice extends DcamBase
 		System.out.format("DCAM_IDSTR_DCAMAPIVERSION = %s\n",
 											lDcamApiVersion);
 	}
-	
+
 	public final double getProperty(DCAMIDPROP pPropertyId)
 	{
-		Pointer lPointerToDouble = Pointer.allocateDouble();
-		final IntValuedEnum<DCAMERR> lError = DcamapiLibrary.dcampropGetvalue(getHDCAMPointer(),pPropertyId,lPointerToDouble);
+		Pointer<Double> lPointerToDouble = Pointer.allocateDouble();
+		final IntValuedEnum<DCAMERR> lError = DcamapiLibrary.dcampropGetvalue(getHDCAMPointer(),
+																																					pPropertyId,
+																																					lPointerToDouble);
 		final boolean lSuccess = addErrorToListAndCheckHasSucceeded(lError);
+		if (!lSuccess)
+		{
+			return Double.NaN;
+		}
 		final double lPropertyValue = lPointerToDouble.getDouble();
 		lPointerToDouble.release();
 		return lPropertyValue;
 	}
 
-	public final boolean open()
+	private final boolean open()
 	{
 		final DCAMDEV_OPEN lDCAMDEV_OPEN = new DCAMDEV_OPEN();
 		final long size = BridJ.sizeOf(DCAMDEV_OPEN.class);
@@ -121,10 +124,14 @@ public class DcamDevice extends DcamBase
 		final IntValuedEnum<DCAMERR> lError = DcamapiLibrary.dcamdevOpen(pointerTo(lDCAMDEV_OPEN));
 		final boolean lSuccess = addErrorToListAndCheckHasSucceeded(lError);
 
+		if(lSuccess)
+		{
+			mDeviceID = lDCAMDEV_OPEN.hdcam().getPeer();
+		}
+		
 		return lSuccess;
 	}
 
-	
 	public final boolean startSequence()
 	{
 		final IntValuedEnum<DCAMERR> lError = DcamapiLibrary.dcamcapStart(getHDCAMPointer(),
@@ -142,6 +149,7 @@ public class DcamDevice extends DcamBase
 
 	public final IntValuedEnum<DCAMCAP_STATUS> getStatus()
 	{
+		@SuppressWarnings({ "unchecked", "rawtypes" })
 		Pointer<IntValuedEnum<DCAMCAP_STATUS>> lPointerToStatus = (Pointer) Pointer.allocateCLong();
 
 		final IntValuedEnum<DCAMERR> lError = DcamapiLibrary.dcamcapStatus(	getHDCAMPointer(),
@@ -149,7 +157,7 @@ public class DcamDevice extends DcamBase
 		final boolean lSuccess = addErrorToListAndCheckHasSucceeded(lError);
 		if (lSuccess)
 		{
-			IntValuedEnum<DCAMCAP_STATUS> lStatus = DCAMCAP_STATUS.fromValue((int) lPointerToStatus.getLong());
+			IntValuedEnum<DCAMCAP_STATUS> lStatus = DCAMCAP_STATUS.fromValue((int) lPointerToStatus.getCLong());
 			lPointerToStatus.release();
 			return lStatus;
 		}
@@ -174,31 +182,46 @@ public class DcamDevice extends DcamBase
 		}
 		return null;
 	}
-	
+
 	public final boolean triggerOneAcquisition()
 	{
-		//DCAMERR DCAMAPI dcamcap_firetrigger		( HDCAM h, long iKind DCAM_DEFAULT_ARG );
-		IntValuedEnum<DCAMERR> lError = DcamapiLibrary.dcamcapFiretrigger(getHDCAMPointer(), 0);
+		// DCAMERR DCAMAPI dcamcap_firetrigger ( HDCAM h, long iKind
+		// DCAM_DEFAULT_ARG );
+		IntValuedEnum<DCAMERR> lError = DcamapiLibrary.dcamcapFiretrigger(getHDCAMPointer(),
+																																			0);
 		final boolean lSuccess = addErrorToListAndCheckHasSucceeded(lError);
 		return lSuccess;
 	}
 
-	
 	public final DcamWait getDcamWait()
 	{
-		if(mDcamWait==null)
+		if (mDcamWait == null)
 		{
 			mDcamWait = new DcamWait(this);
 		}
 		return mDcamWait;
 	}
-	
-	public final DcamBufferControl getDcamBufferControl()
+
+	public final DcamBufferControl getBufferControl()
 	{
-		if(mDcamBufferControl==null)
+		if (mDcamBufferControl == null)
 		{
 			mDcamBufferControl = new DcamBufferControl(this);
 		}
 		return mDcamBufferControl;
 	}
+	
+	public final void close()
+	{
+		IntValuedEnum<DCAMERR> lError = DcamapiLibrary.dcamdevClose(getHDCAMPointer());
+		addErrorToListAndCheckHasSucceeded(lError);
+	}
+	
+	public final boolean showPanel()
+	{
+		IntValuedEnum<DCAMERR> lError = DcamapiLibrary.dcamdevShowpanel(getHDCAMPointer(),1);
+		final boolean lSuccess = addErrorToListAndCheckHasSucceeded(lError);
+		return lSuccess;
+	}
+	
 }

@@ -16,7 +16,7 @@ import dcamapi.DcamapiLibrary;
 import dcamapi.DcamapiLibrary.DCAMERR;
 import dcamapi.DcamapiLibrary.DCAM_IDSTR;
 
-public class DcamTest
+public class DcamApiTests
 {
 
 	@Test

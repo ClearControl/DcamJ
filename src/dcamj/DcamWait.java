@@ -15,9 +15,6 @@ import dcamapi.DcamapiLibrary.DCAMERR;
 import dcamapi.DcamapiLibrary.DCAMWAIT_EVENT;
 import dcamapi.HDCAMWAIT_struct;
 
-import static org.bridj.Pointer.allocateBytes;
-import static org.bridj.Pointer.pointerTo;
-
 public class DcamWait extends DcamBase implements Closeable
 {
 	private DcamDevice mDcamDevice;
@@ -27,6 +24,7 @@ public class DcamWait extends DcamBase implements Closeable
 	{
 		super();
 		mDcamDevice = pDcamDevice;
+		open();
 	}
 
 	private void open()
@@ -77,7 +75,7 @@ public class DcamWait extends DcamBase implements Closeable
 			return;
 
 		final IntValuedEnum<DCAMERR> lError = DcamapiLibrary.dcamwaitClose(mHwaitPointer);
-		final boolean lSuccess = addErrorToListAndCheckHasSucceeded(lError);
+		addErrorToListAndCheckHasSucceeded(lError);
 		return;
 	}
 

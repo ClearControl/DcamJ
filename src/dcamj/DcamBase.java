@@ -1,7 +1,6 @@
 package dcamj;
 
 import java.util.Collection;
-import java.util.Stack;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.bridj.IntValuedEnum;
@@ -10,16 +9,27 @@ import dcamapi.DcamapiLibrary.DCAMERR;
 
 public class DcamBase
 {
-	private ConcurrentLinkedQueue<IntValuedEnum<DCAMERR>> mErrorList;
+	private ConcurrentLinkedQueue<IntValuedEnum<DCAMERR>> mErrorList = new ConcurrentLinkedQueue<IntValuedEnum<DCAMERR>>();
 
+	public boolean mDebug = false;
+	public boolean mShowErrors = false;
+	
 	protected final void addError(IntValuedEnum<DCAMERR> pError)
 	{
 		mErrorList.add(pError);
+		if(mDebug)
+		{
+			System.out.println(pError);
+		}
+		else if(mShowErrors && !DcamLibrary.hasSucceeded(pError))
+		{
+			System.err.println(pError);
+		}
 	}
 
 	protected final boolean addErrorToListAndCheckHasSucceeded(final IntValuedEnum<DCAMERR> lError)
 	{
-		mErrorList.add(lError);
+		addError(lError);
 		final boolean lSuccess = DcamLibrary.hasSucceeded(lError);
 		return lSuccess;
 	}

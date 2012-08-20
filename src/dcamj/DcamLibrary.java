@@ -1,7 +1,6 @@
 package dcamj;
 
 import static org.bridj.Pointer.pointerTo;
-import static org.junit.Assert.assertTrue;
 
 import org.bridj.BridJ;
 import org.bridj.IntValuedEnum;
@@ -12,10 +11,17 @@ import dcamapi.DcamapiLibrary.DCAMERR;
 
 public class DcamLibrary
 {
+
+	// Prevents instantiation
+	private DcamLibrary()
+	{
+		super();
+	}
+
 	private static boolean sInitialized = false;
 	private static long sNumberOfDevices = -1;
 
-	static final boolean initialize()
+	public static final boolean initialize()
 	{
 		DCAMAPI_INIT lDCAMAPI_INIT = new DCAMAPI_INIT();
 		lDCAMAPI_INIT.size(BridJ.sizeOf(DCAMAPI_INIT.class));
@@ -37,18 +43,28 @@ public class DcamLibrary
 		}
 	}
 
-	static final boolean isInitialized()
+	public static final boolean isInitialized()
 	{
 		return sInitialized;
 	}
 
-	static final int getNumberOfDevices()
+	public static final int getNumberOfDevices()
 	{
 		return (int) sNumberOfDevices;
 	}
 
-	static final boolean uninitialize()
+	public static final DcamDevice getDeviceForId(final int pDeviceId)
 	{
+		if (!isInitialized())
+			return null;
+		final DcamDevice lDcamDevice = new DcamDevice(pDeviceId);
+		return lDcamDevice;
+	}
+
+	public static final boolean uninitialize()
+	{
+		if (!isInitialized())
+			return false;
 		IntValuedEnum<DCAMERR> lDcamapiUninit = DcamapiLibrary.dcamapiUninit();
 		final boolean lSuccess = hasSucceeded(lDcamapiUninit);
 		return lSuccess;

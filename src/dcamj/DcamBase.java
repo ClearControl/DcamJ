@@ -9,19 +9,19 @@ import dcamapi.DcamapiLibrary.DCAMERR;
 
 public class DcamBase
 {
-	private ConcurrentLinkedQueue<IntValuedEnum<DCAMERR>> mErrorList = new ConcurrentLinkedQueue<IntValuedEnum<DCAMERR>>();
+	private final ConcurrentLinkedQueue<IntValuedEnum<DCAMERR>> mErrorList = new ConcurrentLinkedQueue<IntValuedEnum<DCAMERR>>();
 
 	public boolean mDebug = false;
 	public boolean mShowErrors = false;
-	
-	protected final void addError(IntValuedEnum<DCAMERR> pError)
+
+	protected final void addError(final IntValuedEnum<DCAMERR> pError)
 	{
 		mErrorList.add(pError);
-		if(mDebug)
+		if (mDebug)
 		{
 			System.out.println(pError);
 		}
-		else if(mShowErrors && !DcamLibrary.hasSucceeded(pError))
+		else if (mShowErrors && !DcamLibrary.hasSucceeded(pError))
 		{
 			System.err.println(pError);
 		}
@@ -46,7 +46,7 @@ public class DcamBase
 
 	public final boolean haveAllSucceeded()
 	{
-		for (IntValuedEnum<DCAMERR> lEntry : mErrorList)
+		for (final IntValuedEnum<DCAMERR> lEntry : mErrorList)
 		{
 			final boolean lHasSuceeded = DcamLibrary.hasSucceeded(lEntry);
 			if (!lHasSuceeded)

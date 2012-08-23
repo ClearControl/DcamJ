@@ -21,20 +21,22 @@ public class DcamRecorder implements Closeable
 	private final LinkedBlockingQueue<DcamFrame> mFrameQueue;
 	private volatile long mElapsedTimeForWritingLastFrame;
 
+	public boolean mDebug = true;
+
 	public DcamRecorder(final int pMaxQueueSize)
 	{
 		super();
 		mFrameQueue = new LinkedBlockingQueue<DcamFrame>(pMaxQueueSize);
 	}
 
-	public final boolean open(File pFile)
+	public final boolean open(final File pFile)
 	{
 		try
 		{
 			mFileChannel = new FileOutputStream(pFile).getChannel();
 			return true;
 		}
-		catch (FileNotFoundException e)
+		catch (final FileNotFoundException e)
 		{
 			System.err.println(e.getLocalizedMessage());
 			return false;
@@ -43,7 +45,7 @@ public class DcamRecorder implements Closeable
 
 	public final boolean startDeamon()
 	{
-		Runnable lRunnable = new Runnable()
+		final Runnable lRunnable = new Runnable()
 		{
 
 			@Override
@@ -54,13 +56,13 @@ public class DcamRecorder implements Closeable
 				{
 					try
 					{
-						DcamFrame lTake = mFrameQueue.take();
+						final DcamFrame lTake = mFrameQueue.take();
 						writeToFile(lTake);
 					}
-					catch (InterruptedException e)
+					catch (final InterruptedException e)
 					{
 					}
-					catch (Throwable e)
+					catch (final Throwable e)
 					{
 						System.out.println(e.getLocalizedMessage());
 					}
@@ -69,14 +71,14 @@ public class DcamRecorder implements Closeable
 				{
 					mFileChannel.close();
 				}
-				catch (IOException e)
+				catch (final IOException e)
 				{
 					System.err.println(e.getLocalizedMessage());
 				}
 
 			}
 		};
-		Thread lThread = new Thread(lRunnable);
+		final Thread lThread = new Thread(lRunnable);
 		lThread.setDaemon(true);
 		lThread.setName("DcamRecorderDeamon");
 		lThread.start();
@@ -84,14 +86,14 @@ public class DcamRecorder implements Closeable
 
 	}
 
-	public boolean asynchronousWrite(DcamFrame pDcamFrame)
+	public boolean asynchronousWrite(final DcamFrame pDcamFrame)
 	{
 		try
 		{
 			mFrameQueue.put(pDcamFrame);
 			return true;
 		}
-		catch (InterruptedException e)
+		catch (final InterruptedException e)
 		{
 			System.err.println(e.getLocalizedMessage());
 			return false;
@@ -103,28 +105,25 @@ public class DcamRecorder implements Closeable
 	{
 		return mFrameQueue.size();
 	}
-	
+
 	public int getRemainingCapacity()
 	{
 		return mFrameQueue.remainingCapacity();
 	}
 
-	public boolean writeToFile(DcamFrame pFrameQueue)
+	public boolean writeToFile(final DcamFrame pFrameQueue)
 	{
 		try
 		{
 			final ByteBuffer lByteBuffer = pFrameQueue.getBytesDirectBuffer();
-			StopWatch lStopWatch = StopWatch.start();
-			final int limit= lByteBuffer.limit();
-			lByteBuffer.limit(limit/2);
+			final StopWatch lStopWatch = StopWatch.start();
 			mFileChannel.write(lByteBuffer);
 			mFileChannel.force(false);
-			lByteBuffer.limit(limit);
 			mElapsedTimeForWritingLastFrame = lStopWatch.time(TimeUnit.MILLISECONDS);
-			//System.out.format("Writing one frame to disk required: %d milliseconds \n",lElapsedTime);
+			// System.out.format("Writing one frame to disk required: %d milliseconds \n",lElapsedTime);
 			return true;
 		}
-		catch (IOException e)
+		catch (final IOException e)
 		{
 			System.err.println(e.getLocalizedMessage());
 			return false;
@@ -142,6 +141,5 @@ public class DcamRecorder implements Closeable
 	{
 		return mElapsedTimeForWritingLastFrame;
 	}
-
 
 }

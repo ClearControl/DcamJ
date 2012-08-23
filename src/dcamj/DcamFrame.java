@@ -53,9 +53,13 @@ public class DcamFrame
 
 		final int lPixelType = (int) mFrame.type().value();
 		if (lPixelType == lMono8bit)
+		{
 			return 1;
+		}
 		if (lPixelType == lMono16bit)
+		{
 			return 2;
+		}
 		return 0;
 	}
 
@@ -66,22 +70,22 @@ public class DcamFrame
 
 	public short[] getShortsArray()
 	{
-		final int lBufferLength =  getBufferLengthInBytes();
-		short[] lShortsArray = getRawBuffer().getShorts(lBufferLength);
+		final int lBufferLength = getBufferLengthInBytes();
+		final short[] lShortsArray = getRawBuffer().getShorts(lBufferLength);
 		return lShortsArray;
 	}
-	
+
 	public ShortBuffer getShortsDirectBuffer()
 	{
-		final int lBufferLength =  getBufferLengthInBytes();
-		ShortBuffer lShortBuffer = getRawBuffer().getShortBuffer(lBufferLength);
+		final int lBufferLength = getBufferLengthInBytes();
+		final ShortBuffer lShortBuffer = getRawBuffer().getShortBuffer(lBufferLength);
 		return lShortBuffer;
 	}
-	
+
 	public ByteBuffer getBytesDirectBuffer()
 	{
-		final int lBufferLength =  getBufferLengthInBytes();
-		ByteBuffer lByteBuffer = getRawBuffer().getByteBuffer(lBufferLength);
+		final int lBufferLength = getBufferLengthInBytes();
+		final ByteBuffer lByteBuffer = getRawBuffer().getByteBuffer(lBufferLength);
 		return lByteBuffer;
 	}
 }

@@ -20,11 +20,11 @@ import dcamapi.DcamapiLibrary.DCAMPROPUNIT;
 
 public class DcamProperties extends DcamBase
 {
-	private DcamDevice mDcamDevice;
+	private final DcamDevice mDcamDevice;
 
-	private HashMap<String, DcamProperty> mPropertyMap = new HashMap<String, DcamProperty>();
+	private final HashMap<String, DcamProperty> mPropertyMap = new HashMap<String, DcamProperty>();
 
-	public DcamProperties(DcamDevice pDcamDevice)
+	public DcamProperties(final DcamDevice pDcamDevice)
 	{
 		mDcamDevice = pDcamDevice;
 		updatePropertyList();
@@ -35,40 +35,42 @@ public class DcamProperties extends DcamBase
 		boolean lSuccess = true;
 
 		@SuppressWarnings(
-		{ "unchecked", "unchecked" })
-		Pointer<IntValuedEnum<DcamapiLibrary.DCAMIDPROP>> lPointerToPropertyId = (Pointer) Pointer.allocateCLong();
+		{ "unchecked" })
+		final Pointer<IntValuedEnum<DcamapiLibrary.DCAMIDPROP>> lPointerToPropertyId = (Pointer) Pointer.allocateCLong();
 
 		while (DcamLibrary.hasSucceeded(DcamapiLibrary.dcampropGetnextid(	mDcamDevice.getHDCAMPointer(),
 																																			lPointerToPropertyId,
 																																			DcamapiLibrary.DCAMPROPOPTION.DCAMPROP_OPTION_SUPPORT.value)))
 		{
 
-			DcamProperty lDcamProperty = new DcamProperty();
+			final DcamProperty lDcamProperty = new DcamProperty();
 
 			lDcamProperty.id = lPointerToPropertyId.getCLong();
 
 			{
-				Pointer<Byte> lNameBytes = Pointer.allocateBytes(64);
-				IntValuedEnum<DCAMERR> lError = DcamapiLibrary.dcampropGetname(	mDcamDevice.getHDCAMPointer(),
-																																				lPointerToPropertyId.getCLong(),
-																																				lNameBytes,
-																																				64L);
+				final Pointer<Byte> lNameBytes = Pointer.allocateBytes(64);
+				final IntValuedEnum<DCAMERR> lError = DcamapiLibrary.dcampropGetname(	mDcamDevice.getHDCAMPointer(),
+																																							lPointerToPropertyId.getCLong(),
+																																							lNameBytes,
+																																							64L);
 				final boolean lSuccessGetName = addErrorToListAndCheckHasSucceeded(lError);
 				lSuccess &= lSuccessGetName;
 				if (!lSuccessGetName)
+				{
 					break;
+				}
 
 				lDcamProperty.name = lNameBytes.getString(StringType.C);
 			}
 
 			{
-				DCAM_PROPERTYATTR lDCAM_PROPERTYATTR = new DCAM_PROPERTYATTR();
+				final DCAM_PROPERTYATTR lDCAM_PROPERTYATTR = new DCAM_PROPERTYATTR();
 				lDCAM_PROPERTYATTR.cbSize(BridJ.sizeOf(DCAM_PROPERTYATTR.class));
 				lDCAM_PROPERTYATTR.iProp(lPointerToPropertyId.getCLong());
 
 				@SuppressWarnings("unchecked")
-				FlagSet<DCAMERR> lError = (FlagSet<DCAMERR>) DcamapiLibrary.dcampropGetattr(mDcamDevice.getHDCAMPointer(),
-																																										Pointer.pointerTo(lDCAM_PROPERTYATTR));
+				final FlagSet<DCAMERR> lError = (FlagSet<DCAMERR>) DcamapiLibrary.dcampropGetattr(mDcamDevice.getHDCAMPointer(),
+																																													Pointer.pointerTo(lDCAM_PROPERTYATTR));
 				final boolean lSuccessGetAttribute = true; // always works...
 				lSuccess &= lSuccessGetAttribute;
 				// System.out.format("name: %s error: %s \n", lDcamProperty.name,
@@ -76,13 +78,13 @@ public class DcamProperties extends DcamBase
 
 				if (lSuccessGetAttribute)
 				{
-					FlagSet<DCAMPROPATTRIBUTE> lFlagSetForAttribute = FlagSet.fromValue(lDCAM_PROPERTYATTR.attribute()
-																																																.value(),
-																																							DCAMPROPATTRIBUTE.class);
+					final FlagSet<DCAMPROPATTRIBUTE> lFlagSetForAttribute = FlagSet.fromValue(lDCAM_PROPERTYATTR.attribute()
+																																																			.value(),
+																																										DCAMPROPATTRIBUTE.class);
 
-					FlagSet<DCAMPROPUNIT> lFlagSetForUnit = FlagSet.fromValue(lDCAM_PROPERTYATTR.iUnit()
-																																											.value(),
-																																		DCAMPROPUNIT.class);
+					final FlagSet<DCAMPROPUNIT> lFlagSetForUnit = FlagSet.fromValue(lDCAM_PROPERTYATTR.iUnit()
+																																														.value(),
+																																					DCAMPROPUNIT.class);
 
 					lDcamProperty.attribute = lFlagSetForAttribute;
 					lDcamProperty.writable = lFlagSetForAttribute.has(DCAMPROPATTRIBUTE.DCAMPROP_ATTR_WRITABLE);
@@ -103,11 +105,15 @@ public class DcamProperties extends DcamBase
 					lDcamProperty.writable = lFlagSetForAttribute.has(DCAMPROPATTRIBUTE.DCAMPROP_ATTR_WRITABLE);
 					lDcamProperty.readable = lFlagSetForAttribute.has(DCAMPROPATTRIBUTE.DCAMPROP_ATTR_READABLE);
 
-					Iterator<DCAMPROPUNIT> lIterator = lFlagSetForUnit.iterator();
+					final Iterator<DCAMPROPUNIT> lIterator = lFlagSetForUnit.iterator();
 					if (lIterator.hasNext())
+					{
 						lDcamProperty.unit = lIterator.next();
+					}
 					else
+					{
 						lDcamProperty.unit = null;
+					}
 
 					lDcamProperty.valuemin = lDCAM_PROPERTYATTR.valuemin();
 					lDcamProperty.valuemax = lDCAM_PROPERTYATTR.valuemax();
@@ -173,17 +179,19 @@ public class DcamProperties extends DcamBase
 		return getProperty(pPropertyName).mode == "long";
 	}
 
-	public double getPropertyValue(DCAMIDPROP pDCAMIDPROP)
+	public double getPropertyValue(final DCAMIDPROP pDCAMIDPROP)
 	{
-		Pointer<Double> lPointerToDouble = Pointer.allocateDouble();
+		final Pointer<Double> lPointerToDouble = Pointer.allocateDouble();
 
-		IntValuedEnum<DCAMERR> lError = DcamapiLibrary.dcampropGetvalue(mDcamDevice.getHDCAMPointer(),
-																																		pDCAMIDPROP.value,
-																																		lPointerToDouble);
+		final IntValuedEnum<DCAMERR> lError = DcamapiLibrary.dcampropGetvalue(mDcamDevice.getHDCAMPointer(),
+																																					pDCAMIDPROP.value,
+																																					lPointerToDouble);
 		final boolean lSuccess = addErrorToListAndCheckHasSucceeded(lError);
 
 		if (!lSuccess)
+		{
 			return Double.NaN;
+		}
 
 		final double lValue = lPointerToDouble.getDouble();
 
@@ -192,17 +200,19 @@ public class DcamProperties extends DcamBase
 
 	public final double getPropertyValue(final String pPropertyName)
 	{
-		DcamProperty lProperty = getProperty(pPropertyName);
+		final DcamProperty lProperty = getProperty(pPropertyName);
 
-		Pointer<Double> lPointerToDouble = Pointer.allocateDouble();
+		final Pointer<Double> lPointerToDouble = Pointer.allocateDouble();
 
-		IntValuedEnum<DCAMERR> lError = DcamapiLibrary.dcampropGetvalue(mDcamDevice.getHDCAMPointer(),
-																																		lProperty.id,
-																																		lPointerToDouble);
+		final IntValuedEnum<DCAMERR> lError = DcamapiLibrary.dcampropGetvalue(mDcamDevice.getHDCAMPointer(),
+																																					lProperty.id,
+																																					lPointerToDouble);
 		final boolean lSuccess = addErrorToListAndCheckHasSucceeded(lError);
 
 		if (!lSuccess)
+		{
 			return Double.NaN;
+		}
 
 		final double lValue = lPointerToDouble.getDouble();
 
@@ -212,11 +222,11 @@ public class DcamProperties extends DcamBase
 	public final boolean setPropertyValue(final String pPropertyName,
 																				final double pValue)
 	{
-		DcamProperty lProperty = getProperty(pPropertyName);
+		final DcamProperty lProperty = getProperty(pPropertyName);
 
-		IntValuedEnum<DCAMERR> lError = DcamapiLibrary.dcampropSetvalue(mDcamDevice.getHDCAMPointer(),
-																																		lProperty.id,
-																																		pValue);
+		final IntValuedEnum<DCAMERR> lError = DcamapiLibrary.dcampropSetvalue(mDcamDevice.getHDCAMPointer(),
+																																					lProperty.id,
+																																					pValue);
 		final boolean lSuccess = addErrorToListAndCheckHasSucceeded(lError);
 
 		return lSuccess;
@@ -226,28 +236,30 @@ public class DcamProperties extends DcamBase
 																				final double pValue)
 	{
 
-		IntValuedEnum<DCAMERR> lError = DcamapiLibrary.dcampropSetvalue(mDcamDevice.getHDCAMPointer(),
-																																		pDCAMIDPROP.value,
-																																		pValue);
+		final IntValuedEnum<DCAMERR> lError = DcamapiLibrary.dcampropSetvalue(mDcamDevice.getHDCAMPointer(),
+																																					pDCAMIDPROP.value,
+																																					pValue);
 		final boolean lSuccess = addErrorToListAndCheckHasSucceeded(lError);
 
 		return lSuccess;
 	}
-	
-	private double setAndGetPropertyValue(DCAMIDPROP pDCAMIDPROP,
-																				double pValue)
+
+	private double setAndGetPropertyValue(final DCAMIDPROP pDCAMIDPROP,
+																				final double pValue)
 	{
-		Pointer<Double> lPointerToDouble = Pointer.allocateDouble();
+		final Pointer<Double> lPointerToDouble = Pointer.allocateDouble();
 		lPointerToDouble.set(pValue);
-		
-		IntValuedEnum<DCAMERR> lError = DcamapiLibrary.dcampropSetgetvalue(mDcamDevice.getHDCAMPointer(),
-																																		pDCAMIDPROP.value,
-																																		lPointerToDouble,
-																																		0);
+
+		final IntValuedEnum<DCAMERR> lError = DcamapiLibrary.dcampropSetgetvalue(	mDcamDevice.getHDCAMPointer(),
+																																							pDCAMIDPROP.value,
+																																							lPointerToDouble,
+																																							0);
 		final boolean lSuccess = addErrorToListAndCheckHasSucceeded(lError);
-		
+
 		if (!lSuccess)
+		{
 			return Double.NaN;
+		}
 
 		final double lValue = lPointerToDouble.getDouble();
 
@@ -256,7 +268,7 @@ public class DcamProperties extends DcamBase
 
 	public void listAllProperties()
 	{
-		for (Entry<String, DcamProperty> lEntry : mPropertyMap.entrySet())
+		for (final Entry<String, DcamProperty> lEntry : mPropertyMap.entrySet())
 		{
 			final String lName = lEntry.getKey();
 			final DcamProperty lDcamProperty = lEntry.getValue();
@@ -271,28 +283,27 @@ public class DcamProperties extends DcamBase
 		return getPropertyValue(DCAMIDPROP.DCAM_IDPROP_EXPOSURETIME);
 	}
 
-	public void setExposure(double pExposure)
+	public void setExposure(final double pExposure)
 	{
 		setPropertyValue(DCAMIDPROP.DCAM_IDPROP_EXPOSURETIME, pExposure);
 	}
 
-	public double setAndGetExposure(double pExposure)
+	public double setAndGetExposure(final double pExposure)
 	{
-		return setAndGetPropertyValue(DCAMIDPROP.DCAM_IDPROP_EXPOSURETIME, pExposure);
+		return setAndGetPropertyValue(DCAMIDPROP.DCAM_IDPROP_EXPOSURETIME,
+																	pExposure);
 	}
 
-	
 	public void setCenteredROI(final int pWidth, final int pHeight)
 	{
-		final int hpos = 1024-pWidth/2;
-		final int vpos = 1024-pHeight/2;
+		final int hpos = 1024 - pWidth / 2;
+		final int vpos = 1024 - pHeight / 2;
 		setPropertyValue(DCAMIDPROP.DCAM_IDPROP_SUBARRAYHPOS, hpos);
 		setPropertyValue(DCAMIDPROP.DCAM_IDPROP_SUBARRAYVPOS, vpos);
 		setPropertyValue(DCAMIDPROP.DCAM_IDPROP_SUBARRAYHSIZE, pWidth);
 		setPropertyValue(DCAMIDPROP.DCAM_IDPROP_SUBARRAYVSIZE, pHeight);
-		
+
 		setPropertyValue(DCAMIDPROP.DCAM_IDPROP_SUBARRAYMODE, 2);
 	}
-
 
 }

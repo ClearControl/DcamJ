@@ -17,7 +17,7 @@ import dcamapi.HDCAMWAIT_struct;
 
 public class DcamWait extends DcamBase implements Closeable
 {
-	private DcamDevice mDcamDevice;
+	private final DcamDevice mDcamDevice;
 	private Pointer<HDCAMWAIT_struct> mHwaitPointer = null;
 
 	public DcamWait(final DcamDevice pDcamDevice)
@@ -46,9 +46,11 @@ public class DcamWait extends DcamBase implements Closeable
 																		final long pTimeOut)
 	{
 		if (mHwaitPointer == null)
+		{
 			return false;
+		}
 
-		DCAMWAIT_START lDCAMWAIT_START = new DCAMWAIT_START();
+		final DCAMWAIT_START lDCAMWAIT_START = new DCAMWAIT_START();
 		lDCAMWAIT_START.size(BridJ.sizeOf(DCAMWAIT_START.class));
 		lDCAMWAIT_START.eventmask(pDCAMWAIT_EVENT.value);
 		lDCAMWAIT_START.timeout(pTimeOut);
@@ -62,17 +64,22 @@ public class DcamWait extends DcamBase implements Closeable
 	public final boolean abort()
 	{
 		if (mHwaitPointer == null)
+		{
 			return false;
+		}
 
 		final IntValuedEnum<DCAMERR> lError = DcamapiLibrary.dcamwaitAbort(mHwaitPointer);
 		final boolean lSuccess = addErrorToListAndCheckHasSucceeded(lError);
 		return lSuccess;
 	}
 
+	@Override
 	public final void close()
 	{
 		if (mHwaitPointer == null)
+		{
 			return;
+		}
 
 		final IntValuedEnum<DCAMERR> lError = DcamapiLibrary.dcamwaitClose(mHwaitPointer);
 		addErrorToListAndCheckHasSucceeded(lError);

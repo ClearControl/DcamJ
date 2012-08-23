@@ -23,9 +23,9 @@ public class DcamLibrary
 
 	public static final boolean initialize()
 	{
-		DCAMAPI_INIT lDCAMAPI_INIT = new DCAMAPI_INIT();
+		final DCAMAPI_INIT lDCAMAPI_INIT = new DCAMAPI_INIT();
 		lDCAMAPI_INIT.size(BridJ.sizeOf(DCAMAPI_INIT.class));
-		IntValuedEnum<DCAMERR> dcamapiInit = DcamapiLibrary.dcamapiInit(pointerTo(lDCAMAPI_INIT));
+		final IntValuedEnum<DCAMERR> dcamapiInit = DcamapiLibrary.dcamapiInit(pointerTo(lDCAMAPI_INIT));
 
 		final boolean lSuccess = hasSucceeded(dcamapiInit);
 
@@ -56,7 +56,9 @@ public class DcamLibrary
 	public static final DcamDevice getDeviceForId(final int pDeviceId)
 	{
 		if (!isInitialized())
+		{
 			return null;
+		}
 		final DcamDevice lDcamDevice = new DcamDevice(pDeviceId);
 		return lDcamDevice;
 	}
@@ -64,13 +66,15 @@ public class DcamLibrary
 	public static final boolean uninitialize()
 	{
 		if (!isInitialized())
+		{
 			return false;
-		IntValuedEnum<DCAMERR> lDcamapiUninit = DcamapiLibrary.dcamapiUninit();
+		}
+		final IntValuedEnum<DCAMERR> lDcamapiUninit = DcamapiLibrary.dcamapiUninit();
 		final boolean lSuccess = hasSucceeded(lDcamapiUninit);
 		return lSuccess;
 	}
 
-	public static boolean hasSucceeded(IntValuedEnum<DCAMERR> dcamapiInit)
+	public static boolean hasSucceeded(final IntValuedEnum<DCAMERR> dcamapiInit)
 	{
 		return dcamapiInit.toString().contains("DCAMERR_SUCCESS");
 	}

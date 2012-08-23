@@ -19,14 +19,14 @@ import dcamapi.DcamapiLibrary.DCAMIDPROP;
 public class DcamBufferControl extends DcamBase
 {
 
-	private DcamDevice mDcamDevice;
+	private final DcamDevice mDcamDevice;
 
-	private ArrayList<ByteBuffer> mByteBufferList = new ArrayList<ByteBuffer>();
-	private ArrayList<Pointer<Byte>> mPointerToByteBufferList = new ArrayList<Pointer<Byte>>();
+	private final ArrayList<ByteBuffer> mByteBufferList = new ArrayList<ByteBuffer>();
+	private final ArrayList<Pointer<Byte>> mPointerToByteBufferList = new ArrayList<Pointer<Byte>>();
 
-	private DcamFrame mDcamFrameForInternalBuffer = new DcamFrame();
+	private final DcamFrame mDcamFrameForInternalBuffer = new DcamFrame();
 
-	public DcamBufferControl(DcamDevice pDcamDevice)
+	public DcamBufferControl(final DcamDevice pDcamDevice)
 	{
 		mDcamDevice = pDcamDevice;
 	}
@@ -34,7 +34,9 @@ public class DcamBufferControl extends DcamBase
 	public final boolean allocateInternalBuffers(final int pNumberOfBuffers)
 	{
 		if (pNumberOfBuffers < 1)
+		{
 			return false;
+		}
 
 		final IntValuedEnum<DCAMERR> lError = DcamapiLibrary.dcambufAlloc(mDcamDevice.getHDCAMPointer(),
 																																			pNumberOfBuffers);
@@ -61,17 +63,18 @@ public class DcamBufferControl extends DcamBase
 
 		 */
 
-		final int lImageSizeInBytes = (int) mDcamDevice.getProperties().getPropertyValue(DCAMIDPROP.DCAM_IDPROP_BUFFER_FRAMEBYTES);
+		final int lImageSizeInBytes = (int) mDcamDevice.getProperties()
+																										.getPropertyValue(DCAMIDPROP.DCAM_IDPROP_BUFFER_FRAMEBYTES);
 
-		Pointer<Pointer<?>> lPointerToPointerArray = Pointer.allocatePointers(pNumberOfBuffers);
+		final Pointer<Pointer<?>> lPointerToPointerArray = Pointer.allocatePointers(pNumberOfBuffers);
 
 		// TODO: should maybe do something less wasteful here:
 		mByteBufferList.clear();
 		mPointerToByteBufferList.clear();
 		for (int i = 0; i < pNumberOfBuffers; i++)
 		{
-			ByteBuffer lByteBuffer = ByteBuffer.allocateDirect(lImageSizeInBytes);
-			Pointer<Byte> lPointerToBytes = pointerToBytes(lByteBuffer);
+			final ByteBuffer lByteBuffer = ByteBuffer.allocateDirect(lImageSizeInBytes);
+			final Pointer<Byte> lPointerToBytes = pointerToBytes(lByteBuffer);
 			mByteBufferList.add(lByteBuffer);
 			mPointerToByteBufferList.add(lPointerToBytes);
 			lPointerToPointerArray.set(i, lPointerToBytes);
@@ -90,13 +93,15 @@ public class DcamBufferControl extends DcamBase
 
 	public final DcamFrame lockFrame()
 	{
-		Pointer<DCAM_FRAME> lPointer = mDcamFrameForInternalBuffer.getPointer();
+		final Pointer<DCAM_FRAME> lPointer = mDcamFrameForInternalBuffer.getPointer();
 
 		final IntValuedEnum<DCAMERR> lError = DcamapiLibrary.dcambufLockframe(mDcamDevice.getHDCAMPointer(),
 																																					lPointer);
 		final boolean lSuccess = addErrorToListAndCheckHasSucceeded(lError);
-		if(!lSuccess)
+		if (!lSuccess)
+		{
 			return null;
+		}
 		return mDcamFrameForInternalBuffer;
 	}
 

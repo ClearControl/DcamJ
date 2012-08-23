@@ -24,11 +24,11 @@ public class StopWatch
 
 	public long time()
 	{
-		long mEndingTime = System.currentTimeMillis();
+		final long mEndingTime = System.currentTimeMillis();
 		return mEndingTime - mStartingTime;
 	}
 
-	public long time(TimeUnit unit)
+	public long time(final TimeUnit unit)
 	{
 		return unit.convert(time(), TimeUnit.MILLISECONDS);
 	}

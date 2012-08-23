@@ -22,9 +22,9 @@ public class DcamApiTests
 	@Test
 	public void test()
 	{
-		DCAMAPI_INIT lDCAMAPI_INIT = new DCAMAPI_INIT();
+		final DCAMAPI_INIT lDCAMAPI_INIT = new DCAMAPI_INIT();
 		lDCAMAPI_INIT.size(BridJ.sizeOf(DCAMAPI_INIT.class));
-		IntValuedEnum<DCAMERR> dcamapiInit = DcamapiLibrary.dcamapiInit(pointerTo(lDCAMAPI_INIT));
+		final IntValuedEnum<DCAMERR> dcamapiInit = DcamapiLibrary.dcamapiInit(pointerTo(lDCAMAPI_INIT));
 
 		assertTrue(dcamapiInit.toString().contains("DCAMERR_SUCCESS"));
 		assertTrue(lDCAMAPI_INIT.iDeviceCount() > 0);
@@ -43,9 +43,9 @@ public class DcamApiTests
 		err = dcamdev_getstring( hdcam, &param );
 		 */
 
-		Pointer<Byte> model = allocateBytes(256);
+		final Pointer<Byte> model = allocateBytes(256);
 
-		DCAMDEV_STRING lDCAMDEV_STRING = new DCAMDEV_STRING();
+		final DCAMDEV_STRING lDCAMDEV_STRING = new DCAMDEV_STRING();
 		lDCAMDEV_STRING.size(BridJ.sizeOf(DCAMDEV_STRING.class));
 		lDCAMDEV_STRING.iString(DCAM_IDSTR.DCAM_IDSTR_MODEL.value());
 		lDCAMDEV_STRING.text(model);
@@ -55,18 +55,18 @@ public class DcamApiTests
 		DcamapiLibrary.dcamdevGetstring(Pointer.NULL,
 																		pointerTo(lDCAMDEV_STRING));
 
-		String lModel = new String(model.getBytes());
+		final String lModel = new String(model.getBytes());
 		System.out.println(lModel);
 		assertTrue(lModel.contains("C11440"));
 
 		{
-			DCAMDEV_OPEN lDCAMDEV_OPEN = new DCAMDEV_OPEN();
+			final DCAMDEV_OPEN lDCAMDEV_OPEN = new DCAMDEV_OPEN();
 			final long size = BridJ.sizeOf(DCAMDEV_OPEN.class);
 			assertTrue(size == 16);
 			lDCAMDEV_OPEN.size(size);
 
 			lDCAMDEV_OPEN.index(0);
-			IntValuedEnum<DCAMERR> dcamdevOpen = DcamapiLibrary.dcamdevOpen(pointerTo(lDCAMDEV_OPEN));
+			final IntValuedEnum<DCAMERR> dcamdevOpen = DcamapiLibrary.dcamdevOpen(pointerTo(lDCAMDEV_OPEN));
 			System.out.format("%s \n", dcamdevOpen.toString());
 
 			assertTrue(dcamdevOpen.toString().contains("DCAMERR_SUCCESS"));

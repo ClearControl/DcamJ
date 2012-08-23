@@ -1,4 +1,8 @@
 package dcamapi;
+import dcamapi.DcamapiLibrary.DCAMPROPATTRIBUTE2;
+import dcamapi.DcamapiLibrary.DCAMPROPATTRIBUTE;
+import dcamapi.DcamapiLibrary.DCAMPROPUNIT;
+import org.bridj.IntValuedEnum;
 import org.bridj.Pointer;
 import org.bridj.StructObject;
 import org.bridj.ann.CLong;
@@ -75,21 +79,21 @@ public class DCAM_PROPERTYATTR extends StructObject {
 	}
 	/**
 	 * output parameters<br>
-	 * DCAMPROPATTRIBUTE
+	 * DCAMPROPATTRIBUTE<br>
+	 * C type : DCAMPROPATTRIBUTE
 	 */
-	@CLong 
 	@Field(4) 
-	public long attribute() {
-		return this.io.getCLongField(this, 4);
+	public IntValuedEnum<DCAMPROPATTRIBUTE > attribute() {
+		return this.io.getEnumField(this, 4);
 	}
 	/**
 	 * output parameters<br>
-	 * DCAMPROPATTRIBUTE
+	 * DCAMPROPATTRIBUTE<br>
+	 * C type : DCAMPROPATTRIBUTE
 	 */
-	@CLong 
 	@Field(4) 
-	public DCAM_PROPERTYATTR attribute(long attribute) {
-		this.io.setCLongField(this, 4, attribute);
+	public DCAM_PROPERTYATTR attribute(IntValuedEnum<DCAMPROPATTRIBUTE > attribute) {
+		this.io.setEnumField(this, 4, attribute);
 		return this;
 	}
 	/// 0 reserved; DCAMIDGROUP
@@ -105,30 +109,38 @@ public class DCAM_PROPERTYATTR extends StructObject {
 		this.io.setCLongField(this, 5, iGroup);
 		return this;
 	}
-	/// DCAMPROPUNIT
-	@CLong 
+	/**
+	 * DCAMPROPUNIT<br>
+	 * C type : DCAMPROPUNIT
+	 */
 	@Field(6) 
-	public long iUnit() {
-		return this.io.getCLongField(this, 6);
+	public IntValuedEnum<DCAMPROPUNIT > iUnit() {
+		return this.io.getEnumField(this, 6);
 	}
-	/// DCAMPROPUNIT
-	@CLong 
+	/**
+	 * DCAMPROPUNIT<br>
+	 * C type : DCAMPROPUNIT
+	 */
 	@Field(6) 
-	public DCAM_PROPERTYATTR iUnit(long iUnit) {
-		this.io.setCLongField(this, 6, iUnit);
+	public DCAM_PROPERTYATTR iUnit(IntValuedEnum<DCAMPROPUNIT > iUnit) {
+		this.io.setEnumField(this, 6, iUnit);
 		return this;
 	}
-	/// DCAMPROPATTRIBUTE2
-	@CLong 
+	/**
+	 * DCAMPROPATTRIBUTE2<br>
+	 * C type : DCAMPROPATTRIBUTE2
+	 */
 	@Field(7) 
-	public long attribute2() {
-		return this.io.getCLongField(this, 7);
+	public IntValuedEnum<DCAMPROPATTRIBUTE2 > attribute2() {
+		return this.io.getEnumField(this, 7);
 	}
-	/// DCAMPROPATTRIBUTE2
-	@CLong 
+	/**
+	 * DCAMPROPATTRIBUTE2<br>
+	 * C type : DCAMPROPATTRIBUTE2
+	 */
 	@Field(7) 
-	public DCAM_PROPERTYATTR attribute2(long attribute2) {
-		this.io.setCLongField(this, 7, attribute2);
+	public DCAM_PROPERTYATTR attribute2(IntValuedEnum<DCAMPROPATTRIBUTE2 > attribute2) {
+		this.io.setEnumField(this, 7, attribute2);
 		return this;
 	}
 	/// minimum value

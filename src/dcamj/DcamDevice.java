@@ -25,8 +25,11 @@ public class DcamDevice extends DcamBase implements Closeable
 {
 	private long mDeviceID;
 
+	private DcamProperties mDcamProperties;
 	private DcamWait mDcamWait;
 	private DcamBufferControl mDcamBufferControl;
+
+
 
 	public DcamDevice(int pDeviceID)
 	{
@@ -97,21 +100,7 @@ public class DcamDevice extends DcamBase implements Closeable
 											lDcamApiVersion);
 	}
 
-	public final double getProperty(DCAMIDPROP pPropertyId)
-	{
-		Pointer<Double> lPointerToDouble = Pointer.allocateDouble();
-		final IntValuedEnum<DCAMERR> lError = DcamapiLibrary.dcampropGetvalue(getHDCAMPointer(),
-																																					pPropertyId,
-																																					lPointerToDouble);
-		final boolean lSuccess = addErrorToListAndCheckHasSucceeded(lError);
-		if (!lSuccess)
-		{
-			return Double.NaN;
-		}
-		final double lPropertyValue = lPointerToDouble.getDouble();
-		lPointerToDouble.release();
-		return lPropertyValue;
-	}
+	
 
 	private final boolean open()
 	{
@@ -192,6 +181,16 @@ public class DcamDevice extends DcamBase implements Closeable
 		final boolean lSuccess = addErrorToListAndCheckHasSucceeded(lError);
 		return lSuccess;
 	}
+	
+	
+	public DcamProperties getProperties()
+	{
+		if (mDcamProperties == null)
+		{
+			mDcamProperties = new DcamProperties(this);
+		}
+		return mDcamProperties;
+	}
 
 	public final DcamWait getDcamWait()
 	{
@@ -211,6 +210,7 @@ public class DcamDevice extends DcamBase implements Closeable
 		return mDcamBufferControl;
 	}
 	
+	
 	public final void close()
 	{
 		IntValuedEnum<DCAMERR> lError = DcamapiLibrary.dcamdevClose(getHDCAMPointer());
@@ -223,6 +223,8 @@ public class DcamDevice extends DcamBase implements Closeable
 		final boolean lSuccess = addErrorToListAndCheckHasSucceeded(lError);
 		return lSuccess;
 	}
+
+
 	
 }
 

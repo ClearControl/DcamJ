@@ -2085,11 +2085,11 @@ public class DcamapiLibrary {
 	@Name("dcamprop_getattr") 
 	public static native IntValuedEnum<DcamapiLibrary.DCAMERR > dcampropGetattr(Pointer<HDCAM_struct > h, Pointer<DCAM_PROPERTYATTR > param);
 	/**
-	 * Original signature : <code>DCAMERR dcamprop_getvalue(HDCAM, DCAMIDPROP, double*)</code><br>
+	 * Original signature : <code>DCAMERR dcamprop_getvalue(HDCAM, long, double*)</code><br>
 	 * <i>native declaration : lib\dcam\inc\dcamprop.h:82</i>
 	 */
 	@Name("dcamprop_getvalue") 
-	public static native IntValuedEnum<DcamapiLibrary.DCAMERR > dcampropGetvalue(Pointer<HDCAM_struct > h, IntValuedEnum<DcamapiLibrary.DCAMIDPROP > iProp, Pointer<Double > pValue);
+	public static native IntValuedEnum<DcamapiLibrary.DCAMERR > dcampropGetvalue(Pointer<HDCAM_struct > h, @CLong long iProp, Pointer<Double > pValue);
 	/**
 	 * Original signature : <code>DCAMERR dcamprop_setvalue(HDCAM, long, double)</code><br>
 	 * <i>native declaration : lib\dcam\inc\dcamprop.h:83</i>
@@ -2109,11 +2109,11 @@ public class DcamapiLibrary {
 	@Name("dcamprop_queryvalue") 
 	public static native IntValuedEnum<DcamapiLibrary.DCAMERR > dcampropQueryvalue(Pointer<HDCAM_struct > h, @CLong long iProp, Pointer<Double > pValue, @CLong long option);
 	/**
-	 * Original signature : <code>DCAMERR dcamprop_getnextid(HDCAM, long*, long)</code><br>
+	 * Original signature : <code>DCAMERR dcamprop_getnextid(HDCAM, DCAMIDPROP*, long)</code><br>
 	 * <i>native declaration : lib\dcam\inc\dcamprop.h:86</i>
 	 */
 	@Name("dcamprop_getnextid") 
-	public static native IntValuedEnum<DcamapiLibrary.DCAMERR > dcampropGetnextid(Pointer<HDCAM_struct > h, Pointer<CLong > pProp, @CLong long option);
+	public static native IntValuedEnum<DcamapiLibrary.DCAMERR > dcampropGetnextid(Pointer<HDCAM_struct > h, Pointer<IntValuedEnum<DcamapiLibrary.DCAMIDPROP > > pProp, @CLong long option);
 	/**
 	 * Original signature : <code>DCAMERR dcamprop_getname(HDCAM, long, char*, long)</code><br>
 	 * <i>native declaration : lib\dcam\inc\dcamprop.h:87</i>

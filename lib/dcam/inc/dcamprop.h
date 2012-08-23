@@ -39,10 +39,10 @@ typedef struct DCAM_PARAM_PROPERTYATTR
 	long	iReserved1;		/*	must be 0				*/
 
 	/* output parameters */
-	long	attribute;		/*	DCAMPROPATTRIBUTE		*/
-	long	iGroup;			/*	0 reserved; DCAMIDGROUP	*/
-	long	iUnit;			/*	DCAMPROPUNIT			*/
-	long	attribute2;		/*	DCAMPROPATTRIBUTE2		*/
+	DCAMPROPATTRIBUTE		attribute;		/*	DCAMPROPATTRIBUTE		*/
+	long					iGroup;			/*	0 reserved; DCAMIDGROUP	*/
+	DCAMPROPUNIT			iUnit;			/*	DCAMPROPUNIT			*/
+	DCAMPROPATTRIBUTE2		attribute2;		/*	DCAMPROPATTRIBUTE2		*/
 
 	double	valuemin;		/*	minimum value			*/
 	double	valuemax;		/*	maximum value			*/
@@ -79,11 +79,11 @@ typedef struct DCAM_PARAM_PROPERTYVALUETEXT
 
 /* DCAM-API 4.0 */
 DCAMERR DCAMAPI dcamprop_getattr		( HDCAM h, DCAM_PROPERTYATTR* param );
-DCAMERR DCAMAPI dcamprop_getvalue		( HDCAM h, DCAMIDPROP iProp, double* pValue );
+DCAMERR DCAMAPI dcamprop_getvalue		( HDCAM h, long iProp, double* pValue );
 DCAMERR DCAMAPI dcamprop_setvalue		( HDCAM h, long iProp, double  fValue );
 DCAMERR DCAMAPI dcamprop_setgetvalue	( HDCAM h, long iProp, double* pValue, long option DCAM_DEFAULT_ARG );
 DCAMERR DCAMAPI dcamprop_queryvalue		( HDCAM h, long iProp, double* pValue, long option DCAM_DEFAULT_ARG );
-DCAMERR DCAMAPI dcamprop_getnextid		( HDCAM h, long* pProp, long option DCAM_DEFAULT_ARG );
+DCAMERR DCAMAPI dcamprop_getnextid		( HDCAM h, DCAMIDPROP* pProp, long option DCAM_DEFAULT_ARG );
 DCAMERR DCAMAPI dcamprop_getname		( HDCAM h, long iProp, char* text, long textbytes );
 DCAMERR DCAMAPI dcamprop_getvaluetext	( HDCAM h, DCAM_PROPERTYVALUETEXT* param );
 

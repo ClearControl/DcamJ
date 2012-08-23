@@ -61,7 +61,7 @@ public class DcamBufferControl extends DcamBase
 
 		 */
 
-		final int lImageSizeInBytes = (int) mDcamDevice.getProperty(DCAMIDPROP.DCAM_IDPROP_BUFFER_FRAMEBYTES);
+		final int lImageSizeInBytes = (int) mDcamDevice.getProperties().getPropertyValue(DCAMIDPROP.DCAM_IDPROP_BUFFER_FRAMEBYTES);
 
 		Pointer<Pointer<?>> lPointerToPointerArray = Pointer.allocatePointers(pNumberOfBuffers);
 

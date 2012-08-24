@@ -131,7 +131,7 @@ public class DcamRecorder implements Closeable
 	}
 
 	@Override
-	public void close() throws IOException
+	public void close()
 	{
 		mActive = false;
 		mFrameQueue.clear();

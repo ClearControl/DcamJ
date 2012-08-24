@@ -10,6 +10,8 @@ import java.util.concurrent.TimeUnit;
 import org.junit.Test;
 
 import dcamapi.DcamapiLibrary.DCAMWAIT_EVENT;
+import dcamj.DcamAcquisition;
+import dcamj.DcamAcquisitionListener;
 import dcamj.DcamBufferControl;
 import dcamj.DcamDevice;
 import dcamj.DcamFrame;
@@ -107,6 +109,32 @@ public class DcamJTests
 		final long lElapsedTimeInSeconds = lStopWatch.time(TimeUnit.SECONDS);
 		final double lFramerate = (double) pFramesAcquiredUntilNow / lElapsedTimeInSeconds;
 		System.out.format("Framerate: %g \n", lFramerate);
+	}
+
+	@Test
+	public void testDcamAcquisition()	throws InterruptedException,
+																		IOException
+	{
+		
+		DcamAcquisition lDcamAcquisition  = new DcamAcquisition(0);
+		
+		lDcamAcquisition.addListener(new DcamAcquisitionListener(){
+
+			@Override
+			public void frameArrived(	DcamAcquisition pDcamAquisition,
+			                         	long pFrameIndex,
+																long pArrivalTimeStamp,
+																DcamFrame pDcamFrame)
+			{
+				System.out.format("Frame %d arrived at %d \n",pFrameIndex,pArrivalTimeStamp);
+			}});
+		
+		lDcamAcquisition.open();
+		lDcamAcquisition.startAcquisition();
+		Thread.sleep(10000);
+		lDcamAcquisition.stopAcquisition();
+		lDcamAcquisition.close();
+		
 	}
 
 }

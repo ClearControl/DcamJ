@@ -135,7 +135,7 @@ public class DcamAcquisition implements Closeable
 				// System.out.println(lShortsDirectBuffer.capacity());
 				if (mDebug && mFrameIndex > 0 && mFrameIndex % 100 == 0)
 				{
-					getTime(mFrameIndex + 1, mStopWatch);
+					printFramerate(mFrameIndex + 1, mStopWatch);
 					/*System.out.format("%d ms to write one %dx%d frame. \n",
 														lDcamFrame.getWidth(),
 														lDcamFrame.getHeight());/**/
@@ -209,7 +209,7 @@ public class DcamAcquisition implements Closeable
 		DcamLibrary.uninitialize();
 	}
 
-	private void getTime(final long pL, final StopWatch lStopWatch)
+	private void printFramerate(final long pL, final StopWatch lStopWatch)
 	{
 		final long lElapsedTimeInSeconds = lStopWatch.time(TimeUnit.SECONDS);
 		final double lFramerate = (double) pL / lElapsedTimeInSeconds;

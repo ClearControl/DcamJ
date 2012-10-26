@@ -189,7 +189,7 @@ public class DcamAcquisition implements Closeable
 		{
 			try
 			{
-				Thread.sleep(10);
+				Thread.sleep(200);
 			}
 			catch (InterruptedException e)
 			{
@@ -204,8 +204,20 @@ public class DcamAcquisition implements Closeable
 
 	public final void close()
 	{
+		System.out.println("mBufferControl.releaseBuffers();");
 		mBufferControl.releaseBuffers();
+		try
+		{
+			Thread.sleep(500);
+		}
+		catch (InterruptedException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		System.out.println("mDcamDevice.close();");
 		mDcamDevice.close();
+		System.out.println("DcamLibrary.uninitialize();");
 		DcamLibrary.uninitialize();
 	}
 

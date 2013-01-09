@@ -136,5 +136,32 @@ public class DcamJTests
 		lDcamAcquisition.close();
 		
 	}
+	
+	@Test
+	public void testDcamAcquisitionWithExternalTriggering()	throws InterruptedException,
+																		IOException
+	{
+		
+		DcamAcquisition lDcamAcquisition  = new DcamAcquisition(0);
+		lDcamAcquisition.setExternalTrigger(true);
+		
+		lDcamAcquisition.addListener(new DcamAcquisitionListener(){
+
+			@Override
+			public void frameArrived(	DcamAcquisition pDcamAquisition,
+			                         	long pFrameIndex,
+																long pArrivalTimeStamp,
+																DcamFrame pDcamFrame)
+			{
+				System.out.format("Frame %d arrived at %d \n",pFrameIndex,pArrivalTimeStamp);
+			}});
+		
+		lDcamAcquisition.open();
+		lDcamAcquisition.startAcquisition();
+		Thread.sleep(10000);
+		lDcamAcquisition.stopAcquisition();
+		lDcamAcquisition.close();
+		
+	}
 
 }

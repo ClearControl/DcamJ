@@ -16,6 +16,7 @@ import dcamapi.DcamapiLibrary;
 import dcamapi.DcamapiLibrary.DCAMERR;
 import dcamapi.DcamapiLibrary.DCAMIDPROP;
 import dcamapi.DcamapiLibrary.DCAMPROPATTRIBUTE;
+import dcamapi.DcamapiLibrary.DCAMPROPMODEVALUE;
 import dcamapi.DcamapiLibrary.DCAMPROPUNIT;
 
 public class DcamProperties extends DcamBase
@@ -244,6 +245,18 @@ public class DcamProperties extends DcamBase
 		return lSuccess;
 	}
 
+	public final boolean setPropertyValue(final DCAMIDPROP pDCAMIDPROP,
+																				final DCAMPROPMODEVALUE pDCAMPROPMODEVALUE)
+	{
+
+		final IntValuedEnum<DCAMERR> lError = DcamapiLibrary.dcampropSetvalue(mDcamDevice.getHDCAMPointer(),
+																																					pDCAMIDPROP.value,
+																																					pDCAMPROPMODEVALUE.value);
+		final boolean lSuccess = addErrorToListAndCheckHasSucceeded(lError);
+
+		return lSuccess;
+	}
+
 	private double setAndGetPropertyValue(final DCAMIDPROP pDCAMIDPROP,
 																				final double pValue)
 	{
@@ -306,4 +319,21 @@ public class DcamProperties extends DcamBase
 		setPropertyValue(DCAMIDPROP.DCAM_IDPROP_SUBARRAYMODE, 2);
 	}
 
+	public void setInternalTrigger()
+	{
+		setPropertyValue(	DCAMIDPROP.DCAM_IDPROP_TRIGGERSOURCE,
+											DCAMPROPMODEVALUE.DCAMPROP_TRIGGERSOURCE__INTERNAL);
+	}
+
+	public void setExternalTrigger()
+	{
+		setPropertyValue(	DCAMIDPROP.DCAM_IDPROP_TRIGGERSOURCE,
+											DCAMPROPMODEVALUE.DCAMPROP_TRIGGERSOURCE__EXTERNAL);
+	}
+
+	public void setSoftwareTrigger()
+	{
+		setPropertyValue(	DCAMIDPROP.DCAM_IDPROP_TRIGGERSOURCE,
+											DCAMPROPMODEVALUE.DCAMPROP_TRIGGERSOURCE__SOFTWARE);
+	}
 }

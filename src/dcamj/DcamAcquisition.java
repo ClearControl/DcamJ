@@ -15,6 +15,7 @@ public class DcamAcquisition implements Closeable
 	private int mHeight = 2048;
 	private int mNumberOfBuffers = 1000;
 	private double mExposure = 0.001;
+	private boolean mExternalTrigger = false;
 
 	private boolean mShowErrors = true;
 	private boolean mDebug = true;
@@ -44,6 +45,11 @@ public class DcamAcquisition implements Closeable
 	{
 		mWidth = pWidth;
 		mHeight = pHeight;
+	}
+
+	public void setExternalTrigger(boolean pExternalTrigger)
+	{
+		mExternalTrigger = pExternalTrigger;
 	}
 
 	public void addListener(DcamAcquisitionListener pDcamAcquisitionListener)
@@ -87,6 +93,9 @@ public class DcamAcquisition implements Closeable
 											mHeight);
 		lProperties.setCenteredROI(mWidth, mHeight);
 
+		if (mExternalTrigger)
+			lProperties.setExternalTrigger();
+
 		System.out.format("DcamJ: allocate %d internal buffers \n",
 											mNumberOfBuffers);
 		mBufferControl = mDcamDevice.getBufferControl();
@@ -105,32 +114,31 @@ public class DcamAcquisition implements Closeable
 		private volatile boolean mStopIfFalse = true;
 		private volatile boolean mTrueIfStopped = false;
 
-
 		@Override
 		public void run()
 		{
-			
+
 			System.out.println("DcamJ: starting acquisition:");
 			mDcamDevice.startSequence();
 			mTrueIfStarted = true;
 
 			mStopWatch = StopWatch.start();
-			mFrameIndex=0;
+			mFrameIndex = 0;
 			mStopIfFalse = true;
 			while (mStopIfFalse)
 			{
 				boolean lWaitSuccess = (mDcamDevice.getDcamWait().waitForEvent(	DCAMWAIT_EVENT.DCAMCAP_EVENT_FRAMEREADY,
 																																				1000));
 				final long lArrivalTimeStamp = mStopWatch.time();
-				
+
 				if (!lWaitSuccess)
 					break;
 
 				final DcamFrame lDcamFrame = mBufferControl.lockFrame();
 				if (lDcamFrame == null)
 					break;
-				
-				notifyListeners(mFrameIndex,lArrivalTimeStamp,lDcamFrame);
+
+				notifyListeners(mFrameIndex, lArrivalTimeStamp, lDcamFrame);
 
 				// System.out.println(lShortsDirectBuffer.capacity());
 				if (mDebug && mFrameIndex > 0 && mFrameIndex % 100 == 0)
@@ -160,7 +168,7 @@ public class DcamAcquisition implements Closeable
 		mAcquisitionThread.setDaemon(true);
 		mAcquisitionThread.setPriority(Thread.MAX_PRIORITY - 1);
 		mAcquisitionThread.start();
-		while(!mDcamAquisitionRunnable.mTrueIfStarted)
+		while (!mDcamAquisitionRunnable.mTrueIfStarted)
 		{
 			try
 			{
@@ -172,20 +180,24 @@ public class DcamAcquisition implements Closeable
 		}
 	}
 
-	
-	private void notifyListeners(long pFrameCounter, long pArrivalTimeStamp, DcamFrame pDcamFrame)
+	private void notifyListeners(	long pFrameCounter,
+																long pArrivalTimeStamp,
+																DcamFrame pDcamFrame)
 	{
-		for(DcamAcquisitionListener lDcamAcquisitionListener : mListenersList)
+		for (DcamAcquisitionListener lDcamAcquisitionListener : mListenersList)
 		{
-			lDcamAcquisitionListener.frameArrived(this,pFrameCounter,pArrivalTimeStamp,pDcamFrame);
+			lDcamAcquisitionListener.frameArrived(this,
+																						pFrameCounter,
+																						pArrivalTimeStamp,
+																						pDcamFrame);
 		}
-		
+
 	}
-	
+
 	public final void stopAcquisition()
 	{
 		mDcamAquisitionRunnable.mStopIfFalse = false;
-		while(!mDcamAquisitionRunnable.mTrueIfStopped)
+		while (!mDcamAquisitionRunnable.mTrueIfStopped)
 		{
 			try
 			{
@@ -248,7 +260,8 @@ public class DcamAcquisition implements Closeable
 		}
 	}
 
-	private void printFramerate(final long pL, final StopWatch lStopWatch)
+	private void printFramerate(final long pL,
+															final StopWatch lStopWatch)
 	{
 		final long lElapsedTimeInSeconds = lStopWatch.time(TimeUnit.SECONDS);
 		final double lFramerate = (double) pL / lElapsedTimeInSeconds;

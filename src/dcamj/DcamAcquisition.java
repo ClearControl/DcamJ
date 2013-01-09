@@ -41,6 +41,11 @@ public class DcamAcquisition implements Closeable
 		mExposure = exposure;
 	}
 
+	public double getExposure()
+	{
+		return mExposure;
+	}
+
 	public void setCenteredRoi(final int pWidth, final int pHeight)
 	{
 		mWidth = pWidth;
@@ -94,7 +99,10 @@ public class DcamAcquisition implements Closeable
 		lProperties.setCenteredROI(mWidth, mHeight);
 
 		if (mExternalTrigger)
-			lProperties.setExternalTrigger();
+		{
+			lProperties.setInputTriggerDefaults();
+			lProperties.setInputTriggerToExternal();
+		}
 
 		System.out.format("DcamJ: allocate %d internal buffers \n",
 											mNumberOfBuffers);

@@ -15,7 +15,13 @@ public class DcamAcquisition implements Closeable
 	private int mHeight = 2048;
 	private int mNumberOfBuffers = 1000;
 	private double mExposure = 0.001;
-	private boolean mExternalTrigger = false;
+
+	public enum TriggerType
+	{
+		Internal, Software, External
+	};
+
+	private TriggerType mTriggerType = TriggerType.Internal;
 
 	private boolean mShowErrors = true;
 	private boolean mDebug = true;
@@ -29,6 +35,7 @@ public class DcamAcquisition implements Closeable
 	public volatile long mFrameIndex = 0;
 
 	private ArrayList<DcamAcquisitionListener> mListenersList = new ArrayList<DcamAcquisitionListener>();
+	private DcamProperties mProperties;
 
 	public DcamAcquisition(final int pDeviceIndex)
 	{
@@ -39,6 +46,8 @@ public class DcamAcquisition implements Closeable
 	public void setExposure(double exposure)
 	{
 		mExposure = exposure;
+		if (mProperties != null)
+			mProperties.setAndGetExposure(mExposure);
 	}
 
 	public double getExposure()
@@ -50,11 +59,28 @@ public class DcamAcquisition implements Closeable
 	{
 		mWidth = pWidth;
 		mHeight = pHeight;
+		if (mProperties != null)
+			mProperties.setCenteredROI(mWidth, mHeight);
 	}
 
-	public void setExternalTrigger(boolean pExternalTrigger)
+	public void setExternalTrigger(final TriggerType pTriggerType)
 	{
-		mExternalTrigger = pExternalTrigger;
+		mTriggerType = pTriggerType;
+		if (mProperties != null)
+		{
+			if (mTriggerType == TriggerType.External)
+			{
+				mProperties.setInputTriggerToExternal();
+			}
+			else if (mTriggerType == TriggerType.Software)
+			{
+				mProperties.setInputTriggerToSoftware();
+			}
+			else if (mTriggerType == TriggerType.Internal)
+			{
+				mProperties.setInputTriggerToInternal();
+			}
+		}
 	}
 
 	public void addListener(DcamAcquisitionListener pDcamAcquisitionListener)
@@ -85,24 +111,20 @@ public class DcamAcquisition implements Closeable
 
 		mDcamDevice.displayDeviceInfo();
 
-		final DcamProperties lProperties = mDcamDevice.getProperties();
-		lProperties.mShowErrors = mShowErrors;
-		lProperties.mDebug = mDebug;
+		mProperties = mDcamDevice.getProperties();
+		mProperties.mShowErrors = mShowErrors;
+		mProperties.mDebug = mDebug;
 		// lProperties.listAllProperties();
 
-		setExposure(lProperties.setAndGetExposure(mExposure));
+		setExposure(mExposure);
 		System.out.format("DcamJ: exposure set at: %g \n ", mExposure);
 
+		setCenteredRoi(mWidth, mHeight);
 		System.out.format("DcamJ: Centered ROI width=%d height=%d \n",
 											mWidth,
 											mHeight);
-		lProperties.setCenteredROI(mWidth, mHeight);
 
-		if (mExternalTrigger)
-		{
-			lProperties.setInputTriggerDefaults();
-			lProperties.setInputTriggerToExternal();
-		}
+		setExternalTrigger(TriggerType.Internal);
 
 		System.out.format("DcamJ: allocate %d internal buffers \n",
 											mNumberOfBuffers);
@@ -186,6 +208,7 @@ public class DcamAcquisition implements Closeable
 			{
 			}
 		}
+
 	}
 
 	private void notifyListeners(	long pFrameCounter,

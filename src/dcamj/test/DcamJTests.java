@@ -18,6 +18,7 @@ import dcamj.DcamFrame;
 import dcamj.DcamLibrary;
 import dcamj.DcamProperties;
 import dcamj.DcamRecorder;
+import dcamj.DcamAcquisition.TriggerType;
 import dcamj.utils.StopWatch;
 
 public class DcamJTests
@@ -143,7 +144,7 @@ public class DcamJTests
 	{
 		
 		DcamAcquisition lDcamAcquisition  = new DcamAcquisition(0);
-		lDcamAcquisition.setExternalTrigger(true);
+		lDcamAcquisition.setExternalTrigger(TriggerType.External);
 		lDcamAcquisition.setExposure(0.001);	
 		
 		lDcamAcquisition.addListener(new DcamAcquisitionListener(){

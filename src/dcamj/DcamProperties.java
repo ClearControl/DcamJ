@@ -349,9 +349,10 @@ public class DcamProperties extends DcamBase
 
 	public void setInputTriggerToExternal()
 	{
+		setInputTriggerDefaults();
 		setPropertyValue(	DCAMIDPROP.DCAM_IDPROP_TRIGGERSOURCE,
 											DCAMPROPMODEVALUE.DCAMPROP_TRIGGERSOURCE__EXTERNAL);
-
+		setOutputTriggerToExposure();
 	}
 
 	public void setInputTriggerToSoftware()

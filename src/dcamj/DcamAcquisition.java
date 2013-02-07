@@ -18,7 +18,7 @@ public class DcamAcquisition implements Closeable
 
 	public enum TriggerType
 	{
-		Internal, Software, External
+		Internal, Software, ExternalEdge, ExternalLevel
 	};
 
 	private TriggerType mTriggerType = TriggerType.Internal;
@@ -43,11 +43,12 @@ public class DcamAcquisition implements Closeable
 		mDeviceIndex = pDeviceIndex;
 	}
 
-	public void setExposure(double exposure)
+	public double setExposure(double exposure)
 	{
 		mExposure = exposure;
 		if (mProperties != null)
-			mProperties.setAndGetExposure(mExposure);
+			mExposure = mProperties.setAndGetExposure(mExposure);
+		return mExposure;
 	}
 
 	public double getExposure()
@@ -63,14 +64,18 @@ public class DcamAcquisition implements Closeable
 			mProperties.setCenteredROI(mWidth, mHeight);
 	}
 
-	public void setExternalTrigger(final TriggerType pTriggerType)
+	public void setTriggerType(final TriggerType pTriggerType)
 	{
 		mTriggerType = pTriggerType;
 		if (mProperties != null)
 		{
-			if (mTriggerType == TriggerType.External)
+			if (mTriggerType == TriggerType.ExternalEdge)
 			{
-				mProperties.setInputTriggerToExternal();
+				mProperties.setInputTriggerToExternalEdge();
+			}
+			else if (mTriggerType == TriggerType.ExternalEdge)
+			{
+				mProperties.setInputTriggerToExternalLevel();
 			}
 			else if (mTriggerType == TriggerType.Software)
 			{
@@ -124,7 +129,7 @@ public class DcamAcquisition implements Closeable
 											mWidth,
 											mHeight);
 
-		setExternalTrigger(TriggerType.Internal);
+		setTriggerType(TriggerType.Internal);
 
 		System.out.format("DcamJ: allocate %d internal buffers \n",
 											mNumberOfBuffers);
@@ -143,47 +148,56 @@ public class DcamAcquisition implements Closeable
 		private volatile boolean mTrueIfStarted = false;
 		private volatile boolean mStopIfFalse = true;
 		private volatile boolean mTrueIfStopped = false;
+		private volatile boolean mTrueIfError = false;
 
 		@Override
 		public void run()
 		{
 
-			System.out.println("DcamJ: starting acquisition:");
-			mDcamDevice.startSequence();
-			mTrueIfStarted = true;
-
-			mStopWatch = StopWatch.start();
-			mFrameIndex = 0;
-			mStopIfFalse = true;
-			while (mStopIfFalse)
+			try
 			{
-				boolean lWaitSuccess = (mDcamDevice.getDcamWait().waitForEvent(	DCAMWAIT_EVENT.DCAMCAP_EVENT_FRAMEREADY,
-																																				1000));
-				final long lArrivalTimeStamp = mStopWatch.time();
+				System.out.println("DcamJ: starting acquisition:");
+				mDcamDevice.startSequence();
+				mTrueIfStarted = true;
 
-				if (!lWaitSuccess)
-					break;
-
-				final DcamFrame lDcamFrame = mBufferControl.lockFrame();
-				if (lDcamFrame == null)
-					break;
-
-				notifyListeners(mFrameIndex, lArrivalTimeStamp, lDcamFrame);
-
-				// System.out.println(lShortsDirectBuffer.capacity());
-				if (mDebug && mFrameIndex > 0 && mFrameIndex % 100 == 0)
+				mStopWatch = StopWatch.start();
+				mFrameIndex = 0;
+				mStopIfFalse = true;
+				while (mStopIfFalse)
 				{
-					printFramerate(mFrameIndex + 1, mStopWatch);
-					/*System.out.format("%d ms to write one %dx%d frame. \n",
-														lDcamFrame.getWidth(),
-														lDcamFrame.getHeight());/**/
+					boolean lWaitSuccess = (mDcamDevice.getDcamWait().waitForEvent(	DCAMWAIT_EVENT.DCAMCAP_EVENT_FRAMEREADY,
+																																					1000));
+					final long lArrivalTimeStamp = mStopWatch.time();
 
+					if (!lWaitSuccess)
+						break;
+
+					final DcamFrame lDcamFrame = mBufferControl.lockFrame();
+					if (lDcamFrame == null)
+						break;
+
+					notifyListeners(mFrameIndex, lArrivalTimeStamp, lDcamFrame);
+
+					// System.out.println(lShortsDirectBuffer.capacity());
+					if (mDebug && mFrameIndex > 0 && mFrameIndex % 100 == 0)
+					{
+						printFramerate(mFrameIndex + 1, mStopWatch);
+						/*System.out.format("%d ms to write one %dx%d frame. \n",
+															lDcamFrame.getWidth(),
+															lDcamFrame.getHeight());/**/
+
+					}
+
+					mFrameIndex++;
 				}
-
-				mFrameIndex++;
+				System.out.println("DcamJ: stoping acquisition:");
+				mDcamDevice.stop();
 			}
-			System.out.println("DcamJ: stoping acquisition:");
-			mDcamDevice.stop();
+			catch (Throwable e)
+			{
+				e.printStackTrace();
+				mTrueIfError = true;
+			}
 			mTrueIfStopped = true;
 
 		}
@@ -198,7 +212,7 @@ public class DcamAcquisition implements Closeable
 		mAcquisitionThread.setDaemon(true);
 		mAcquisitionThread.setPriority(Thread.MAX_PRIORITY - 1);
 		mAcquisitionThread.start();
-		while (!mDcamAquisitionRunnable.mTrueIfStarted)
+		while (!mDcamAquisitionRunnable.mTrueIfStarted && !mDcamAquisitionRunnable.mTrueIfError)
 		{
 			try
 			{

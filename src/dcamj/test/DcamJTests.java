@@ -144,7 +144,7 @@ public class DcamJTests
 	{
 		
 		DcamAcquisition lDcamAcquisition  = new DcamAcquisition(0);
-		lDcamAcquisition.setExternalTrigger(TriggerType.External);
+		lDcamAcquisition.setTriggerType(TriggerType.ExternalEdge);
 		lDcamAcquisition.setExposure(0.001);	
 		
 		lDcamAcquisition.addListener(new DcamAcquisitionListener(){

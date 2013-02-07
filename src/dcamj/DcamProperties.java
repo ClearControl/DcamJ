@@ -319,39 +319,45 @@ public class DcamProperties extends DcamBase
 		setPropertyValue(DCAMIDPROP.DCAM_IDPROP_SUBARRAYMODE, 2);
 	}
 
-	
 	public void setInputTriggerDefaults()
 	{
 		setPropertyValue(	DCAMIDPROP.DCAM_IDPROP_TRIGGER_MODE,
 											DCAMPROPMODEVALUE.DCAMPROP_TRIGGER_MODE__NORMAL);
-		setPropertyValue(	DCAMIDPROP.DCAM_IDPROP_TRIGGERACTIVE,
-											DCAMPROPMODEVALUE.DCAMPROP_TRIGGERACTIVE__EDGE);
 		setPropertyValue(	DCAMIDPROP.DCAM_IDPROP_TRIGGERPOLARITY,
 											DCAMPROPMODEVALUE.DCAMPROP_TRIGGERPOLARITY__POSITIVE);
 
 		setPropertyValue(	DCAMIDPROP.DCAM_IDPROP_TRIGGER_CONNECTOR,
 											DCAMPROPMODEVALUE.DCAMPROP_TRIGGER_CONNECTOR__BNC);
 
-		
-		setPropertyValue(	DCAMIDPROP.DCAM_IDPROP_TRIGGERTIMES,
-											1);
+		setPropertyValue(DCAMIDPROP.DCAM_IDPROP_TRIGGERTIMES, 1);
 
-		setPropertyValue(	DCAMIDPROP.DCAM_IDPROP_TRIGGERDELAY,
-											0);
+		setPropertyValue(DCAMIDPROP.DCAM_IDPROP_TRIGGERDELAY, 0);
 
 	}
-	
+
 	public void setInputTriggerToInternal()
 	{
 		setPropertyValue(	DCAMIDPROP.DCAM_IDPROP_TRIGGERSOURCE,
 											DCAMPROPMODEVALUE.DCAMPROP_TRIGGERSOURCE__INTERNAL);
 	}
 
-	public void setInputTriggerToExternal()
+	public void setInputTriggerToExternalEdge()
 	{
 		setInputTriggerDefaults();
 		setPropertyValue(	DCAMIDPROP.DCAM_IDPROP_TRIGGERSOURCE,
 											DCAMPROPMODEVALUE.DCAMPROP_TRIGGERSOURCE__EXTERNAL);
+		setPropertyValue(	DCAMIDPROP.DCAM_IDPROP_TRIGGERACTIVE,
+											DCAMPROPMODEVALUE.DCAMPROP_TRIGGERACTIVE__EDGE);
+		setOutputTriggerToExposure();
+	}
+
+	public void setInputTriggerToExternalLevel()
+	{
+		setInputTriggerDefaults();
+		setPropertyValue(	DCAMIDPROP.DCAM_IDPROP_TRIGGERSOURCE,
+											DCAMPROPMODEVALUE.DCAMPROP_TRIGGERSOURCE__EXTERNAL);
+		setPropertyValue(	DCAMIDPROP.DCAM_IDPROP_TRIGGERACTIVE,
+											DCAMPROPMODEVALUE.DCAMPROP_TRIGGERACTIVE__LEVEL);
 		setOutputTriggerToExposure();
 	}
 
@@ -360,7 +366,7 @@ public class DcamProperties extends DcamBase
 		setPropertyValue(	DCAMIDPROP.DCAM_IDPROP_TRIGGERSOURCE,
 											DCAMPROPMODEVALUE.DCAMPROP_TRIGGERSOURCE__SOFTWARE);
 	}
-	
+
 	public void setOutputTriggerToExposure()
 	{
 		setPropertyValue(	DCAMIDPROP.DCAM_IDPROP_OUTPUTTRIGGER_POLARITY,
@@ -368,6 +374,6 @@ public class DcamProperties extends DcamBase
 
 		setPropertyValue(	DCAMIDPROP.DCAM_IDPROP_OUTPUTTRIGGER_KIND,
 											DCAMPROPMODEVALUE.DCAMPROP_OUTPUTTRIGGER_KIND__EXPOSURE);
-		
+
 	}
 }

@@ -192,13 +192,14 @@ public class DcamAcquisition implements Closeable
 				}
 				System.out.println("DcamJ: stoping acquisition:");
 				mDcamDevice.stop();
+				mTrueIfStopped = true;
 			}
 			catch (Throwable e)
 			{
 				e.printStackTrace();
 				mTrueIfError = true;
 			}
-			mTrueIfStopped = true;
+		
 
 		}
 

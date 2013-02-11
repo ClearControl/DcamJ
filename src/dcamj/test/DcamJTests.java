@@ -145,7 +145,7 @@ public class DcamJTests
 		
 		DcamAcquisition lDcamAcquisition  = new DcamAcquisition(0);
 		lDcamAcquisition.setTriggerType(TriggerType.ExternalEdge);
-		lDcamAcquisition.setExposure(0.001);	
+		lDcamAcquisition.setExposureInSeconds(0.001);	
 		
 		lDcamAcquisition.addListener(new DcamAcquisitionListener(){
 
@@ -159,11 +159,12 @@ public class DcamJTests
 			}});
 		
 		lDcamAcquisition.open();
-		System.out.format("Effective exposure is: %g s \n",lDcamAcquisition.getExposure());
+				
+		System.out.format("Effective exposure is: %g s \n",lDcamAcquisition.getExposureInSeconds());
 		                  
 		lDcamAcquisition.startAcquisition();
 		
-		Thread.sleep(1000000);
+		Thread.sleep(5000);
 		lDcamAcquisition.stopAcquisition();
 		lDcamAcquisition.close();
 		

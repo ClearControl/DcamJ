@@ -48,13 +48,15 @@ public class DcamBase
 	{
 		for (final IntValuedEnum<DCAMERR> lEntry : mErrorList)
 		{
-			final boolean lHasSuceeded = DcamLibrary.hasSucceeded(lEntry);
-			if (!lHasSuceeded)
+			final boolean lHasSucceeded = DcamLibrary.hasSucceeded(lEntry);
+			if (!lHasSucceeded)
 			{
 				return false;
 			}
 		}
 		return true;
 	}
+
+
 
 }

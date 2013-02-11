@@ -4,6 +4,7 @@ import static org.bridj.Pointer.pointerTo;
 import static org.bridj.Pointer.pointerToBytes;
 
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.ArrayList;
 
 import org.bridj.BridJ;
@@ -74,6 +75,7 @@ public class DcamBufferControl extends DcamBase
 		for (int i = 0; i < pNumberOfBuffers; i++)
 		{
 			final ByteBuffer lByteBuffer = ByteBuffer.allocateDirect(lImageSizeInBytes);
+			lByteBuffer.order(ByteOrder.nativeOrder());
 			final Pointer<Byte> lPointerToBytes = pointerToBytes(lByteBuffer);
 			mByteBufferList.add(lByteBuffer);
 			mPointerToByteBufferList.add(lPointerToBytes);

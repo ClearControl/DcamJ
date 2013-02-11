@@ -43,7 +43,7 @@ public class DcamAcquisition implements Closeable
 		mDeviceIndex = pDeviceIndex;
 	}
 
-	public double setExposure(double exposure)
+	public double setExposureInSeconds(double exposure)
 	{
 		mExposure = exposure;
 		if (mProperties != null)
@@ -51,7 +51,7 @@ public class DcamAcquisition implements Closeable
 		return mExposure;
 	}
 
-	public double getExposure()
+	public double getExposureInSeconds()
 	{
 		return mExposure;
 	}
@@ -73,7 +73,7 @@ public class DcamAcquisition implements Closeable
 			{
 				mProperties.setInputTriggerToExternalEdge();
 			}
-			else if (mTriggerType == TriggerType.ExternalEdge)
+			else if (mTriggerType == TriggerType.ExternalLevel)
 			{
 				mProperties.setInputTriggerToExternalLevel();
 			}
@@ -86,6 +86,11 @@ public class DcamAcquisition implements Closeable
 				mProperties.setInputTriggerToInternal();
 			}
 		}
+	}
+
+	public boolean isExternalTriggering()
+	{
+		return mTriggerType == TriggerType.ExternalEdge || mTriggerType == TriggerType.ExternalLevel;
 	}
 
 	public void addListener(DcamAcquisitionListener pDcamAcquisitionListener)
@@ -121,7 +126,7 @@ public class DcamAcquisition implements Closeable
 		mProperties.mDebug = mDebug;
 		// lProperties.listAllProperties();
 
-		setExposure(mExposure);
+		setExposureInSeconds(mExposure);
 		System.out.format("DcamJ: exposure set at: %g \n ", mExposure);
 
 		setCenteredRoi(mWidth, mHeight);
@@ -129,7 +134,7 @@ public class DcamAcquisition implements Closeable
 											mWidth,
 											mHeight);
 
-		setTriggerType(TriggerType.Internal);
+		setTriggerType(mTriggerType);
 
 		System.out.format("DcamJ: allocate %d internal buffers \n",
 											mNumberOfBuffers);
@@ -163,18 +168,34 @@ public class DcamAcquisition implements Closeable
 				mStopWatch = StopWatch.start();
 				mFrameIndex = 0;
 				mStopIfFalse = true;
+
+				final int lWaitTimeout = isExternalTriggering()	? 5000
+																												: 1000;
+
 				while (mStopIfFalse)
 				{
+
 					boolean lWaitSuccess = (mDcamDevice.getDcamWait().waitForEvent(	DCAMWAIT_EVENT.DCAMCAP_EVENT_FRAMEREADY,
-																																					1000));
+																																					lWaitTimeout));
 					final long lArrivalTimeStamp = mStopWatch.time();
 
 					if (!lWaitSuccess)
-						break;
+					{
+
+						if (!isExternalTriggering())
+						{
+							System.err.println("DcamJ: timeout waiting for frame!");
+							break;
+						}
+						continue;
+					}
 
 					final DcamFrame lDcamFrame = mBufferControl.lockFrame();
 					if (lDcamFrame == null)
+					{
+						System.err.println("DcamJ: Could not lock frame!");
 						break;
+					}
 
 					notifyListeners(mFrameIndex, lArrivalTimeStamp, lDcamFrame);
 
@@ -199,10 +220,8 @@ public class DcamAcquisition implements Closeable
 				e.printStackTrace();
 				mTrueIfError = true;
 			}
-		
 
 		}
-
 	};
 
 	public final void startAcquisition()

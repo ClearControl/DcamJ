@@ -106,6 +106,20 @@ public class DcamBufferControl extends DcamBase
 		}
 		return mDcamFrameForInternalBuffer;
 	}
+	
+	public final DcamFrame copyFrame()
+	{
+		final Pointer<DCAM_FRAME> lPointer = mDcamFrameForInternalBuffer.getPointer();
+
+		final IntValuedEnum<DCAMERR> lError = DcamapiLibrary.dcambufCopyframe(mDcamDevice.getHDCAMPointer(),
+																																					lPointer);
+		final boolean lSuccess = addErrorToListAndCheckHasSucceeded(lError);
+		if (!lSuccess)
+		{
+			return null;
+		}
+		return mDcamFrameForInternalBuffer;
+	}
 
 	public final boolean releaseBuffers()
 	{

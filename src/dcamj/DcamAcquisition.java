@@ -13,7 +13,7 @@ public class DcamAcquisition implements Closeable
 	private int mDeviceIndex;
 	private int mWidth = 2048;
 	private int mHeight = 2048;
-	private int mNumberOfBuffers = 1000;
+	private int mNumberOfBuffers = 256;
 	private double mExposure = 0.001;
 
 	public enum TriggerType
@@ -62,6 +62,21 @@ public class DcamAcquisition implements Closeable
 		mHeight = pHeight;
 		if (mProperties != null)
 			mProperties.setCenteredROI(mWidth, mHeight);
+	}
+	
+	public int getFrameWidth()
+	{
+		return mWidth;
+	}
+	
+	public int getFrameHeight()
+	{
+		return mHeight;
+	}
+	
+	public int getFrameBytesPerPixel()
+	{
+		return 2;
 	}
 
 	public void setTriggerType(final TriggerType pTriggerType)
@@ -198,6 +213,7 @@ public class DcamAcquisition implements Closeable
 					}
 
 					notifyListeners(mFrameIndex, lArrivalTimeStamp, lDcamFrame);
+					
 
 					// System.out.println(lShortsDirectBuffer.capacity());
 					if (mDebug && mFrameIndex > 0 && mFrameIndex % 100 == 0)
@@ -332,5 +348,9 @@ public class DcamAcquisition implements Closeable
 		final double lFramerate = (double) pL / lElapsedTimeInSeconds;
 		System.out.format("Framerate: %g \n", lFramerate);
 	}
+
+
+
+
 
 }

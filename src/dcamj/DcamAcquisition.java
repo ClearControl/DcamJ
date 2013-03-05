@@ -23,8 +23,8 @@ public class DcamAcquisition implements Closeable
 
 	private TriggerType mTriggerType = TriggerType.Internal;
 
-	private boolean mShowErrors = true;
-	private boolean mDebug = true;
+	private boolean mShowErrors = false;
+	private boolean mDebug = false;
 
 	private DcamDevice mDcamDevice;
 	private DcamBufferControl mBufferControl;

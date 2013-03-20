@@ -285,7 +285,7 @@ public class DcamProperties extends DcamBase
 		{
 			final String lName = lEntry.getKey();
 			final DcamProperty lDcamProperty = lEntry.getValue();
-			System.out.format("property: '%s' \n%s \n",
+			System.out.format("DcamJ: property: '%s' \n%s \n",
 												lName,
 												lDcamProperty.toString());
 		}
@@ -307,16 +307,42 @@ public class DcamProperties extends DcamBase
 																	pExposure);
 	}
 
-	public void setCenteredROI(final int pWidth, final int pHeight)
+	public boolean setCenteredROI(final int pCenteredWidth,
+																final int pCenteredHeight)
 	{
-		final int hpos = 1024 - pWidth / 2;
-		final int vpos = 1024 - pHeight / 2;
-		setPropertyValue(DCAMIDPROP.DCAM_IDPROP_SUBARRAYHPOS, hpos);
-		setPropertyValue(DCAMIDPROP.DCAM_IDPROP_SUBARRAYVPOS, vpos);
-		setPropertyValue(DCAMIDPROP.DCAM_IDPROP_SUBARRAYHSIZE, pWidth);
-		setPropertyValue(DCAMIDPROP.DCAM_IDPROP_SUBARRAYVSIZE, pHeight);
+		final int lWidth = roundto4(pCenteredWidth);
+		final int lHeight = roundto4(pCenteredHeight);
 
-		setPropertyValue(DCAMIDPROP.DCAM_IDPROP_SUBARRAYMODE, 2);
+		final int hpos = roundto4(1024 - lWidth / 2);
+		final int vpos = roundto4(1024 - lHeight / 2);
+		boolean lSuccess = true;
+		lSuccess &= setPropertyValue(	DCAMIDPROP.DCAM_IDPROP_SUBARRAYHPOS,
+																	hpos);
+		lSuccess &= setPropertyValue(	DCAMIDPROP.DCAM_IDPROP_SUBARRAYVPOS,
+																	vpos);
+		lSuccess &= setPropertyValue(	DCAMIDPROP.DCAM_IDPROP_SUBARRAYHSIZE,
+																	lWidth);
+		lSuccess &= setPropertyValue(	DCAMIDPROP.DCAM_IDPROP_SUBARRAYVSIZE,
+																	lHeight);
+
+		lSuccess &= setPropertyValue(	DCAMIDPROP.DCAM_IDPROP_SUBARRAYMODE,
+																	2);
+
+		System.out.format("DcamJ: ROI: parameters: cwidth=%d, cheight=%d, hpos=%d, vpos=%d, width=%d, height=%d --> success=%s  \n",
+											pCenteredWidth,
+											pCenteredHeight,
+											hpos,
+											vpos,
+											lWidth,
+											lHeight,
+											lSuccess ? "true" : "false");
+
+		return lSuccess;
+	}
+
+	private int roundto4(int pWidth)
+	{
+		return (int) (4 * Math.round(pWidth * 0.25));
 	}
 
 	public void setInputTriggerDefaults()

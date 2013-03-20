@@ -56,24 +56,26 @@ public class DcamAcquisition implements Closeable
 		return mExposure;
 	}
 
-	public void setCenteredRoi(final int pWidth, final int pHeight)
+	public void setFrameWidth(final int pWidth)
 	{
 		mWidth = pWidth;
-		mHeight = pHeight;
-		if (mProperties != null)
-			mProperties.setCenteredROI(mWidth, mHeight);
 	}
-	
+
+	public void setFrameHeight(final int pHeight)
+	{
+		mHeight = pHeight;
+	}
+
 	public int getFrameWidth()
 	{
 		return mWidth;
 	}
-	
+
 	public int getFrameHeight()
 	{
 		return mHeight;
 	}
-	
+
 	public int getFrameBytesPerPixel()
 	{
 		return 2;
@@ -136,29 +138,52 @@ public class DcamAcquisition implements Closeable
 
 		mDcamDevice.displayDeviceInfo();
 
-		mProperties = mDcamDevice.getProperties();
-		mProperties.mShowErrors = mShowErrors;
-		mProperties.mDebug = mDebug;
 		// lProperties.listAllProperties();
 
-		setExposureInSeconds(mExposure);
-		System.out.format("DcamJ: exposure set at: %g \n ", mExposure);
+		setCurrentProperties();
 
-		setCenteredRoi(mWidth, mHeight);
-		System.out.format("DcamJ: Centered ROI width=%d height=%d \n",
-											mWidth,
-											mHeight);
+		allocateInternalBuffers();
 
-		setTriggerType(mTriggerType);
+		return true;
+	}
 
+	public void reopen()
+	{
+		if (mBufferControl != null)
+			mBufferControl.releaseBuffers();
+		if (mDcamDevice != null)
+			mDcamDevice.close();
+		mDcamDevice = DcamLibrary.getDeviceForId(mDeviceIndex);
+		setCurrentProperties();
+		allocateInternalBuffers();
+	}
+
+	private void allocateInternalBuffers()
+	{
 		System.out.format("DcamJ: allocate %d internal buffers \n",
 											mNumberOfBuffers);
 		mBufferControl = mDcamDevice.getBufferControl();
 		mBufferControl.mShowErrors = true;
 		mBufferControl.mDebug = false;
 		mBufferControl.allocateInternalBuffers(mNumberOfBuffers);
+	}
 
-		return true;
+	private void setCurrentProperties()
+	{
+		mProperties = mDcamDevice.getProperties();
+		mProperties.mShowErrors = mShowErrors;
+		mProperties.mDebug = mDebug;
+
+		setExposureInSeconds(mExposure);
+		System.out.format("DcamJ: exposure set at: %g \n", mExposure);
+
+		if (mProperties != null)
+			mProperties.setCenteredROI(mWidth, mHeight);
+		System.out.format("DcamJ: Centered ROI set cwidth=%d cheight=%d \n",
+											mWidth,
+											mHeight);
+
+		setTriggerType(mTriggerType);
 	}
 
 	private class DcamAquisitionRunnable implements Runnable
@@ -184,8 +209,7 @@ public class DcamAcquisition implements Closeable
 				mFrameIndex = 0;
 				mStopIfFalse = true;
 
-				final int lWaitTimeout = isExternalTriggering()	? 5000
-																												: 1000;
+				final int lWaitTimeout = isExternalTriggering() ? 5000 : 1000;
 
 				while (mStopIfFalse)
 				{
@@ -213,7 +237,6 @@ public class DcamAcquisition implements Closeable
 					}
 
 					notifyListeners(mFrameIndex, lArrivalTimeStamp, lDcamFrame);
-					
 
 					// System.out.println(lShortsDirectBuffer.capacity());
 					if (mDebug && mFrameIndex > 0 && mFrameIndex % 100 == 0)
@@ -307,7 +330,8 @@ public class DcamAcquisition implements Closeable
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		mBufferControl.releaseBuffers();
+		if (mBufferControl != null)
+			mBufferControl.releaseBuffers();
 		try
 		{
 			Thread.sleep(2000);
@@ -318,7 +342,9 @@ public class DcamAcquisition implements Closeable
 			e.printStackTrace();
 		}
 		System.out.println("mDcamDevice.close();");
-		mDcamDevice.close();
+
+		if (mDcamDevice != null)
+			mDcamDevice.close();
 		try
 		{
 			Thread.sleep(2000);
@@ -348,9 +374,5 @@ public class DcamAcquisition implements Closeable
 		final double lFramerate = (double) pL / lElapsedTimeInSeconds;
 		System.out.format("Framerate: %g \n", lFramerate);
 	}
-
-
-
-
 
 }

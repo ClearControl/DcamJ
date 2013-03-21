@@ -56,14 +56,14 @@ public class DcamAcquisition implements Closeable
 		return mExposure;
 	}
 
-	public void setFrameWidth(final int pWidth)
+	public int setFrameWidth(final int pWidth)
 	{
-		mWidth = pWidth;
+		return mWidth = DcamProperties.roundto4(pWidth);
 	}
 
-	public void setFrameHeight(final int pHeight)
+	public int setFrameHeight(final int pHeight)
 	{
-		mHeight = pHeight;
+		return mHeight = DcamProperties.roundto4(pHeight);
 	}
 
 	public int getFrameWidth()

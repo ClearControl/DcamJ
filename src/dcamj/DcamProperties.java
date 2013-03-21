@@ -340,10 +340,7 @@ public class DcamProperties extends DcamBase
 		return lSuccess;
 	}
 
-	private int roundto4(int pWidth)
-	{
-		return (int) (4 * Math.round(pWidth * 0.25));
-	}
+
 
 	public void setInputTriggerDefaults()
 	{
@@ -401,5 +398,10 @@ public class DcamProperties extends DcamBase
 		setPropertyValue(	DCAMIDPROP.DCAM_IDPROP_OUTPUTTRIGGER_KIND,
 											DCAMPROPMODEVALUE.DCAMPROP_OUTPUTTRIGGER_KIND__EXPOSURE);
 
+	}
+	
+	public static int roundto4(int pWidth)
+	{
+		return (int) (4 * Math.round(pWidth * 0.25));
 	}
 }

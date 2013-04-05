@@ -8,6 +8,7 @@ import org.bridj.Pointer;
 
 import dcamapi.DCAM_FRAME;
 import dcamapi.DcamapiLibrary;
+import dcamapi.DcamapiLibrary.DCAM_PIXELTYPE;
 
 public class DcamFrame
 {
@@ -31,9 +32,19 @@ public class DcamFrame
 		return Pointer.pointerTo(mFrame);
 	}
 
+	public void setRawBufferFromByteBuffer(ByteBuffer pByteBuffer)
+	{
+		mFrame.buf(Pointer.pointerToBuffer(pByteBuffer));
+	}
+
 	public Pointer<?> getRawBuffer()
 	{
 		return mFrame.buf();
+	}
+
+	public final void setWidth(int pWidth)
+	{
+		mFrame.width(pWidth);
 	}
 
 	public final int getWidth()
@@ -41,9 +52,26 @@ public class DcamFrame
 		return (int) mFrame.width();
 	}
 
+	public final void setHeight(int pHeight)
+	{
+		mFrame.height(pHeight);
+	}
+
 	public final int getHeight()
 	{
 		return (int) mFrame.height();
+	}
+
+	public final void setPixelSizeInBytes(final int pNumberOfBytesPerPixel)
+	{
+		if (pNumberOfBytesPerPixel == 1)
+		{
+			mFrame.type(DCAM_PIXELTYPE.DCAM_PIXELTYPE_MONO8);
+		}
+		else if (pNumberOfBytesPerPixel == 2)
+		{
+			mFrame.type(DCAM_PIXELTYPE.DCAM_PIXELTYPE_MONO16);
+		}
 	}
 
 	public final int getPixelSizeInBytes()

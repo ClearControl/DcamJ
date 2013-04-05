@@ -19,6 +19,7 @@ public class DcamWait extends DcamBase implements Closeable
 {
 	private final DcamDevice mDcamDevice;
 	private Pointer<HDCAMWAIT_struct> mHwaitPointer = null;
+	private DCAMWAIT_START mDCAMWAIT_START;
 
 	public DcamWait(final DcamDevice pDcamDevice)
 	{
@@ -39,6 +40,7 @@ public class DcamWait extends DcamBase implements Closeable
 		if (lSuccess)
 		{
 			mHwaitPointer = lDCAMWAIT_OPEN.hwait();
+			mDCAMWAIT_START = new DCAMWAIT_START();
 		}
 	}
 
@@ -50,15 +52,20 @@ public class DcamWait extends DcamBase implements Closeable
 			return false;
 		}
 
-		final DCAMWAIT_START lDCAMWAIT_START = new DCAMWAIT_START();
-		lDCAMWAIT_START.size(BridJ.sizeOf(DCAMWAIT_START.class));
-		lDCAMWAIT_START.eventmask(pDCAMWAIT_EVENT.value);
-		lDCAMWAIT_START.timeout(pTimeOut);
+		
+		mDCAMWAIT_START.size(BridJ.sizeOf(DCAMWAIT_START.class));
+		mDCAMWAIT_START.eventmask(pDCAMWAIT_EVENT.value);
+		mDCAMWAIT_START.timeout(pTimeOut);
 
 		final IntValuedEnum<DCAMERR> lError = DcamapiLibrary.dcamwaitStart(	mHwaitPointer,
-																																				pointerTo(lDCAMWAIT_START));
+																																				pointerTo(mDCAMWAIT_START));
 		final boolean lSuccess = addErrorToListAndCheckHasSucceeded(lError);
 		return lSuccess;
+	}
+	
+	public final long getEvent()
+	{
+		return mDCAMWAIT_START.eventhappened();
 	}
 
 	public final boolean abort()

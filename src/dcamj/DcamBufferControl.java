@@ -21,15 +21,20 @@ public class DcamBufferControl extends DcamBase
 {
 
 	private final DcamDevice mDcamDevice;
+	private DcamAcquisition mDcamAcquisition;
 
 	private final ArrayList<ByteBuffer> mByteBufferList = new ArrayList<ByteBuffer>();
 	private final ArrayList<Pointer<Byte>> mPointerToByteBufferList = new ArrayList<Pointer<Byte>>();
+	private final ArrayList<DcamFrame> mDcamFrameList = new ArrayList<DcamFrame>();
 
 	private final DcamFrame mDcamFrameForInternalBuffer = new DcamFrame();
+	private final DcamFrame mDcamFrameForExternalBuffer = new DcamFrame();
 
-	public DcamBufferControl(final DcamDevice pDcamDevice)
+	public DcamBufferControl(	final DcamDevice pDcamDevice,
+														final DcamAcquisition pDcamAcquisition)
 	{
 		mDcamDevice = pDcamDevice;
+		mDcamAcquisition = pDcamAcquisition;
 	}
 
 	public final boolean allocateInternalBuffers(final int pNumberOfBuffers)
@@ -41,54 +46,6 @@ public class DcamBufferControl extends DcamBase
 
 		final IntValuedEnum<DCAMERR> lError = DcamapiLibrary.dcambufAlloc(mDcamDevice.getHDCAMPointer(),
 																																			pNumberOfBuffers);
-		final boolean lSuccess = addErrorToListAndCheckHasSucceeded(lError);
-		return lSuccess;
-	}
-
-	public final boolean attachExternalBuffers(final int pNumberOfBuffers)
-	{
-
-		/*
-		 * 		long	number_of_buffer = 10;
-			DCAMBUF_ATTACH	paramattach;
-			memset( &paramattach, 0, sizeof(paramattach) );
-			paramattach.size		= sizeof(paramattach);
-			paramattach.buffer		= new void*[number_of_buffer];
-			paramattach.buffercount	= number_of_buffer;
-
-			long	bufferbytes;
-			my_dcamprop_getvalue( hdcam, DCAM_IDPROP_BUFFER_FRAMEBYTES, bufferbytes );
-			long	i;
-			for( i = 0; i < number_of_buffer; i++ )
-				paramattach.buffer[i] = new char[bufferbytes];
-
-		 */
-
-		final int lImageSizeInBytes = (int) mDcamDevice.getProperties()
-																										.getPropertyValue(DCAMIDPROP.DCAM_IDPROP_BUFFER_FRAMEBYTES);
-
-		final Pointer<Pointer<?>> lPointerToPointerArray = Pointer.allocatePointers(pNumberOfBuffers);
-
-		// TODO: should maybe do something less wasteful here:
-		mByteBufferList.clear();
-		mPointerToByteBufferList.clear();
-		for (int i = 0; i < pNumberOfBuffers; i++)
-		{
-			final ByteBuffer lByteBuffer = ByteBuffer.allocateDirect(lImageSizeInBytes);
-			lByteBuffer.order(ByteOrder.nativeOrder());
-			final Pointer<Byte> lPointerToBytes = pointerToBytes(lByteBuffer);
-			mByteBufferList.add(lByteBuffer);
-			mPointerToByteBufferList.add(lPointerToBytes);
-			lPointerToPointerArray.set(i, lPointerToBytes);
-		}
-
-		final DCAMBUF_ATTACH lDCAMBUF_ATTACH = new DCAMBUF_ATTACH();
-		lDCAMBUF_ATTACH.size(BridJ.sizeOf(DCAMBUF_ATTACH.class));
-		lDCAMBUF_ATTACH.buffercount(pNumberOfBuffers);
-		lDCAMBUF_ATTACH.buffer(lPointerToPointerArray);
-
-		final IntValuedEnum<DCAMERR> lError = DcamapiLibrary.dcambufAttach(	mDcamDevice.getHDCAMPointer(),
-																																				pointerTo(lDCAMBUF_ATTACH));
 		final boolean lSuccess = addErrorToListAndCheckHasSucceeded(lError);
 		return lSuccess;
 	}
@@ -106,7 +63,7 @@ public class DcamBufferControl extends DcamBase
 		}
 		return mDcamFrameForInternalBuffer;
 	}
-	
+
 	public final DcamFrame copyFrame()
 	{
 		final Pointer<DCAM_FRAME> lPointer = mDcamFrameForInternalBuffer.getPointer();
@@ -119,6 +76,61 @@ public class DcamBufferControl extends DcamBase
 			return null;
 		}
 		return mDcamFrameForInternalBuffer;
+	}
+
+	public final boolean allocateExternalBuffers(final int pNumberOfBuffers)
+	{
+
+		final int lImageSizeInBytes = (int) mDcamDevice.getProperties()
+																										.getPropertyValue(DCAMIDPROP.DCAM_IDPROP_BUFFER_FRAMEBYTES);
+
+		if (mByteBufferList.size() >= pNumberOfBuffers && mDcamFrameList.get(0)
+																																		.getBufferLengthInBytes() == mDcamAcquisition.getFrameSizeInBytes())
+			return true;
+
+		final Pointer<Pointer<?>> lPointerToPointerArray = Pointer.allocatePointers(pNumberOfBuffers);
+
+		// TODO: should maybe do something less wasteful here:
+		mByteBufferList.clear();
+		mPointerToByteBufferList.clear();
+		mDcamFrameList.clear();
+		for (int i = 0; i < pNumberOfBuffers; i++)
+		{
+			final ByteBuffer lByteBuffer = ByteBuffer.allocateDirect(lImageSizeInBytes)
+																								.order(ByteOrder.nativeOrder());
+			final Pointer<Byte> lPointerToBytes = pointerToBytes(lByteBuffer);
+			mByteBufferList.add(lByteBuffer);
+			mPointerToByteBufferList.add(lPointerToBytes);
+			lPointerToPointerArray.set(i, lPointerToBytes);
+
+			final DcamFrame lDcamFrame = new DcamFrame();
+			lDcamFrame.setRawBufferFromByteBuffer(lByteBuffer);
+			mDcamFrameList.set(i, lDcamFrame);
+		}
+
+		final DCAMBUF_ATTACH lDCAMBUF_ATTACH = new DCAMBUF_ATTACH();
+		lDCAMBUF_ATTACH.size(BridJ.sizeOf(DCAMBUF_ATTACH.class));
+		lDCAMBUF_ATTACH.buffercount(pNumberOfBuffers);
+		lDCAMBUF_ATTACH.buffer(lPointerToPointerArray);
+
+		final IntValuedEnum<DCAMERR> lError = DcamapiLibrary.dcambufAttach(	mDcamDevice.getHDCAMPointer(),
+																																				pointerTo(lDCAMBUF_ATTACH));
+		final boolean lSuccess = addErrorToListAndCheckHasSucceeded(lError);
+		return lSuccess;
+	}
+
+	public ByteBuffer getExternalBufferForIndex(int pBufferIndex)
+	{
+		return mByteBufferList.get(pBufferIndex);
+	}
+
+	public DcamFrame getDcamFrameForIndex(int pFrameIndex)
+	{
+		DcamFrame lDcamFrame = mDcamFrameList.get(pFrameIndex);
+		lDcamFrame.setWidth(mDcamAcquisition.getFrameWidth());
+		lDcamFrame.setHeight(mDcamAcquisition.getFrameHeight());
+		lDcamFrame.setPixelSizeInBytes(mDcamAcquisition.getFrameBytesPerPixel());
+		return lDcamFrame;
 	}
 
 	public final boolean releaseBuffers()

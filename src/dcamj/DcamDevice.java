@@ -26,7 +26,8 @@ public class DcamDevice extends DcamBase implements Closeable
 
 	private DcamProperties mDcamProperties;
 	private DcamWait mDcamWait;
-	private DcamBufferControl mDcamBufferControl;
+
+	private DcamBufferControl mBufferControl;
 
 	public DcamDevice(final int pDeviceID)
 	{
@@ -123,6 +124,14 @@ public class DcamDevice extends DcamBase implements Closeable
 		final boolean lSuccess = addErrorToListAndCheckHasSucceeded(lError);
 		return lSuccess;
 	}
+	
+	public final boolean startSnap()
+	{
+		final IntValuedEnum<DCAMERR> lError = DcamapiLibrary.dcamcapStart(getHDCAMPointer(),
+																																			DCAMCAP_START.DCAMCAP_START_SNAP.value);
+		final boolean lSuccess = addErrorToListAndCheckHasSucceeded(lError);
+		return lSuccess;
+	}
 
 	public final boolean stop()
 	{
@@ -198,11 +207,11 @@ public class DcamDevice extends DcamBase implements Closeable
 
 	public final DcamBufferControl getBufferControl()
 	{
-		if (mDcamBufferControl == null)
+		if (mBufferControl == null)
 		{
-			mDcamBufferControl = new DcamBufferControl(this);
+			mBufferControl = new DcamBufferControl(this, null);
 		}
-		return mDcamBufferControl;
+		return mBufferControl;
 	}
 
 	@Override

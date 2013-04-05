@@ -18,13 +18,13 @@ public class DcamAcquisition implements Closeable
 
 	public enum TriggerType
 	{
-		Internal, Software, ExternalEdge, ExternalLevel
+		Internal, Software, ExternalEdge, ExternalFastEdge, ExternalLevel
 	};
 
 	private TriggerType mTriggerType = TriggerType.Internal;
 
 	private boolean mShowErrors = false;
-	private boolean mDebug = false;
+	private boolean mDebug = true;
 
 	private DcamDevice mDcamDevice;
 	private DcamBufferControl mBufferControl;
@@ -90,6 +90,10 @@ public class DcamAcquisition implements Closeable
 			{
 				mProperties.setInputTriggerToExternalEdge();
 			}
+			if (mTriggerType == TriggerType.ExternalFastEdge)
+			{
+				mProperties.setInputTriggerToExternalFastEdge();
+			}
 			else if (mTriggerType == TriggerType.ExternalLevel)
 			{
 				mProperties.setInputTriggerToExternalLevel();
@@ -107,7 +111,8 @@ public class DcamAcquisition implements Closeable
 
 	public boolean isExternalTriggering()
 	{
-		return mTriggerType == TriggerType.ExternalEdge || mTriggerType == TriggerType.ExternalLevel;
+		return mTriggerType == TriggerType.ExternalEdge || mTriggerType == TriggerType.ExternalFastEdge
+						|| mTriggerType == TriggerType.ExternalLevel;
 	}
 
 	public void addListener(DcamAcquisitionListener pDcamAcquisitionListener)
@@ -235,14 +240,15 @@ public class DcamAcquisition implements Closeable
 						System.err.println("DcamJ: Could not lock frame!");
 						break;
 					}
-
+					
+					
 					notifyListeners(mFrameIndex, lArrivalTimeStamp, lDcamFrame);
 
 					// System.out.println(lShortsDirectBuffer.capacity());
 					if (mDebug && mFrameIndex > 0 && mFrameIndex % 100 == 0)
 					{
 						printFramerate(mFrameIndex + 1, mStopWatch);
-						/*System.out.format("%d ms to write one %dx%d frame. \n",
+						/*System.out.format("%d ms to process one %dx%d frame. \n",
 															lDcamFrame.getWidth(),
 															lDcamFrame.getHeight());/**/
 

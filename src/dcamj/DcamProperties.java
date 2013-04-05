@@ -383,6 +383,16 @@ public class DcamProperties extends DcamBase
 											DCAMPROPMODEVALUE.DCAMPROP_TRIGGERACTIVE__LEVEL);
 		setOutputTriggerToExposure();
 	}
+	
+	public void setInputTriggerToExternalFastEdge()
+	{
+		setInputTriggerDefaults();
+		setPropertyValue(	DCAMIDPROP.DCAM_IDPROP_TRIGGERSOURCE,
+											DCAMPROPMODEVALUE.DCAMPROP_TRIGGERSOURCE__EXTERNAL);
+		setPropertyValue(	DCAMIDPROP.DCAM_IDPROP_TRIGGERACTIVE,
+											DCAMPROPMODEVALUE.DCAMPROP_TRIGGERACTIVE__SYNCREADOUT);
+		setOutputTriggerToExposure();
+	}
 
 	public void setInputTriggerToSoftware()
 	{

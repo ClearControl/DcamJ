@@ -3,7 +3,6 @@ package dcamj;
 import static org.bridj.Pointer.pointerTo;
 
 import java.io.Closeable;
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
@@ -11,7 +10,6 @@ import org.bridj.BridJ;
 import org.bridj.IntValuedEnum;
 
 import dcamapi.DCAMCAP_TRANSFERINFO;
-import dcamapi.DCAMWAIT_OPEN;
 import dcamapi.DcamapiLibrary;
 import dcamapi.DcamapiLibrary.DCAMERR;
 import dcamapi.DcamapiLibrary.DCAMWAIT_EVENT;
@@ -20,10 +18,10 @@ import dcamj.utils.StopWatch;
 public class DcamAcquisition implements Closeable
 {
 
-	private int mDeviceIndex;
+	private final int mDeviceIndex;
 	private int mWidth = 2048;
 	private int mHeight = 2048;
-	private int mNumberOfInternalBuffers = 256;
+	private final int mNumberOfInternalBuffers = 256;
 	private double mExposure = 0.001;
 
 	public enum TriggerType
@@ -33,8 +31,8 @@ public class DcamAcquisition implements Closeable
 
 	private TriggerType mTriggerType = TriggerType.Internal;
 
-	private boolean mShowErrors = false;
-	private boolean mDebug = false;
+	private final boolean mShowErrors = false;
+	private final boolean mDebug = false;
 
 	private DcamDevice mDcamDevice;
 	private DcamBufferControl mBufferControl;
@@ -45,7 +43,7 @@ public class DcamAcquisition implements Closeable
 
 	public volatile long mFrameIndex = 0;
 
-	private ArrayList<DcamAcquisitionListener> mListenersList = new ArrayList<DcamAcquisitionListener>();
+	private final ArrayList<DcamAcquisitionListener> mListenersList = new ArrayList<DcamAcquisitionListener>();
 	private DcamProperties mProperties;
 
 	public DcamAcquisition(final int pDeviceIndex)
@@ -54,7 +52,7 @@ public class DcamAcquisition implements Closeable
 		mDeviceIndex = pDeviceIndex;
 	}
 
-	public double setExposureInSeconds(double exposure)
+	public double setExposureInSeconds(final double exposure)
 	{
 		mExposure = exposure;
 		if (mProperties != null)
@@ -131,7 +129,7 @@ public class DcamAcquisition implements Closeable
 						|| mTriggerType == TriggerType.ExternalLevel;
 	}
 
-	public void addListener(DcamAcquisitionListener pDcamAcquisitionListener)
+	public void addListener(final DcamAcquisitionListener pDcamAcquisitionListener)
 	{
 		if (!mListenersList.contains(pDcamAcquisitionListener))
 			mListenersList.add(pDcamAcquisitionListener);
@@ -177,7 +175,7 @@ public class DcamAcquisition implements Closeable
 
 	}
 
-	private void allocateBuffers(int pNumberOfBuffers)
+	private void allocateBuffers(final int pNumberOfBuffers)
 	{
 		if (mCaptureNFrames)
 			allocateExternalBuffers(pNumberOfBuffers);
@@ -185,7 +183,7 @@ public class DcamAcquisition implements Closeable
 			allocateInternalBuffers();
 	}
 
-	private void allocateExternalBuffers(int pNumberOfBuffers)
+	private void allocateExternalBuffers(final int pNumberOfBuffers)
 	{
 		System.out.format("DcamJ: allocate %d external buffers \n",
 											pNumberOfBuffers);
@@ -245,7 +243,7 @@ public class DcamAcquisition implements Closeable
 		mAcquisitionThread = new Thread(mDcamAquisitionRunnable);
 		mAcquisitionThread.setName("DcamAcquisitionThread");
 		mAcquisitionThread.setDaemon(true);
-		mAcquisitionThread.setPriority(Thread.MAX_PRIORITY - 1);
+		mAcquisitionThread.setPriority(Thread.MAX_PRIORITY);
 		mAcquisitionThread.start();
 		while (!mDcamAquisitionRunnable.mTrueIfStarted && !mDcamAquisitionRunnable.mTrueIfError)
 		{
@@ -253,7 +251,7 @@ public class DcamAcquisition implements Closeable
 			{
 				Thread.sleep(10);
 			}
-			catch (InterruptedException e)
+			catch (final InterruptedException e)
 			{
 			}
 		}
@@ -300,8 +298,7 @@ public class DcamAcquisition implements Closeable
 																												.getEvent() == DCAMWAIT_EVENT.DCAMCAP_EVENT_STOPPED.value;
 					if (lReceivedStopEvent)
 					{
-						mStopIfFalse = true;
-						continue;
+						break;
 					}
 
 					final long lArrivalTimeStamp = mStopWatch.time();
@@ -350,7 +347,7 @@ public class DcamAcquisition implements Closeable
 
 				if (mCaptureNFrames)
 				{
-					DCAMCAP_TRANSFERINFO lTransferinfo = getTransferinfo();
+					final DCAMCAP_TRANSFERINFO lTransferinfo = getTransferinfo();
 
 					final int lNumberOfFramesWrittentoExternalBuffer = (int) lTransferinfo.nFrameCount();
 
@@ -362,7 +359,7 @@ public class DcamAcquisition implements Closeable
 				mDcamDevice.stop();
 				mTrueIfStopped = true;
 			}
-			catch (Throwable e)
+			catch (final Throwable e)
 			{
 				e.printStackTrace();
 				mTrueIfError = true;
@@ -371,11 +368,11 @@ public class DcamAcquisition implements Closeable
 		}
 	};
 
-	private void notifyListeners(	long pFrameCounter,
-																long pArrivalTimeStamp,
-																DcamFrame pDcamFrame)
+	private void notifyListeners(	final long pFrameCounter,
+																final long pArrivalTimeStamp,
+																final DcamFrame pDcamFrame)
 	{
-		for (DcamAcquisitionListener lDcamAcquisitionListener : mListenersList)
+		for (final DcamAcquisitionListener lDcamAcquisitionListener : mListenersList)
 		{
 			lDcamAcquisitionListener.frameArrived(this,
 																						pFrameCounter,
@@ -394,7 +391,7 @@ public class DcamAcquisition implements Closeable
 			{
 				Thread.sleep(200);
 			}
-			catch (InterruptedException e)
+			catch (final InterruptedException e)
 			{
 			}
 		}
@@ -405,6 +402,7 @@ public class DcamAcquisition implements Closeable
 		return mDcamAquisitionRunnable.mTrueIfStarted && !mDcamAquisitionRunnable.mTrueIfStopped;
 	}
 
+	@Override
 	public final void close()
 	{
 		System.out.println("mBufferControl.releaseBuffers();");
@@ -412,7 +410,7 @@ public class DcamAcquisition implements Closeable
 		{
 			Thread.sleep(2000);
 		}
-		catch (InterruptedException e)
+		catch (final InterruptedException e)
 		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -423,7 +421,7 @@ public class DcamAcquisition implements Closeable
 		{
 			Thread.sleep(2000);
 		}
-		catch (InterruptedException e)
+		catch (final InterruptedException e)
 		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -436,7 +434,7 @@ public class DcamAcquisition implements Closeable
 		{
 			Thread.sleep(2000);
 		}
-		catch (InterruptedException e)
+		catch (final InterruptedException e)
 		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -447,7 +445,7 @@ public class DcamAcquisition implements Closeable
 		{
 			Thread.sleep(2000);
 		}
-		catch (InterruptedException e)
+		catch (final InterruptedException e)
 		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();

@@ -355,7 +355,12 @@ public class DcamProperties extends DcamBase
 		setPropertyValue(DCAMIDPROP.DCAM_IDPROP_TRIGGERTIMES, 1);
 
 		setPropertyValue(DCAMIDPROP.DCAM_IDPROP_TRIGGERDELAY, 0);
-
+	}
+	
+	public void setOutputTriggerDefaults()
+	{
+		setPropertyValue(	DCAMIDPROP.DCAM_IDPROP_TRIGGER_CONNECTOR,
+											DCAMPROPMODEVALUE.DCAMPROP_TRIGGER_CONNECTOR__BNC);
 	}
 
 	public void setInputTriggerToInternal()
@@ -402,11 +407,23 @@ public class DcamProperties extends DcamBase
 
 	public void setOutputTriggerToExposure()
 	{
+		setOutputTriggerDefaults();
 		setPropertyValue(	DCAMIDPROP.DCAM_IDPROP_OUTPUTTRIGGER_POLARITY,
 											DCAMPROPMODEVALUE.DCAMPROP_OUTPUTTRIGGER_POLARITY__POSITIVE);
 
 		setPropertyValue(	DCAMIDPROP.DCAM_IDPROP_OUTPUTTRIGGER_KIND,
 											DCAMPROPMODEVALUE.DCAMPROP_OUTPUTTRIGGER_KIND__EXPOSURE);
+
+	}
+	
+	public void setOutputTriggerToProgrammable()
+	{
+		setOutputTriggerDefaults();
+		setPropertyValue(	DCAMIDPROP.DCAM_IDPROP_OUTPUTTRIGGER_POLARITY,
+											DCAMPROPMODEVALUE.DCAMPROP_OUTPUTTRIGGER_POLARITY__POSITIVE);
+
+		setPropertyValue(	DCAMIDPROP.DCAM_IDPROP_OUTPUTTRIGGER_KIND,
+											DCAMPROPMODEVALUE.DCAMPROP_OUTPUTTRIGGER_KIND__PROGRAMABLE);
 
 	}
 	

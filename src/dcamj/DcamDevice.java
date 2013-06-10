@@ -63,7 +63,7 @@ public class DcamDevice extends DcamBase implements Closeable
 		}
 		else
 		{
-			return "Could not retreive String for: " + pDCAM_IDSTR.toString();
+			return "DcamJ: Could not retreive String for: " + pDCAM_IDSTR.toString();
 		}
 	}
 
@@ -117,7 +117,7 @@ public class DcamDevice extends DcamBase implements Closeable
 		return lSuccess;
 	}
 
-	public final boolean startSequence()
+	public final boolean startContinuous()
 	{
 		final IntValuedEnum<DCAMERR> lError = DcamapiLibrary.dcamcapStart(getHDCAMPointer(),
 																																			DCAMCAP_START.DCAMCAP_START_SEQUENCE.value);
@@ -125,7 +125,7 @@ public class DcamDevice extends DcamBase implements Closeable
 		return lSuccess;
 	}
 	
-	public final boolean startSnap()
+	public final boolean startSequence()
 	{
 		final IntValuedEnum<DCAMERR> lError = DcamapiLibrary.dcamcapStart(getHDCAMPointer(),
 																																			DCAMCAP_START.DCAMCAP_START_SNAP.value);

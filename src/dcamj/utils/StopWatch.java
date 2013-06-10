@@ -18,19 +18,19 @@ public class StopWatch
 
 	public StopWatch reset()
 	{
-		mStartingTime = System.currentTimeMillis();
+		mStartingTime = System.nanoTime();
 		return this;
 	}
 
-	public long time()
+	public long timeInNanoseconds()
 	{
-		final long mEndingTime = System.currentTimeMillis();
+		final long mEndingTime = System.nanoTime();
 		return mEndingTime - mStartingTime;
 	}
 
 	public long time(final TimeUnit unit)
 	{
-		return unit.convert(time(), TimeUnit.MILLISECONDS);
+		return unit.convert(timeInNanoseconds(), TimeUnit.NANOSECONDS);
 	}
 
 }

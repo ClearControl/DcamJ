@@ -303,8 +303,13 @@ public class DcamProperties extends DcamBase
 
 	public double setAndGetExposure(final double pExposure)
 	{
-		return setAndGetPropertyValue(DCAMIDPROP.DCAM_IDPROP_EXPOSURETIME,
-																	pExposure);
+		final double lEffectiveExposure = setAndGetPropertyValue(	DCAMIDPROP.DCAM_IDPROP_EXPOSURETIME,
+																															pExposure);
+		/*System.out.format("DcamJ: exposure requested: %g effective exposure: %g  \n",
+											pExposure,
+											lEffectiveExposure);/**/
+
+		return lEffectiveExposure;
 	}
 
 	public boolean setCenteredROI(final int pCenteredWidth,
@@ -328,19 +333,17 @@ public class DcamProperties extends DcamBase
 		lSuccess &= setPropertyValue(	DCAMIDPROP.DCAM_IDPROP_SUBARRAYMODE,
 																	2);
 
-		System.out.format("DcamJ: ROI: parameters: cwidth=%d, cheight=%d, hpos=%d, vpos=%d, width=%d, height=%d --> success=%s  \n",
+		/*System.out.format("DcamJ: ROI: parameters: cwidth=%d, cheight=%d, hpos=%d, vpos=%d, width=%d, height=%d --> success=%s  \n",
 											pCenteredWidth,
 											pCenteredHeight,
 											hpos,
 											vpos,
 											lWidth,
 											lHeight,
-											lSuccess ? "true" : "false");
+											lSuccess ? "true" : "false");/**/
 
 		return lSuccess;
 	}
-
-
 
 	public void setInputTriggerDefaults()
 	{
@@ -356,7 +359,7 @@ public class DcamProperties extends DcamBase
 
 		setPropertyValue(DCAMIDPROP.DCAM_IDPROP_TRIGGERDELAY, 0);
 	}
-	
+
 	public void setOutputTriggerDefaults()
 	{
 		setPropertyValue(	DCAMIDPROP.DCAM_IDPROP_TRIGGER_CONNECTOR,
@@ -388,7 +391,7 @@ public class DcamProperties extends DcamBase
 											DCAMPROPMODEVALUE.DCAMPROP_TRIGGERACTIVE__LEVEL);
 		setOutputTriggerToExposure();
 	}
-	
+
 	public void setInputTriggerToExternalFastEdge()
 	{
 		setInputTriggerDefaults();
@@ -415,7 +418,7 @@ public class DcamProperties extends DcamBase
 											DCAMPROPMODEVALUE.DCAMPROP_OUTPUTTRIGGER_KIND__EXPOSURE);
 
 	}
-	
+
 	public void setOutputTriggerToProgrammable()
 	{
 		setOutputTriggerDefaults();
@@ -426,7 +429,7 @@ public class DcamProperties extends DcamBase
 											DCAMPROPMODEVALUE.DCAMPROP_OUTPUTTRIGGER_KIND__PROGRAMABLE);
 
 	}
-	
+
 	public static int roundto4(int pWidth)
 	{
 		return (int) (4 * Math.round(pWidth * 0.25));

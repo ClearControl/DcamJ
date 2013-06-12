@@ -203,7 +203,7 @@ public class DcamJTests
 																int pFrameIndexInBuffer,
 																DcamFrame pDcamFrame)
 			{
-				/*System.out.format("Frame %d in buffer %d arrived at %d \n",
+				System.out.format("Frame %d in buffer %d arrived at %d \n",
 													pAbsoluteFrameIndex,
 													pFrameIndexInBuffer,
 													pArrivalTimeStamp);/**/
@@ -211,9 +211,9 @@ public class DcamJTests
 			}
 		});
 
-		final int lNumberOfIterations = 300;
-		final int lNumberOfFramesToCapture = 300;
-		final int lImageResolution = 320;
+		final int lNumberOfIterations = 10;
+		final int lNumberOfFramesToCapture = 1000;
+		final int lImageResolution = 2048;
 
 		lDcamAcquisition.setFrameWidthAndHeight(lImageResolution,
 																						lImageResolution);
@@ -235,16 +235,18 @@ public class DcamJTests
 																					lImageResolution,
 																					lNumberOfFramesToCapture);
 
+		// Thread.sleep(1000000);
+
 		System.gc();
 		StopWatch lStopWatch = StopWatch.start();
 		for (int i = 0; i < lNumberOfIterations; i++)
 		{
-			//System.out.println("ITERATION=" + i);
+			// System.out.println("ITERATION=" + i);
 			assertTrue(lDcamAcquisition.startAcquisition(	lNumberOfFramesToCapture,
 																										false,
 																										true,
 																										lDcamFrame));
-			//Thread.sleep(100);
+			// Thread.sleep(100);
 		}
 		long lTimeInSeconds = lStopWatch.time(TimeUnit.SECONDS);
 		final double lSpeed = lNumberOfIterations * lNumberOfFramesToCapture
@@ -255,28 +257,28 @@ public class DcamJTests
 		{
 			Thread.sleep(100);
 		}
-		
+
 		lDcamAcquisition.stopAcquisition();
-		
-		final double average = computeAverageInBuffer(lDcamFrame.getBytesDirectBuffer());
-		System.out.format("avg=%g \n", average);
-		assertTrue(average != 0);
-		
+
+		for (int i = 0; i < lDcamFrame.getDepth(); i++)
+		{
+			final double average = computeAverageInBuffer(lDcamFrame.getSinglePlaneByteBuffer(i));
+			System.out.format("avg=%g \n", average);
+			assertTrue(average != 0);
+		}
+
 		lDcamAcquisition.close();
-
-
-
 
 	}
 
 	private double computeAverageInBuffer(ByteBuffer pByteBuffer)
 	{
 		double average = 0;
-		
+
 		pByteBuffer.clear();
 		int lCapacity = pByteBuffer.capacity();
 		double lInverse = 1 / (double) lCapacity;
-		while(pByteBuffer.hasRemaining())
+		while (pByteBuffer.hasRemaining())
 		{
 			int lShort = pByteBuffer.getShort();
 			average = average + lShort * lInverse;

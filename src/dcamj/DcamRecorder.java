@@ -111,13 +111,16 @@ public class DcamRecorder implements Closeable
 		return mFrameQueue.remainingCapacity();
 	}
 
-	public boolean writeToFile(final DcamFrame pFrameQueue)
+	public boolean writeToFile(final DcamFrame pDcamFrame)
 	{
 		try
 		{
-			final ByteBuffer lByteBuffer = pFrameQueue.getBytesDirectBuffer();
 			final StopWatch lStopWatch = StopWatch.start();
-			mFileChannel.write(lByteBuffer);
+			for (int i = 0; i < pDcamFrame.getDepth(); i++)
+			{
+				final ByteBuffer lByteBuffer = pDcamFrame.getBytesDirectBuffer(i);
+				mFileChannel.write(lByteBuffer);
+			}
 			mFileChannel.force(false);
 			mElapsedTimeForWritingLastFrame = lStopWatch.time(TimeUnit.MILLISECONDS);
 			// System.out.format("Writing one frame to disk required: %d milliseconds \n",lElapsedTime);

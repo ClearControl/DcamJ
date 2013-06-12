@@ -1,110 +1,23 @@
 package dcamj.test;
 
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.Test;
 
-import dcamapi.DcamapiLibrary.DCAMWAIT_EVENT;
 import dcamj.DcamAcquisition;
-import dcamj.DcamAcquisitionListener;
-import dcamj.DcamBufferControl;
-import dcamj.DcamDevice;
-import dcamj.DcamFrame;
-import dcamj.DcamLibrary;
-import dcamj.DcamProperties;
-import dcamj.DcamRecorder;
 import dcamj.DcamAcquisition.TriggerType;
+import dcamj.DcamAcquisitionListener;
+import dcamj.DcamFrame;
 import dcamj.utils.StopWatch;
 
 public class DcamJTests
 {
 
 	final static int cNumberOfBuffers = 1000;
-
-	@Test
-	public void testSimpleRecording()	throws InterruptedException,
-																		IOException
-	{
-		System.out.println("Initializing the DCAM library:");
-		DcamLibrary.initialize();
-
-		final int numberOfDevices = DcamLibrary.getNumberOfDevices();
-		assertTrue(numberOfDevices >= 1);
-
-		final DcamDevice lDcamDevice = DcamLibrary.getDeviceForId(0);
-		lDcamDevice.mShowErrors = true;
-		lDcamDevice.mDebug = false;
-
-		final DcamProperties lProperties = lDcamDevice.getProperties();
-		lProperties.mShowErrors = true;
-		lProperties.mDebug = true;
-		// lProperties.updatePropertyList();
-
-		lProperties.listAllProperties();
-
-		final double lExposure = lProperties.setAndGetExposure(0.001);
-		System.out.format("Exposure=%g \n ", lExposure);
-
-		lProperties.setCenteredROI(512, 512);
-
-		lDcamDevice.displayDeviceInfo();
-		final DcamBufferControl lBufferControl = lDcamDevice.getBufferControl();
-		lBufferControl.mShowErrors = true;
-		lBufferControl.mDebug = false;
-		lBufferControl.allocateInternalBuffers(cNumberOfBuffers);
-
-		System.out.println("starting sequence acquisition:");
-		lDcamDevice.startContinuous();
-
-		final DcamRecorder lDcamRecorder = new DcamRecorder(cNumberOfBuffers);
-		lDcamRecorder.open(new File("D:/Temp/test.raw"));
-		lDcamRecorder.startDeamon();
-
-		final int lNumberOfFrames = 10000;
-		final StopWatch lStopWatch = StopWatch.start();
-		for (int i = 0; i < lNumberOfFrames; i++)
-		{
-			assertTrue(lDcamDevice.getDcamWait()
-														.waitForEvent(DCAMWAIT_EVENT.DCAMCAP_EVENT_FRAMEREADY,
-																					1000));
-			// System.out.println("received frame!");
-			final DcamFrame lDcamFrame = lBufferControl.lockFrame();
-			assertNotNull(lDcamFrame);
-
-			lDcamRecorder.asynchronousWrite(lDcamFrame);
-
-			// System.out.println(lShortsDirectBuffer.capacity());
-			if (i > 0 && i % 100 == 0)
-			{
-				getTime(i + 1, lStopWatch);
-				System.out.format("Queue length= %d,  %d ms to write one %dx%d frame. \n",
-													lDcamRecorder.getQueueLength(),
-													lDcamRecorder.getElapsedTimeForWritingLastFrame(),
-													lDcamFrame.getWidth(),
-													lDcamFrame.getHeight());
-
-			}
-		}
-		getTime(lNumberOfFrames, lStopWatch);
-
-		lDcamRecorder.close();
-
-		Thread.sleep(2000);
-
-		lDcamDevice.stop();
-		lBufferControl.releaseBuffers();
-		lDcamDevice.close();
-		// System.out.println(lDcamDevice.getStatus());
-
-		DcamLibrary.uninitialize();
-	}
 
 	private void getTime(	final int pFramesAcquiredUntilNow,
 												final StopWatch lStopWatch)
@@ -186,12 +99,44 @@ public class DcamJTests
 
 	}
 
+	static int lDcamFrameCounter;
+
 	@Test
 	public void testDcamSequenceAcquisition()	throws InterruptedException,
 																						IOException
 	{
 
-		DcamAcquisition lDcamAcquisition = new DcamAcquisition(0);
+		final DcamAcquisition lDcamAcquisition = new DcamAcquisition(0);
+
+		final int lNumerOfDcamFrames = 4;
+		final int lNumberOfIterations = 10;
+		final int lNumberOfFramesToCapture = 512;
+		final int lImageResolution = 512;
+
+		lDcamAcquisition.setFrameWidthAndHeight(lImageResolution,
+																						lImageResolution);
+		lDcamAcquisition.setExposureInSeconds(0.0001);
+		if (!lDcamAcquisition.open())
+		{
+			lDcamAcquisition.close();
+			return;
+		}
+
+		lDcamAcquisition.getProperties().setOutputTriggerToProgrammable();
+
+		final long lBufferCapacity = lDcamAcquisition.getBufferControl()
+																									.computeTotalRequiredmemoryInBytes(lNumberOfFramesToCapture);
+		System.out.format("RequiredMemory is: %d MB \n",
+											lBufferCapacity / 1000000);
+
+		final DcamFrame[] lDcamFrameArray = new DcamFrame[lNumerOfDcamFrames];
+		for (int i = 0; i < lNumerOfDcamFrames; i++)
+			lDcamFrameArray[i] = new DcamFrame(	2,
+																					lImageResolution,
+																					lImageResolution,
+																					lNumberOfFramesToCapture);
+
+		lDcamFrameCounter = 0;
 
 		lDcamAcquisition.addListener(new DcamAcquisitionListener()
 		{
@@ -208,34 +153,9 @@ public class DcamJTests
 													pFrameIndexInBuffer,
 													pArrivalTimeStamp);/**/
 				assertTrue(pDcamFrame.getDepth() != 1);
+
 			}
 		});
-
-		final int lNumberOfIterations = 10;
-		final int lNumberOfFramesToCapture = 1000;
-		final int lImageResolution = 2048;
-
-		lDcamAcquisition.setFrameWidthAndHeight(lImageResolution,
-																						lImageResolution);
-		lDcamAcquisition.setExposureInSeconds(0.0001);
-		if (!lDcamAcquisition.open())
-		{
-			lDcamAcquisition.close();
-			return;
-		}
-
-		lDcamAcquisition.getProperties().setOutputTriggerToProgrammable();
-
-		final int lBufferCapacity = lDcamAcquisition.getBufferControl()
-																								.computeBufferSize(lNumberOfFramesToCapture);
-		System.out.format("Buffer capacity is: %d \n", lBufferCapacity);
-
-		DcamFrame lDcamFrame = new DcamFrame(	2,
-																					lImageResolution,
-																					lImageResolution,
-																					lNumberOfFramesToCapture);
-
-		// Thread.sleep(1000000);
 
 		System.gc();
 		StopWatch lStopWatch = StopWatch.start();
@@ -245,8 +165,15 @@ public class DcamJTests
 			assertTrue(lDcamAcquisition.startAcquisition(	lNumberOfFramesToCapture,
 																										false,
 																										true,
-																										lDcamFrame));
-			// Thread.sleep(100);
+																										lDcamFrameArray[lDcamFrameCounter]));
+			// lDcamAcquisition.stopAcquisition();
+
+			// Thread.sleep(1000);
+			lDcamFrameCounter = (lDcamFrameCounter + 1) % lNumerOfDcamFrames;
+			final DcamFrame lNewDcamFrame = lDcamFrameArray[lDcamFrameCounter];
+			lDcamAcquisition.getBufferControl()
+											.attachExternalBuffers(lNewDcamFrame);
+
 		}
 		long lTimeInSeconds = lStopWatch.time(TimeUnit.SECONDS);
 		final double lSpeed = lNumberOfIterations * lNumberOfFramesToCapture
@@ -258,14 +185,13 @@ public class DcamJTests
 			Thread.sleep(100);
 		}
 
-		lDcamAcquisition.stopAcquisition();
-
-		for (int i = 0; i < lDcamFrame.getDepth(); i++)
-		{
-			final double average = computeAverageInBuffer(lDcamFrame.getSinglePlaneByteBuffer(i));
-			System.out.format("avg=%g \n", average);
-			assertTrue(average != 0);
-		}
+		for (int j = 0; j < lNumerOfDcamFrames; j++)
+			for (int i = 0; i < lDcamFrameArray[j].getDepth(); i++)
+			{
+				final double average = computeAverageInBuffer(lDcamFrameArray[j].getSinglePlaneByteBuffer(i));
+				System.out.format("avg=%g \n", average);
+				assertTrue(average != 0);
+			}
 
 		lDcamAcquisition.close();
 

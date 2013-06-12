@@ -191,7 +191,7 @@ public class DcamAcquisition implements Closeable
 		mBufferControl = getBufferControl();
 		mBufferControl.mShowErrors = true;
 		mBufferControl.mDebug = false;
-		return mBufferControl.provideExternalBuffers(pDcamFrame);
+		return mBufferControl.attachExternalBuffers(pDcamFrame);
 	}
 
 	private boolean allocateInternalBuffers()
@@ -294,14 +294,7 @@ public class DcamAcquisition implements Closeable
 		mAcquisitionThread.start();
 
 		if (!pContinuousAcquisition)
-			try
-			{
-				mAcquisitionFinishedSignal.await();
-			}
-			catch (InterruptedException e)
-			{
-				e.printStackTrace();
-			}
+			stopAcquisitionInternal();
 
 		return !mDcamAquisitionRunnable.mTrueIfError;
 	}
@@ -539,10 +532,15 @@ public class DcamAcquisition implements Closeable
 	public final void stopAcquisition()
 	{
 		mDcamAquisitionRunnable.mStopIfFalse = false;
+		stopAcquisitionInternal();
+	}
 
+	private void stopAcquisitionInternal()
+	{
 		try
 		{
 			mAcquisitionFinishedSignal.await();
+			mDcamDevice.stop();
 		}
 		catch (InterruptedException e)
 		{

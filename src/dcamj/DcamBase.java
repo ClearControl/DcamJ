@@ -39,6 +39,11 @@ public class DcamBase
 		return mErrorList;
 	}
 
+	public final void displayErrorList()
+	{
+		System.out.println(mErrorList);
+	}
+
 	public final void clearErrorList()
 	{
 		mErrorList.clear();
@@ -56,7 +61,5 @@ public class DcamBase
 		}
 		return true;
 	}
-
-
 
 }

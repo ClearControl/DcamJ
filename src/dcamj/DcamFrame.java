@@ -1,6 +1,7 @@
 package dcamj;
 
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.ShortBuffer;
 
 import org.bridj.BridJ;
@@ -14,12 +15,56 @@ public class DcamFrame
 {
 	private final DCAM_FRAME mFrame;
 
+	private int mDepth = 1;
+
 	public DcamFrame()
 	{
-		super();
 		mFrame = new DCAM_FRAME();
 		mFrame.size(BridJ.sizeOf(DCAM_FRAME.class));
 		mFrame.iFrame(-1);
+	}
+
+	public DcamFrame(	final Pointer<?> pPointer,
+										final int pPixelSizeInBytes,
+										final int pWidth,
+										final int pHeight,
+										final int pDepth)
+	{
+		this();
+		setRawBufferFromPointer(pPointer);
+		setPixelSizeInBytes(pPixelSizeInBytes);
+		setWidth(pWidth);
+		setHeight(pHeight);
+		setDepth(pDepth);
+	}
+
+	public DcamFrame(	final ByteBuffer pByteBuffer,
+										final int pPixelSizeInBytes,
+										final int pWidth,
+										final int pHeight,
+										final int pDepth)
+	{
+		this(	Pointer.pointerToBuffer(pByteBuffer),
+					pPixelSizeInBytes,
+					pWidth,
+					pHeight,
+					pDepth);
+	}
+
+	public DcamFrame(	final int pPixelSizeInBytes,
+										final int pWidth,
+										final int pHeight,
+										final int pDepth)
+	{
+		this(	ByteBuffer.allocateDirect(pWidth * pHeight
+																		* pDepth
+																		* pPixelSizeInBytes)
+										.order(ByteOrder.nativeOrder()),
+					pPixelSizeInBytes,
+					pWidth,
+					pHeight,
+					pDepth);
+
 	}
 
 	public final int getFrameIndex()
@@ -32,12 +77,17 @@ public class DcamFrame
 		return Pointer.pointerTo(mFrame);
 	}
 
-	public void setRawBufferFromByteBuffer(ByteBuffer pByteBuffer)
+	public void setRawBufferFromPointer(Pointer<?> pPointer)
 	{
-		mFrame.buf(Pointer.pointerToBuffer(pByteBuffer));
+		mFrame.buf(pPointer);
 	}
 
-	public Pointer<?> getRawBuffer()
+	public void setRawBufferFromByteBuffer(ByteBuffer pByteBuffer)
+	{
+		setRawBufferFromPointer(Pointer.pointerToBuffer(pByteBuffer));
+	}
+
+	public Pointer<?> getRawBufferPointer()
 	{
 		return mFrame.buf();
 	}
@@ -60,6 +110,16 @@ public class DcamFrame
 	public final int getHeight()
 	{
 		return (int) mFrame.height();
+	}
+
+	public final void setDepth(int pDepth)
+	{
+		mDepth = pDepth;
+	}
+
+	public final int getDepth()
+	{
+		return mDepth;
 	}
 
 	public final void setPixelSizeInBytes(final int pNumberOfBytesPerPixel)
@@ -91,29 +151,35 @@ public class DcamFrame
 		return 0;
 	}
 
-	public final int getBufferLengthInBytes()
+	public final long getBufferLengthInBytes()
 	{
-		return getWidth() * getHeight() * getPixelSizeInBytes();
+		return getSinglePlaneBufferLengthInBytes() * getDepth();
+	}
+
+	public final long getSinglePlaneBufferLengthInBytes()
+	{
+		return getPixelSizeInBytes() * getWidth() * getHeight();
 	}
 
 	public short[] getShortsArray()
 	{
-		final int lBufferLength = getBufferLengthInBytes();
-		final short[] lShortsArray = getRawBuffer().getShorts(lBufferLength);
+		final int lBufferLength = (int) getBufferLengthInBytes();
+		final short[] lShortsArray = getRawBufferPointer().getShorts(lBufferLength);
 		return lShortsArray;
 	}
 
 	public ShortBuffer getShortsDirectBuffer()
 	{
-		final int lBufferLength = getBufferLengthInBytes();
-		final ShortBuffer lShortBuffer = getRawBuffer().getShortBuffer(lBufferLength);
+		final int lBufferLength = (int) getBufferLengthInBytes();
+		final ShortBuffer lShortBuffer = getRawBufferPointer().getShortBuffer(lBufferLength);
 		return lShortBuffer;
 	}
 
 	public ByteBuffer getBytesDirectBuffer()
 	{
-		final int lBufferLength = getBufferLengthInBytes();
-		final ByteBuffer lByteBuffer = getRawBuffer().getByteBuffer(lBufferLength);
+		final int lBufferLength = (int) getBufferLengthInBytes();
+		final ByteBuffer lByteBuffer = getRawBufferPointer().getByteBuffer(lBufferLength);
 		return lByteBuffer;
 	}
+
 }

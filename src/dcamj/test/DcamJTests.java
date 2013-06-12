@@ -126,12 +126,14 @@ public class DcamJTests
 
 			@Override
 			public void frameArrived(	DcamAcquisition pDcamAquisition,
-																long pFrameIndex,
+																long pAbsoluteFrameIndex,
 																long pArrivalTimeStamp,
+																int pFrameIndexInBufferList,
 																DcamFrame pDcamFrame)
 			{
-				System.out.format("Frame %d arrived at %d \n",
-													pFrameIndex,
+				System.out.format("Frame %d in buffer %d arrived at %d \n",
+													pAbsoluteFrameIndex,
+													pFrameIndexInBufferList,
 													pArrivalTimeStamp);
 			}
 		});
@@ -139,7 +141,7 @@ public class DcamJTests
 		lDcamAcquisition.open();
 		lDcamAcquisition.getProperties().setOutputTriggerToProgrammable();
 		lDcamAcquisition.startAcquisition();
-		Thread.sleep(10000);
+		Thread.sleep(100000);
 		lDcamAcquisition.stopAcquisition();
 		lDcamAcquisition.close();
 
@@ -159,12 +161,14 @@ public class DcamJTests
 
 			@Override
 			public void frameArrived(	DcamAcquisition pDcamAquisition,
-																long pFrameIndex,
+																long pAbsoluteFrameIndex,
 																long pArrivalTimeStamp,
+																int pFrameIndexInBuffer,
 																DcamFrame pDcamFrame)
 			{
-				System.out.format("Frame %d arrived at %d \n",
-													pFrameIndex,
+				System.out.format("Frame %d in buffer %d arrived at %d \n",
+													pAbsoluteFrameIndex,
+													pFrameIndexInBuffer,
 													pArrivalTimeStamp);
 			}
 		});
@@ -194,40 +198,53 @@ public class DcamJTests
 
 			@Override
 			public void frameArrived(	DcamAcquisition pDcamAquisition,
-																long pFrameIndex,
+																long pAbsoluteFrameIndex,
 																long pArrivalTimeStamp,
+																int pFrameIndexInBuffer,
 																DcamFrame pDcamFrame)
 			{
-				System.out.format("Frame %d arrived at %d \n",
-													pFrameIndex,
-													pArrivalTimeStamp);
-				assertTrue(pDcamFrame==null);
+				/*System.out.format("Frame %d in buffer %d arrived at %d \n",
+													pAbsoluteFrameIndex,
+													pFrameIndexInBuffer,
+													pArrivalTimeStamp);/**/
+				assertTrue(pDcamFrame.getDepth() != 1);
 			}
 		});
 
-		final int lNumberOfIterations = 10;
-		final int lNumberOfFramesToCapture = 1000;
-		final int lImageResolution = 512;
+		final int lNumberOfIterations = 300;
+		final int lNumberOfFramesToCapture = 300;
+		final int lImageResolution = 320;
 
 		lDcamAcquisition.setFrameWidthAndHeight(lImageResolution,
 																						lImageResolution);
 		lDcamAcquisition.setExposureInSeconds(0.0001);
-		lDcamAcquisition.open();
+		if (!lDcamAcquisition.open())
+		{
+			lDcamAcquisition.close();
+			return;
+		}
 
 		lDcamAcquisition.getProperties().setOutputTriggerToProgrammable();
 
 		final int lBufferCapacity = lDcamAcquisition.getBufferControl()
 																								.computeBufferSize(lNumberOfFramesToCapture);
 		System.out.format("Buffer capacity is: %d \n", lBufferCapacity);
-		ByteBuffer lByteBuffer = ByteBuffer.allocateDirect(lBufferCapacity)
-																				.order(ByteOrder.nativeOrder());
 
+		DcamFrame lDcamFrame = new DcamFrame(	2,
+																					lImageResolution,
+																					lImageResolution,
+																					lNumberOfFramesToCapture);
+
+		System.gc();
 		StopWatch lStopWatch = StopWatch.start();
 		for (int i = 0; i < lNumberOfIterations; i++)
 		{
-
-			assertTrue(lDcamAcquisition.startAcquisition(lNumberOfFramesToCapture,
-																									lByteBuffer));
+			//System.out.println("ITERATION=" + i);
+			assertTrue(lDcamAcquisition.startAcquisition(	lNumberOfFramesToCapture,
+																										false,
+																										true,
+																										lDcamFrame));
+			//Thread.sleep(100);
 		}
 		long lTimeInSeconds = lStopWatch.time(TimeUnit.SECONDS);
 		final double lSpeed = lNumberOfIterations * lNumberOfFramesToCapture
@@ -238,13 +255,15 @@ public class DcamJTests
 		{
 			Thread.sleep(100);
 		}
-
-		lDcamAcquisition.stopAcquisition();
-		lDcamAcquisition.close();
 		
-		final double average = computeAverageInBuffer(lByteBuffer);
-		System.out.format("avg=%g", average);
+		lDcamAcquisition.stopAcquisition();
+		
+		final double average = computeAverageInBuffer(lDcamFrame.getBytesDirectBuffer());
+		System.out.format("avg=%g \n", average);
 		assertTrue(average != 0);
+		
+		lDcamAcquisition.close();
+
 
 
 
@@ -253,13 +272,14 @@ public class DcamJTests
 	private double computeAverageInBuffer(ByteBuffer pByteBuffer)
 	{
 		double average = 0;
+		
+		pByteBuffer.clear();
 		int lCapacity = pByteBuffer.capacity();
-		double lInverse = 1/(double)lCapacity;
-		for (int i = 0; i < lCapacity / 2; i++)
+		double lInverse = 1 / (double) lCapacity;
+		while(pByteBuffer.hasRemaining())
 		{
-			int lShort = pByteBuffer.getShort(i);
-			//System.out.println(lShort);
-			average = average + lShort*lInverse;
+			int lShort = pByteBuffer.getShort();
+			average = average + lShort * lInverse;
 		}
 		return average;
 	}

@@ -4,7 +4,7 @@ import java.util.concurrent.TimeUnit;
 
 public class StopWatch
 {
-	long mStartingTime;
+	volatile long mStartingTime;
 
 	public static StopWatch start()
 	{

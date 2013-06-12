@@ -4,8 +4,9 @@ public interface DcamAcquisitionListener
 {
 
 	void frameArrived(DcamAcquisition pDcamAquisition,
-	                  long pFrameIndex,
+										long pAbsoluteFrameIndex,
 										long pArrivalTimeStampInNanoseconds,
+										int pFrameIndexInBufferList,
 										DcamFrame pDcamFrame);
 
 }

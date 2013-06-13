@@ -1,5 +1,6 @@
 package dcamj;
 
+import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.ShortBuffer;
@@ -18,6 +19,7 @@ public class DcamFrame
 	private final DcamFrame[] mSinglePlaneDcamFrameArray;
 
 	private int mBytesPerPixel, mWidth, mHeight, mDepth;
+	private long mIndex, mTimeStampInNs;
 
 	public DcamFrame(	final int pBytesPerPixel,
 										final int pWidth,
@@ -30,7 +32,7 @@ public class DcamFrame
 		mDepth = pDepth;
 		mByteBufferArray = new ByteBuffer[pDepth];
 		mSinglePlaneDcamFrameArray = new DcamFrame[pDepth];
-		
+
 		for (int i = 0; i < pDepth; i++)
 		{
 			mByteBufferArray[i] = ByteBuffer.allocateDirect(pBytesPerPixel * pWidth
@@ -72,24 +74,48 @@ public class DcamFrame
 		return mDepth;
 	}
 
+	public final long getIndex()
+	{
+		return mIndex;
+	}
+
+	public void setIndex(long pIndex)
+	{
+		mIndex = pIndex;
+	}
+
+	public void setTimeStampInNs(long pTimeStampInNs)
+	{
+		mTimeStampInNs = pTimeStampInNs;
+	}
+
+	public final long getFrameTimeStampInNs()
+	{
+		return mTimeStampInNs;
+	}
+
 	public final int getPixelSizeInBytes()
 	{
 		return mBytesPerPixel;
+	}
+
+	public ByteBuffer getSinglePlaneByteBuffer()
+	{
+		return getSinglePlaneByteBuffer(0);
 	}
 
 	public ByteBuffer getSinglePlaneByteBuffer(final int pIndex)
 	{
 		return mByteBufferArray[pIndex];
 	}
-	
+
 	public DcamFrame getSinglePlaneDcamFrame(final int pIndex)
 	{
-		if(mSinglePlaneDcamFrameArray==null)
+		if (mSinglePlaneDcamFrameArray == null)
 			return this;
 		else
 			return mSinglePlaneDcamFrameArray[pIndex];
 	}
-	
 
 	public Pointer<Byte> getSinglePlanePointer(final int pIndex)
 	{

@@ -239,9 +239,9 @@ public class DcamAcquisition implements Closeable
 		return mBufferControl;
 	}
 
-	public final void startAcquisition()
+	public final boolean startAcquisition()
 	{
-		startAcquisition(-1, true, false, allocateDefaultDcamFrame(-1));
+		return startAcquisition(-1, true, false, allocateDefaultDcamFrame(-1));
 	}
 
 	private DcamFrame allocateDefaultDcamFrame(final int pNumberOfFramesToCapture)
@@ -254,9 +254,9 @@ public class DcamAcquisition implements Closeable
 													lNumberOfFramesInBuffer);
 	}
 
-	public final void startAcquisition(final int pNumberOfFramesToCapture)
+	public final boolean startAcquisition(final int pNumberOfFramesToCapture)
 	{
-		startAcquisition(	pNumberOfFramesToCapture,
+		return startAcquisition(	pNumberOfFramesToCapture,
 											false,
 											false,
 											allocateDefaultDcamFrame(pNumberOfFramesToCapture));
@@ -464,6 +464,9 @@ public class DcamAcquisition implements Closeable
 													lDcamFrame);
 					mFrameIndex++;
 				}
+				
+				lDcamFrame.setIndex(mFrameIndex);
+				lDcamFrame.setTimeStampInNs(lArrivalTimeStampInNanoseconds);
 
 				if (lReceivedFrameReadyEvent)
 				{
@@ -481,7 +484,7 @@ public class DcamAcquisition implements Closeable
 
 			}
 
-			if (mStackAcquisition)
+			if (!mContinuousAcquisition)
 			{
 				// System.out.println("getTransferinfo.before");
 				final DCAMCAP_TRANSFERINFO lTransferinfo = getTransferinfo();

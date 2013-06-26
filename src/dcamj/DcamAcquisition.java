@@ -40,6 +40,8 @@ public class DcamAcquisition implements Closeable
 
 	private Thread mAcquisitionThread;
 	private DcamAquisitionRunnable mDcamAquisitionRunnable;
+	private CountDownLatch mAcquisitionStartedSignal;
+	private CountDownLatch mAcquisitionFinishedSignal;
 
 	public volatile long mFrameIndex = 0;
 
@@ -269,6 +271,21 @@ public class DcamAcquisition implements Closeable
 																				final boolean pStackAcquisition,
 																				final DcamFrame pDcamFrame)
 	{
+		return startAcquisition(pNumberOfFramesToCapture,
+														pContinuousAcquisition,
+														pStackAcquisition,
+														true,
+														!pContinuousAcquisition,
+														pDcamFrame);
+	}
+
+	public final boolean startAcquisition(final int pNumberOfFramesToCapture,
+																				final boolean pContinuousAcquisition,
+																				final boolean pStackAcquisition,
+																				final boolean pWaitToStart,
+																				final boolean pWaitToFinish,
+																				final DcamFrame pDcamFrame)
+	{
 		// This prevents (reduces probability really) GC events during acquisition
 		System.gc();
 
@@ -285,6 +302,7 @@ public class DcamAcquisition implements Closeable
 			return false;
 		}
 
+		mAcquisitionStartedSignal = new CountDownLatch(1);
 		mAcquisitionFinishedSignal = new CountDownLatch(1);
 		mDcamAquisitionRunnable = new DcamAquisitionRunnable(	pNumberOfFramesToCapture,
 																													pContinuousAcquisition,
@@ -295,8 +313,11 @@ public class DcamAcquisition implements Closeable
 		mAcquisitionThread.setPriority(Thread.MAX_PRIORITY);
 		mAcquisitionThread.start();
 
-		if (!pContinuousAcquisition)
-			stopAcquisitionInternal();
+		if (pWaitToStart)
+			waitAcquisitionStarted();
+
+		if (pWaitToFinish)
+			waitAcquisitionFinishedAndStop();
 
 		return !mDcamAquisitionRunnable.mTrueIfError;
 	}
@@ -337,6 +358,7 @@ public class DcamAcquisition implements Closeable
 			try
 			{
 				System.out.println("DcamJ: Starting acquisition:");
+				mAcquisitionStartedSignal.countDown();
 				mTrueIfStarted = true;
 				mStopWatch = StopWatch.start();
 				mFrameIndex = 0;
@@ -386,7 +408,7 @@ public class DcamAcquisition implements Closeable
 			int lWaitTimeout;
 
 			if (mStackAcquisition)
-				lWaitTimeout = 1000 + (int) (10 * 1000 * mNumberOfFramesToCapture * mExposureInSeconds);
+				lWaitTimeout = 50000 + (int) (10 * 1000 * mNumberOfFramesToCapture * mExposureInSeconds);
 			else
 			{
 				if (isExternalTriggering())
@@ -403,7 +425,7 @@ public class DcamAcquisition implements Closeable
 
 			while (mStopIfFalse)
 			{
-				System.out.format("DcamJ: frame index = %d (local index = %d) \n",
+				/*System.out.format("DcamJ: frame index = %d (local index = %d) \n",
 													mFrameIndex,
 													lLocalFrameIndex);/**/
 
@@ -413,7 +435,7 @@ public class DcamAcquisition implements Closeable
 				if (mContinuousAcquisition && !mStackAcquisition)
 					lDcamcapEventToWaitFor = DCAMWAIT_EVENT.DCAMCAP_EVENT_FRAMEREADYORSTOPPED;
 				else if (mStackAcquisition)
-					lDcamcapEventToWaitFor = DCAMWAIT_EVENT.DCAMCAP_EVENT_STOPPED;
+					lDcamcapEventToWaitFor = DCAMWAIT_EVENT.DCAMCAP_EVENT_FRAMEREADYORSTOPPED; // DCAMCAP_EVENT_STOPPED
 				else
 					lDcamcapEventToWaitFor = DCAMWAIT_EVENT.DCAMCAP_EVENT_FRAMEREADY;
 
@@ -422,7 +444,7 @@ public class DcamAcquisition implements Closeable
 																																							lWaitTimeout));
 				// System.out.println("waitForEvent.after");
 				final long lArrivalTimeStampInNanoseconds = mStopWatch.timeInNanoseconds();
-				// System.out.println(System.nanoTime());
+				//System.out.println(System.nanoTime());
 
 				if (!lWaitSuccess)
 				{
@@ -472,12 +494,16 @@ public class DcamAcquisition implements Closeable
 					mFrameIndex++;
 				}
 
-				lDcamFrame.setIndex(mFrameIndex);
-				lDcamFrame.setTimeStampInNs(lArrivalTimeStampInNanoseconds);
+				if (lDcamFrame != null)
+				{
+					lDcamFrame.setIndex(mFrameIndex);
+					lDcamFrame.setTimeStampInNs(lArrivalTimeStampInNanoseconds);
+				}
 
 				if (lReceivedFrameReadyEvent)
 				{
-
+					//System.out.println("Received frame!");
+					
 					if (!mContinuousAcquisition && !mStackAcquisition
 							&& lLocalFrameIndex >= mNumberOfFramesToCapture - 1)
 					{
@@ -542,10 +568,22 @@ public class DcamAcquisition implements Closeable
 	public final void stopAcquisition()
 	{
 		mDcamAquisitionRunnable.mStopIfFalse = false;
-		stopAcquisitionInternal();
+		waitAcquisitionFinishedAndStop();
 	}
 
-	private void stopAcquisitionInternal()
+	private void waitAcquisitionStarted()
+	{
+		try
+		{
+			mAcquisitionStartedSignal.await();
+		}
+		catch (final InterruptedException e)
+		{
+			e.printStackTrace();
+		}
+	}
+
+	private void waitAcquisitionFinishedAndStop()
 	{
 		try
 		{
@@ -554,7 +592,6 @@ public class DcamAcquisition implements Closeable
 		}
 		catch (final InterruptedException e)
 		{
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -611,7 +648,6 @@ public class DcamAcquisition implements Closeable
 	}
 
 	DCAMCAP_TRANSFERINFO mDcamCapTransfertInfo;
-	private CountDownLatch mAcquisitionFinishedSignal;
 
 	private DCAMCAP_TRANSFERINFO getTransferinfo()
 	{

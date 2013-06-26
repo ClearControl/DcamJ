@@ -3,7 +3,6 @@ package dcamj;
 import static org.bridj.Pointer.pointerTo;
 
 import java.io.Closeable;
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -241,31 +240,34 @@ public class DcamAcquisition implements Closeable
 
 	public final boolean startAcquisition()
 	{
-		return startAcquisition(-1, true, false, allocateDefaultDcamFrame(-1));
+		return startAcquisition(-1,
+														true,
+														false,
+														allocateDefaultDcamFrame(-1));
 	}
 
 	private DcamFrame allocateDefaultDcamFrame(final int pNumberOfFramesToCapture)
 	{
 		final int lNumberOfFramesInBuffer = pNumberOfFramesToCapture < 1 ? mNumberOfBuffersByDefault
 																																		: pNumberOfFramesToCapture;
-		return new DcamFrame(	getFrameBytesPerPixel(),
-													getWidth(),
-													getHeight(),
-													lNumberOfFramesInBuffer);
+		return DcamFrame.requestFrame(getFrameBytesPerPixel(),
+																	getWidth(),
+																	getHeight(),
+																	lNumberOfFramesInBuffer);
 	}
 
 	public final boolean startAcquisition(final int pNumberOfFramesToCapture)
 	{
-		return startAcquisition(	pNumberOfFramesToCapture,
-											false,
-											false,
-											allocateDefaultDcamFrame(pNumberOfFramesToCapture));
+		return startAcquisition(pNumberOfFramesToCapture,
+														false,
+														false,
+														allocateDefaultDcamFrame(pNumberOfFramesToCapture));
 	}
 
 	public final boolean startAcquisition(final int pNumberOfFramesToCapture,
 																				final boolean pContinuousAcquisition,
 																				final boolean pStackAcquisition,
-																				DcamFrame pDcamFrame)
+																				final DcamFrame pDcamFrame)
 	{
 		// This prevents (reduces probability really) GC events during acquisition
 		System.gc();
@@ -299,7 +301,7 @@ public class DcamAcquisition implements Closeable
 		return !mDcamAquisitionRunnable.mTrueIfError;
 	}
 
-	private boolean checkDimensions(DcamFrame pDcamFrame)
+	private boolean checkDimensions(final DcamFrame pDcamFrame)
 	{
 		final boolean isEverythingFine = pDcamFrame.getWidth() == getWidth() && pDcamFrame.getHeight() == getHeight();
 		return isEverythingFine;
@@ -314,13 +316,13 @@ public class DcamAcquisition implements Closeable
 		private volatile boolean mTrueIfStopped = false;
 		private volatile boolean mTrueIfError = false;
 
-		private int mNumberOfFramesToCapture;
-		private boolean mContinuousAcquisition;
-		private boolean mStackAcquisition;
+		private final int mNumberOfFramesToCapture;
+		private final boolean mContinuousAcquisition;
+		private final boolean mStackAcquisition;
 
-		public DcamAquisitionRunnable(int pNumberOfFramesToCapture,
-																	boolean pContinuousAcquisition,
-																	boolean pStackAcquisition)
+		public DcamAquisitionRunnable(final int pNumberOfFramesToCapture,
+																	final boolean pContinuousAcquisition,
+																	final boolean pStackAcquisition)
 		{
 			mNumberOfFramesToCapture = pNumberOfFramesToCapture;
 			mContinuousAcquisition = pContinuousAcquisition;
@@ -415,12 +417,12 @@ public class DcamAcquisition implements Closeable
 				else
 					lDcamcapEventToWaitFor = DCAMWAIT_EVENT.DCAMCAP_EVENT_FRAMEREADY;
 
-				//System.out.println("waitForEvent.before");
+				// System.out.println("waitForEvent.before");
 				final boolean lWaitSuccess = (mDcamDevice.getDcamWait().waitForEvent(	lDcamcapEventToWaitFor,
 																																							lWaitTimeout));
-				//System.out.println("waitForEvent.after");
+				// System.out.println("waitForEvent.after");
 				final long lArrivalTimeStampInNanoseconds = mStopWatch.timeInNanoseconds();
-				//System.out.println(System.nanoTime());
+				// System.out.println(System.nanoTime());
 
 				if (!lWaitSuccess)
 				{
@@ -433,7 +435,8 @@ public class DcamAcquisition implements Closeable
 					continue;
 				}
 
-				long lDcamWaitEvent = mDcamDevice.getDcamWait().getEvent();
+				final long lDcamWaitEvent = mDcamDevice.getDcamWait()
+																								.getEvent();
 				final boolean lReceivedStopEvent = lDcamWaitEvent == DCAMWAIT_EVENT.DCAMCAP_EVENT_STOPPED.value;
 				final boolean lReceivedFrameReadyEvent = lDcamWaitEvent == DCAMWAIT_EVENT.DCAMCAP_EVENT_FRAMEREADY.value;
 
@@ -445,6 +448,8 @@ public class DcamAcquisition implements Closeable
 					if (mStackAcquisition)
 					{
 						lDcamFrame = getBufferControl().getStackDcamFrame();
+						lDcamFrame.setIndex(mFrameIndex);
+						lDcamFrame.setTimeStampInNs(lArrivalTimeStampInNanoseconds);
 						notifyListeners(mFrameIndex,
 														lArrivalTimeStampInNanoseconds,
 														0,
@@ -458,13 +463,15 @@ public class DcamAcquisition implements Closeable
 				{
 
 					lDcamFrame = getBufferControl().getDcamFrameForIndex(lLocalFrameIndex);
+					lDcamFrame.setIndex(mFrameIndex);
+					lDcamFrame.setTimeStampInNs(lArrivalTimeStampInNanoseconds);
 					notifyListeners(mFrameIndex,
 													lArrivalTimeStampInNanoseconds,
 													lLocalFrameIndex,
 													lDcamFrame);
 					mFrameIndex++;
 				}
-				
+
 				lDcamFrame.setIndex(mFrameIndex);
 				lDcamFrame.setTimeStampInNs(lArrivalTimeStampInNanoseconds);
 
@@ -545,7 +552,7 @@ public class DcamAcquisition implements Closeable
 			mAcquisitionFinishedSignal.await();
 			mDcamDevice.stop();
 		}
-		catch (InterruptedException e)
+		catch (final InterruptedException e)
 		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();

@@ -1,24 +1,85 @@
 package dcamj;
 
-import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.nio.ShortBuffer;
-import java.util.ArrayList;
+import java.util.concurrent.LinkedBlockingQueue;
 
-import org.bridj.BridJ;
 import org.bridj.Pointer;
 
-import dcamapi.DCAM_FRAME;
-import dcamapi.DcamapiLibrary;
-import dcamapi.DcamapiLibrary.DCAM_PIXELTYPE;
+import dcamj.utils.BufferUtils;
 
 public class DcamFrame
 {
+
+	public static LinkedBlockingQueue<DcamFrame> mAvailableFramesQueue = new LinkedBlockingQueue<DcamFrame>(1000);
+
+	public static DcamFrame requestFrame(	final int pBytesPerPixel,
+																				final int pWidth,
+																				final int pHeight,
+																				final int pDepth)
+	{
+		DcamFrame lDcamFrame = mAvailableFramesQueue.poll();
+
+		if (lDcamFrame == null || lDcamFrame.getPixelSizeInBytes() != pBytesPerPixel
+				|| lDcamFrame.getWidth() != pWidth
+				|| lDcamFrame.getHeight() != pHeight
+				|| lDcamFrame.getDepth() != pDepth)
+		{
+			if (lDcamFrame != null)
+			{
+				lDcamFrame.destroy();
+				lDcamFrame = null;
+			}
+
+			lDcamFrame = new DcamFrame(	pBytesPerPixel,
+																	pWidth,
+																	pHeight,
+																	pDepth);
+		}
+
+		return lDcamFrame;
+	}
+
+	public static void releaseFrame(final DcamFrame pDcamFrame)
+	{
+		mAvailableFramesQueue.offer(pDcamFrame);
+	}
+
+	public static void clearFrames()
+	{
+		DcamFrame lDcamFrame;
+		while ((lDcamFrame = mAvailableFramesQueue.poll()) != null)
+		{
+			lDcamFrame.release();
+			lDcamFrame.destroy();
+		}
+		mAvailableFramesQueue.clear();
+		System.gc();
+	}
+
+	public static void preallocateFrames(	final int pNumberOfFramesToAllocate,
+																				final int pBytesPerPixel,
+																				final int pWidth,
+																				final int pHeight,
+																				final int pDepth)
+	{
+		clearFrames();
+		for (int i = 0; i < pNumberOfFramesToAllocate; i++)
+		{
+			final DcamFrame lRequestedFrame = requestFrame(	pBytesPerPixel,
+																											pWidth,
+																											pHeight,
+																											pDepth);
+			lRequestedFrame.release();
+		}
+	}
+
+	/****************************************************/
+
 	private final ByteBuffer[] mByteBufferArray;
 	private final DcamFrame[] mSinglePlaneDcamFrameArray;
 
-	private int mBytesPerPixel, mWidth, mHeight, mDepth;
+	private final int mBytesPerPixel, mWidth, mHeight, mDepth;
 	private long mIndex, mTimeStampInNs;
 
 	public DcamFrame(	final int pBytesPerPixel,
@@ -79,12 +140,12 @@ public class DcamFrame
 		return mIndex;
 	}
 
-	public void setIndex(long pIndex)
+	public void setIndex(final long pIndex)
 	{
 		mIndex = pIndex;
 	}
 
-	public void setTimeStampInNs(long pTimeStampInNs)
+	public void setTimeStampInNs(final long pTimeStampInNs)
 	{
 		mTimeStampInNs = pTimeStampInNs;
 	}
@@ -109,6 +170,33 @@ public class DcamFrame
 		return mByteBufferArray[pIndex];
 	}
 
+	public long getTotalSizeInBytesForAllPlanes()
+	{
+		long size = 0;
+		for (final ByteBuffer lByteBuffer : mByteBufferArray)
+		{
+			size += lByteBuffer.capacity();
+		}
+		return size;
+	}
+
+	public boolean getSingleByteBufferForAllPlanes(final ByteBuffer pByteBuffer)
+	{
+		final long lTotalSizeInBytes = getTotalSizeInBytesForAllPlanes();
+		if (pByteBuffer.capacity() != lTotalSizeInBytes)
+			return false;
+
+		pByteBuffer.clear();
+
+		for (final ByteBuffer lPlaneByteBuffer : mByteBufferArray)
+		{
+			lPlaneByteBuffer.rewind();
+			pByteBuffer.put(lPlaneByteBuffer);
+		}
+
+		return true;
+	}
+
 	public DcamFrame getSinglePlaneDcamFrame(final int pIndex)
 	{
 		if (mSinglePlaneDcamFrameArray == null)
@@ -127,4 +215,34 @@ public class DcamFrame
 		return getPixelSizeInBytes() * getWidth() * getHeight();
 	}
 
+	public final void release()
+	{
+		releaseFrame(this);
+	}
+
+	public final void destroy()
+	{
+		try
+		{
+			for (final ByteBuffer lByteBuffer : mByteBufferArray)
+				if (lByteBuffer != null)
+					BufferUtils.destroyDirectByteBuffer(lByteBuffer);
+		}
+		catch (final Throwable e)
+		{
+			e.printStackTrace();
+		}
+	}
+
+	@Override
+	public String toString()
+	{
+		return String.format(	"DcamFrame [mBytesPerPixel=%s, mWidth=%s, mHeight=%s, mDepth=%s, mIndex=%s, mTimeStampInNs=%s]",
+													mBytesPerPixel,
+													mWidth,
+													mHeight,
+													mDepth,
+													mIndex,
+													mTimeStampInNs);
+	}
 }

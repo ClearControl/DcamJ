@@ -32,17 +32,17 @@ public class DcamJTests
 																		IOException
 	{
 
-		DcamAcquisition lDcamAcquisition = new DcamAcquisition(0);
+		final DcamAcquisition lDcamAcquisition = new DcamAcquisition(0);
 
 		lDcamAcquisition.addListener(new DcamAcquisitionListener()
 		{
 
 			@Override
-			public void frameArrived(	DcamAcquisition pDcamAquisition,
-																long pAbsoluteFrameIndex,
-																long pArrivalTimeStamp,
-																int pFrameIndexInBufferList,
-																DcamFrame pDcamFrame)
+			public void frameArrived(	final DcamAcquisition pDcamAquisition,
+																final long pAbsoluteFrameIndex,
+																final long pArrivalTimeStamp,
+																final int pFrameIndexInBufferList,
+																final DcamFrame pDcamFrame)
 			{
 				System.out.format("Frame %d in buffer %d arrived at %d \n",
 													pAbsoluteFrameIndex,
@@ -65,7 +65,7 @@ public class DcamJTests
 																													IOException
 	{
 
-		DcamAcquisition lDcamAcquisition = new DcamAcquisition(0);
+		final DcamAcquisition lDcamAcquisition = new DcamAcquisition(0);
 		lDcamAcquisition.setTriggerType(TriggerType.ExternalEdge);
 		lDcamAcquisition.setExposureInSeconds(0.001);
 
@@ -73,11 +73,11 @@ public class DcamJTests
 		{
 
 			@Override
-			public void frameArrived(	DcamAcquisition pDcamAquisition,
-																long pAbsoluteFrameIndex,
-																long pArrivalTimeStamp,
-																int pFrameIndexInBuffer,
-																DcamFrame pDcamFrame)
+			public void frameArrived(	final DcamAcquisition pDcamAquisition,
+																final long pAbsoluteFrameIndex,
+																final long pArrivalTimeStamp,
+																final int pFrameIndexInBuffer,
+																final DcamFrame pDcamFrame)
 			{
 				System.out.format("Frame %d in buffer %d arrived at %d \n",
 													pAbsoluteFrameIndex,
@@ -142,11 +142,11 @@ public class DcamJTests
 		{
 
 			@Override
-			public void frameArrived(	DcamAcquisition pDcamAquisition,
-																long pAbsoluteFrameIndex,
-																long pArrivalTimeStamp,
-																int pFrameIndexInBuffer,
-																DcamFrame pDcamFrame)
+			public void frameArrived(	final DcamAcquisition pDcamAquisition,
+																final long pAbsoluteFrameIndex,
+																final long pArrivalTimeStamp,
+																final int pFrameIndexInBuffer,
+																final DcamFrame pDcamFrame)
 			{
 				System.out.format("Frame %d in buffer %d arrived at %d \n",
 													pAbsoluteFrameIndex,
@@ -158,7 +158,7 @@ public class DcamJTests
 		});
 
 		System.gc();
-		StopWatch lStopWatch = StopWatch.start();
+		final StopWatch lStopWatch = StopWatch.start();
 		for (int i = 0; i < lNumberOfIterations; i++)
 		{
 			// System.out.println("ITERATION=" + i);
@@ -175,7 +175,7 @@ public class DcamJTests
 											.attachExternalBuffers(lNewDcamFrame);
 
 		}
-		long lTimeInSeconds = lStopWatch.time(TimeUnit.SECONDS);
+		final long lTimeInSeconds = lStopWatch.time(TimeUnit.SECONDS);
 		final double lSpeed = lNumberOfIterations * lNumberOfFramesToCapture
 													/ (lTimeInSeconds);
 		System.out.format("acquisition speed: %g frames/s \n", lSpeed);
@@ -197,16 +197,16 @@ public class DcamJTests
 
 	}
 
-	private double computeAverageInBuffer(ByteBuffer pByteBuffer)
+	private double computeAverageInBuffer(final ByteBuffer pByteBuffer)
 	{
 		double average = 0;
 
 		pByteBuffer.clear();
-		int lCapacity = pByteBuffer.capacity();
-		double lInverse = 1 / (double) lCapacity;
+		final int lCapacity = pByteBuffer.capacity();
+		final double lInverse = 1 / (double) lCapacity;
 		while (pByteBuffer.hasRemaining())
 		{
-			int lShort = pByteBuffer.getShort();
+			final int lShort = pByteBuffer.getShort();
 			average = average + lShort * lInverse;
 		}
 		return average;

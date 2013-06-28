@@ -242,45 +242,38 @@ public class DcamAcquisition implements Closeable
 
 	public final boolean startAcquisition()
 	{
-		return startAcquisition(-1,
-														true,
+		return startAcquisition(true,
 														false,
-														allocateDefaultDcamFrame(-1));
+														allocateDefaultDcamFrame(mNumberOfBuffersByDefault));
 	}
 
 	private DcamFrame allocateDefaultDcamFrame(final int pNumberOfFramesToCapture)
 	{
-		final int lNumberOfFramesInBuffer = pNumberOfFramesToCapture < 1 ? mNumberOfBuffersByDefault
-																																		: pNumberOfFramesToCapture;
 		return DcamFrame.requestFrame(getFrameBytesPerPixel(),
 																	getWidth(),
 																	getHeight(),
-																	lNumberOfFramesInBuffer);
+																	pNumberOfFramesToCapture);
 	}
 
 	public final boolean startAcquisition(final int pNumberOfFramesToCapture)
 	{
-		return startAcquisition(pNumberOfFramesToCapture,
-														false,
+		return startAcquisition(false,
 														false,
 														allocateDefaultDcamFrame(pNumberOfFramesToCapture));
 	}
 
-	public final boolean startAcquisition(final int pNumberOfFramesToCapture,
-																				final boolean pContinuousAcquisition,
+	public final boolean startAcquisition(final boolean pContinuousAcquisition,
 																				final boolean pStackAcquisition,
 																				final DcamFrame pDcamFrame)
 	{
-		return startAcquisition(pNumberOfFramesToCapture,
-														pContinuousAcquisition,
+		return startAcquisition(pContinuousAcquisition,
 														pStackAcquisition,
 														true,
 														!pContinuousAcquisition,
 														pDcamFrame);
 	}
 
-	public final boolean startAcquisition(final int pNumberOfFramesToCapture,
-																				final boolean pContinuousAcquisition,
+	public final boolean startAcquisition(final boolean pContinuousAcquisition,
 																				final boolean pStackAcquisition,
 																				final boolean pWaitToStart,
 																				final boolean pWaitToFinish,
@@ -304,7 +297,7 @@ public class DcamAcquisition implements Closeable
 
 		mAcquisitionStartedSignal = new CountDownLatch(1);
 		mAcquisitionFinishedSignal = new CountDownLatch(1);
-		mDcamAquisitionRunnable = new DcamAquisitionRunnable(	pNumberOfFramesToCapture,
+		mDcamAquisitionRunnable = new DcamAquisitionRunnable(	pDcamFrame.getDepth(),
 																													pContinuousAcquisition,
 																													pStackAcquisition);
 		mAcquisitionThread = new Thread(mDcamAquisitionRunnable);
@@ -333,6 +326,7 @@ public class DcamAcquisition implements Closeable
 
 		private StopWatch mStopWatch;
 		private volatile boolean mTrueIfStarted = false;
+		private volatile boolean mStopContinousIfFalse = true;
 		private volatile boolean mStopIfFalse = true;
 		private volatile boolean mTrueIfStopped = false;
 		private volatile boolean mTrueIfError = false;
@@ -364,7 +358,7 @@ public class DcamAcquisition implements Closeable
 				mFrameIndex = 0;
 
 				if (mStackAcquisition && mContinuousAcquisition)
-					while (mStopIfFalse)
+					while (mStopContinousIfFalse)
 					{
 						runOnce();
 					}
@@ -444,7 +438,7 @@ public class DcamAcquisition implements Closeable
 																																							lWaitTimeout));
 				// System.out.println("waitForEvent.after");
 				final long lArrivalTimeStampInNanoseconds = mStopWatch.timeInNanoseconds();
-				//System.out.println(System.nanoTime());
+				// System.out.println(System.nanoTime());
 
 				if (!lWaitSuccess)
 				{
@@ -502,8 +496,8 @@ public class DcamAcquisition implements Closeable
 
 				if (lReceivedFrameReadyEvent)
 				{
-					//System.out.println("Received frame!");
-					
+					// System.out.println("Received frame!");
+
 					if (!mContinuousAcquisition && !mStackAcquisition
 							&& lLocalFrameIndex >= mNumberOfFramesToCapture - 1)
 					{
@@ -568,6 +562,7 @@ public class DcamAcquisition implements Closeable
 	public final void stopAcquisition()
 	{
 		mDcamAquisitionRunnable.mStopIfFalse = false;
+		mDcamAquisitionRunnable.mStopContinousIfFalse = false;
 		waitAcquisitionFinishedAndStop();
 	}
 

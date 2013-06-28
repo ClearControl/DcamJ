@@ -16,12 +16,13 @@ public class DcamBase
 
 	protected final void addError(final IntValuedEnum<DCAMERR> pError)
 	{
-		mErrorList.add(pError);
 		if (mDebug)
 		{
+			mErrorList.add(pError);
 			System.out.println(pError);
 		}
-		else if (mShowErrors && !DcamLibrary.hasSucceeded(pError))
+
+		if (mShowErrors && !DcamLibrary.hasSucceeded(pError))
 		{
 			System.err.println(pError);
 		}

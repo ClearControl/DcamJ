@@ -162,8 +162,7 @@ public class DcamJTests
 		for (int i = 0; i < lNumberOfIterations; i++)
 		{
 			// System.out.println("ITERATION=" + i);
-			assertTrue(lDcamAcquisition.startAcquisition(	lNumberOfFramesToCapture,
-																										false,
+			assertTrue(lDcamAcquisition.startAcquisition(	false,
 																										true,
 																										lDcamFrameArray[lDcamFrameCounter]));
 			// lDcamAcquisition.stopAcquisition();

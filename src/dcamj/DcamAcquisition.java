@@ -384,7 +384,6 @@ public class DcamAcquisition implements Closeable
 
 		private void runOnce()
 		{
-			System.gc();
 			mStopIfFalse = true;
 
 			if (mContinuousAcquisition && !mStackAcquisition)
@@ -604,6 +603,8 @@ public class DcamAcquisition implements Closeable
 
 	public final boolean isAcquiring()
 	{
+		if (mDcamAquisitionRunnable == null)
+			return false;
 		return mDcamAquisitionRunnable.mTrueIfStarted && !mDcamAquisitionRunnable.mTrueIfStopped;
 	}
 

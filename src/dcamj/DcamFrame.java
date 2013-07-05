@@ -48,11 +48,6 @@ public class DcamFrame
 	public static void clearFrames()
 	{
 		DcamFrame lDcamFrame;
-		while ((lDcamFrame = mAvailableFramesQueue.poll()) != null)
-		{
-			lDcamFrame.release();
-			lDcamFrame.destroy();
-		}
 		mAvailableFramesQueue.clear();
 		System.gc();
 	}

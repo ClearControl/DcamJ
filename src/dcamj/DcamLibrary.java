@@ -3,6 +3,7 @@ package dcamj;
 import static org.bridj.Pointer.pointerTo;
 
 import org.bridj.BridJ;
+import org.bridj.FlagSet;
 import org.bridj.IntValuedEnum;
 
 import dcamapi.DCAMAPI_INIT;
@@ -76,7 +77,8 @@ public class DcamLibrary
 
 	public static boolean hasSucceeded(final IntValuedEnum<DCAMERR> dcamapiInit)
 	{
-		return dcamapiInit.toString().contains("DCAMERR_SUCCESS");
+		@SuppressWarnings("unchecked")
+		FlagSet<DCAMERR> ldcamapiInit = (FlagSet<DCAMERR>)dcamapiInit;
+		return ldcamapiInit.has(DCAMERR.DCAMERR_SUCCESS);
 	}
-
 }

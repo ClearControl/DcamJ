@@ -403,7 +403,8 @@ public class DcamAcquisition implements Closeable
 			int lWaitTimeout;
 
 			if (mStackAcquisition)
-				lWaitTimeout = 1000 ; //+ (int) (10 * 1000 * mNumberOfFramesToCapture * mExposureInSeconds)
+				lWaitTimeout = 1000; // + (int) (10 * 1000 * mNumberOfFramesToCapture *
+															// mExposureInSeconds)
 			else
 			{
 				if (isExternalTriggering())
@@ -428,7 +429,7 @@ public class DcamAcquisition implements Closeable
 				if (mContinuousAcquisition && !mStackAcquisition)
 					lDcamcapEventToWaitFor = DCAMWAIT_EVENT.DCAMCAP_EVENT_FRAMEREADYORSTOPPED;
 				else if (mStackAcquisition)
-					lDcamcapEventToWaitFor =  DCAMWAIT_EVENT.DCAMCAP_EVENT_FRAMEREADYORSTOPPED;
+					lDcamcapEventToWaitFor = DCAMWAIT_EVENT.DCAMCAP_EVENT_FRAMEREADYORSTOPPED;
 				else
 					lDcamcapEventToWaitFor = DCAMWAIT_EVENT.DCAMCAP_EVENT_FRAMEREADY;
 
@@ -570,6 +571,8 @@ public class DcamAcquisition implements Closeable
 
 	public final void stopAcquisition()
 	{
+		if (mDcamAquisitionRunnable == null)
+			return;
 		mDcamAquisitionRunnable.mStopIfFalse = false;
 		mDcamAquisitionRunnable.mStopContinousIfFalse = false;
 		waitAcquisitionFinishedAndStop();

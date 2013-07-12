@@ -24,13 +24,18 @@ public class StopWatch
 
 	public long timeInNanoseconds()
 	{
-		final long mEndingTime = System.nanoTime();
+		final long mEndingTime =  System.nanoTime();
 		return mEndingTime - mStartingTime;
 	}
 
 	public long time(final TimeUnit unit)
 	{
 		return unit.convert(timeInNanoseconds(), TimeUnit.NANOSECONDS);
+	}
+
+	public static long absoluteTimeInNanoseconds()
+	{
+		return System.nanoTime();
 	}
 
 }

@@ -4,8 +4,11 @@ import static org.bridj.Pointer.pointerTo;
 
 import java.io.Closeable;
 import java.util.ArrayList;
+import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.bridj.BridJ;
 import org.bridj.IntValuedEnum;
@@ -279,8 +282,6 @@ public class DcamAcquisition implements Closeable
 																				final boolean pWaitToFinish,
 																				final DcamFrame pDcamFrame)
 	{
-		// This prevents (reduces probability really) GC events during acquisition
-		System.gc();
 
 		if (!checkDimensions(pDcamFrame))
 			return false;
@@ -320,11 +321,10 @@ public class DcamAcquisition implements Closeable
 		final boolean isEverythingFine = pDcamFrame.getWidth() == getWidth() && pDcamFrame.getHeight() == getHeight();
 		return isEverythingFine;
 	}
-
+	
 	private class DcamAquisitionRunnable implements Runnable
 	{
 
-		private StopWatch mStopWatch;
 		private volatile boolean mTrueIfStarted = false;
 		private volatile boolean mStopContinousIfFalse = true;
 		private volatile boolean mStopIfFalse = true;
@@ -354,7 +354,6 @@ public class DcamAcquisition implements Closeable
 				System.out.println("DcamJ: Starting acquisition:");
 
 				mTrueIfStarted = true;
-				mStopWatch = StopWatch.start();
 				mFrameIndex = 0;
 
 				if (mStackAcquisition && mContinuousAcquisition)
@@ -363,7 +362,9 @@ public class DcamAcquisition implements Closeable
 						runOnce();
 					}
 				else
+				{
 					runOnce();
+				}
 
 			}
 			catch (final Throwable e)
@@ -403,14 +404,14 @@ public class DcamAcquisition implements Closeable
 			int lWaitTimeout;
 
 			if (mStackAcquisition)
-				lWaitTimeout = 1000; // + (int) (10 * 1000 * mNumberOfFramesToCapture *
+				lWaitTimeout = 3000; // + (int) (10 * 1000 * mNumberOfFramesToCapture *
 															// mExposureInSeconds)
 			else
 			{
 				if (isExternalTriggering())
 					lWaitTimeout = 5000;
 				else
-					lWaitTimeout = 1000;
+					lWaitTimeout = 3000;
 			}
 
 			if (mDebug)
@@ -440,12 +441,18 @@ public class DcamAcquisition implements Closeable
 																																							lWaitTimeout));
 				if (mDebug)
 					System.out.println(" ...after.");
-				final long lArrivalTimeStampInNanoseconds = mStopWatch.timeInNanoseconds();
-				// System.out.println(System.nanoTime());
+				final long lArrivalTimeStampInNanoseconds = StopWatch.absoluteTimeInNanoseconds();
+				//System.out.println(System.nanoTime());
 
 				if (!lWaitSuccess)
 				{
 					System.err.println("DcamJ: waiting for event failed!!!!");
+					System.err.format("DcamJ: frame index = %d (local index = %d) out of %d frames to capture (%s acquisition)  \n",
+														mFrameIndex,
+														lLocalFrameIndex,
+														mNumberOfFramesToCapture,
+														mStackAcquisition	? "stack"
+																							: "single plane");
 					if (!isExternalTriggering())
 					{
 						System.err.println("DcamJ: timeout waiting for frame!");
@@ -516,8 +523,6 @@ public class DcamAcquisition implements Closeable
 					lLocalFrameIndex = (lLocalFrameIndex + 1) % lNumberOfBuffers;
 				}
 
-				debugInfo();
-
 			}
 
 			// if (!mContinuousAcquisition)
@@ -540,14 +545,6 @@ public class DcamAcquisition implements Closeable
 					mTrueIfError = true;
 				}
 
-			}
-		}
-
-		private void debugInfo()
-		{
-			if (mDebug && mFrameIndex > 0 && mFrameIndex % 100 == 0)
-			{
-				printFramerate(mFrameIndex + 1, mStopWatch);
 			}
 		}
 
@@ -668,12 +665,6 @@ public class DcamAcquisition implements Closeable
 		return mDcamCapTransfertInfo;
 	}
 
-	private void printFramerate(final long pL,
-															final StopWatch lStopWatch)
-	{
-		final long lElapsedTimeInSeconds = lStopWatch.time(TimeUnit.SECONDS);
-		final double lFramerate = (double) pL / lElapsedTimeInSeconds;
-		System.out.format("Framerate: %g \n", lFramerate);
-	}
+
 
 }

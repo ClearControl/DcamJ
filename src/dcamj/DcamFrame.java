@@ -18,19 +18,16 @@ public class DcamFrame
 																				final int pHeight,
 																				final int pDepth)
 	{
-		DcamFrame lDcamFrame = mAvailableFramesQueue.poll();
-
-		if (lDcamFrame == null || lDcamFrame.getPixelSizeInBytes() != pBytesPerPixel
-				|| lDcamFrame.getWidth() != pWidth
-				|| lDcamFrame.getHeight() != pHeight
-				|| lDcamFrame.getDepth() != pDepth)
+		DcamFrame lDcamFrame;
+		do
 		{
-			if (lDcamFrame != null)
-			{
-				lDcamFrame.destroy();
-				lDcamFrame = null;
-			}
+			lDcamFrame = mAvailableFramesQueue.poll();
+		}
+		while (lDcamFrame != null && (lDcamFrame.getPixelSizeInBytes() != pBytesPerPixel || lDcamFrame.getWidth() != pWidth
+																	|| lDcamFrame.getHeight() != pHeight || lDcamFrame.getDepth() != pDepth));
 
+		if (lDcamFrame == null)
+		{
 			lDcamFrame = new DcamFrame(	pBytesPerPixel,
 																	pWidth,
 																	pHeight,
@@ -49,7 +46,6 @@ public class DcamFrame
 	{
 		DcamFrame lDcamFrame;
 		mAvailableFramesQueue.clear();
-		System.gc();
 	}
 
 	public static void preallocateFrames(	final int pNumberOfFramesToAllocate,

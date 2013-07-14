@@ -430,6 +430,13 @@ public class DcamProperties extends DcamBase
 
 	}
 
+	public void setDefectCorectionMode(final boolean pDefectCorrections)
+	{
+		setPropertyValue(	DCAMIDPROP.DCAM_IDPROP_DEFECTCORRECT_MODE,
+		                 	pDefectCorrections	? DCAMPROPMODEVALUE.DCAMPROP_MODE__ON
+																						: DCAMPROPMODEVALUE.DCAMPROP_MODE__OFF);
+	}
+
 	public static int roundto4(int pWidth)
 	{
 		return (int) (4 * Math.round(pWidth * 0.25));

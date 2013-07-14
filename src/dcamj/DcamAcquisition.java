@@ -665,6 +665,11 @@ public class DcamAcquisition implements Closeable
 		return mDcamCapTransfertInfo;
 	}
 
+	public void setDefectCorrection(boolean pDefectCorrection)
+	{
+		getProperties().setDefectCorectionMode(pDefectCorrection);
+	}
+
 
 
 }

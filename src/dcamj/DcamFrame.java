@@ -44,7 +44,7 @@ public class DcamFrame
 
 	public static void clearFrames()
 	{
-		DcamFrame lDcamFrame;
+		final DcamFrame lDcamFrame;
 		mAvailableFramesQueue.clear();
 	}
 
@@ -173,14 +173,23 @@ public class DcamFrame
 
 	public boolean getSingleByteBufferForAllPlanes(final ByteBuffer pByteBuffer)
 	{
+		return getSingleByteBufferForPlanes(pByteBuffer,
+																				mByteBufferArray.length);
+	}
+
+	public boolean getSingleByteBufferForPlanes(final ByteBuffer pByteBuffer,
+																							final int pMaxNumberOfPlanes)
+	{
 		final long lTotalSizeInBytes = getTotalSizeInBytesForAllPlanes();
 		if (pByteBuffer.capacity() != lTotalSizeInBytes)
 			return false;
 
 		pByteBuffer.clear();
 
-		for (final ByteBuffer lPlaneByteBuffer : mByteBufferArray)
+		for (int i = 0; i < Math.min(	mByteBufferArray.length,
+																	pMaxNumberOfPlanes); i++)
 		{
+			final ByteBuffer lPlaneByteBuffer = mByteBufferArray[i];
 			lPlaneByteBuffer.rewind();
 			pByteBuffer.put(lPlaneByteBuffer);
 		}

@@ -17,6 +17,7 @@ import dcamapi.HDCAMWAIT_struct;
 
 public class DcamWait extends DcamBase implements Closeable
 {
+	private static final long cSizeOf_DCAMWAIT_START = BridJ.sizeOf(DCAMWAIT_START.class);
 	private final DcamDevice mDcamDevice;
 	private Pointer<HDCAMWAIT_struct> mHwaitPointer = null;
 	private DCAMWAIT_START mDCAMWAIT_START;
@@ -55,7 +56,7 @@ public class DcamWait extends DcamBase implements Closeable
 		}
 
 		
-		mDCAMWAIT_START.size(BridJ.sizeOf(DCAMWAIT_START.class));
+		mDCAMWAIT_START.size(cSizeOf_DCAMWAIT_START);
 		mDCAMWAIT_START.eventmask(pDCAMWAIT_EVENT.value);
 		mDCAMWAIT_START.timeout(pTimeOut);
 

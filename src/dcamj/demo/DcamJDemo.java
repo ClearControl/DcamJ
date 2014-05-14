@@ -1,4 +1,4 @@
-package dcamj.test;
+package dcamj.demo;
 
 import static org.junit.Assert.assertTrue;
 
@@ -14,7 +14,7 @@ import dcamj.DcamAcquisitionListener;
 import dcamj.DcamFrame;
 import dcamj.utils.StopWatch;
 
-public class DcamJTests
+public class DcamJDemo
 {
 
 	final static int cNumberOfBuffers = 1000;

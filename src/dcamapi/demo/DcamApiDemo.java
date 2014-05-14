@@ -1,4 +1,4 @@
-package dcamapi.test;
+package dcamapi.demo;
 
 import static org.bridj.Pointer.allocateBytes;
 import static org.bridj.Pointer.pointerTo;
@@ -16,7 +16,7 @@ import dcamapi.DcamapiLibrary;
 import dcamapi.DcamapiLibrary.DCAMERR;
 import dcamapi.DcamapiLibrary.DCAM_IDSTR;
 
-public class DcamApiTests
+public class DcamApiDemo
 {
 
 	@Test

@@ -20,7 +20,7 @@ public class DcamApiDemo
 {
 
 	@Test
-	public void test()
+	public void demo()
 	{
 		final DCAMAPI_INIT lDCAMAPI_INIT = new DCAMAPI_INIT();
 		lDCAMAPI_INIT.size(BridJ.sizeOf(DCAMAPI_INIT.class));

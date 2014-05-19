@@ -1,11 +1,6 @@
 package dcamj;
 
 import static org.bridj.Pointer.pointerTo;
-import static org.bridj.Pointer.pointerToBytes;
-
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.util.ArrayList;
 
 import org.bridj.BridJ;
 import org.bridj.IntValuedEnum;
@@ -88,16 +83,16 @@ public class DcamBufferControl extends DcamBase
 
 		mAttachedDcamFrame = pDcamFrame;
 
-		final int lNumberOfBuffers = pDcamFrame.getDepth();
+		final long lNumberOfBuffers = pDcamFrame.getDepth();
 
 		if(mPointerToPointerArray==null || mPointerToPointerArray.getValidElements()!=lNumberOfBuffers)
-		mPointerToPointerArray = Pointer.allocatePointers(lNumberOfBuffers);
+			mPointerToPointerArray = Pointer.allocatePointers((int) lNumberOfBuffers);
 
 		
 		for (int i = 0; i < lNumberOfBuffers; i++)
 		{
 			@SuppressWarnings("unchecked")
-			Pointer<Byte> lPointerToIndividualBuffer = (Pointer<Byte>) pDcamFrame.getSinglePlanePointer(i);
+			Pointer<Byte> lPointerToIndividualBuffer = pDcamFrame.getSinglePlanePointer(i);
 			mPointerToPointerArray.set(i, lPointerToIndividualBuffer);
 		}
 
@@ -106,7 +101,7 @@ public class DcamBufferControl extends DcamBase
 		return lSuccess;
 	}
 
-	private boolean attachBuffersInternal(final int lNumberOfBuffers)
+	private boolean attachBuffersInternal(final long lNumberOfBuffers)
 	{
 		if (mDCAMBUF_ATTACH == null)
 		{
@@ -132,12 +127,12 @@ public class DcamBufferControl extends DcamBase
 		return lTotalRequiredmemoryInBytes;
 	}
 
-	public DcamFrame getDcamFrameForIndex(int pFrameIndex)
+	public DcamFrame getDcamFrameForIndex(long pFrameIndex)
 	{
 		return mAttachedDcamFrame.getSinglePlaneDcamFrame(pFrameIndex);
 	}
 
-	public int getNumberOfSinglePlaneBuffers()
+	public long getNumberOfSinglePlaneBuffers()
 	{
 		return mAttachedDcamFrame.getDepth();
 	}

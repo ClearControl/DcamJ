@@ -41,7 +41,7 @@ public class DcamJDemo
 			public void frameArrived(	final DcamAcquisition pDcamAquisition,
 																final long pAbsoluteFrameIndex,
 																final long pArrivalTimeStamp,
-																final int pFrameIndexInBufferList,
+																final long pFrameIndexInBufferList,
 																final DcamFrame pDcamFrame)
 			{
 				System.out.format("Frame %d in buffer %d arrived at %d \n",
@@ -76,7 +76,7 @@ public class DcamJDemo
 			public void frameArrived(	final DcamAcquisition pDcamAquisition,
 																final long pAbsoluteFrameIndex,
 																final long pArrivalTimeStamp,
-																final int pFrameIndexInBuffer,
+																final long pFrameIndexInBuffer,
 																final DcamFrame pDcamFrame)
 			{
 				System.out.format("Frame %d in buffer %d arrived at %d \n",
@@ -145,7 +145,7 @@ public class DcamJDemo
 			public void frameArrived(	final DcamAcquisition pDcamAquisition,
 																final long pAbsoluteFrameIndex,
 																final long pArrivalTimeStamp,
-																final int pFrameIndexInBuffer,
+																final long pFrameIndexInBuffer,
 																final DcamFrame pDcamFrame)
 			{
 				System.out.format("Frame %d in buffer %d arrived at %d \n",

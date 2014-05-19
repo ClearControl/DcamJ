@@ -13,10 +13,10 @@ public class DcamFrame
 
 	public static LinkedBlockingQueue<DcamFrame> mAvailableFramesQueue = new LinkedBlockingQueue<DcamFrame>(1000);
 
-	public static DcamFrame requestFrame(	final int pBytesPerPixel,
-																				final int pWidth,
-																				final int pHeight,
-																				final int pDepth)
+	public static DcamFrame requestFrame(	final long pBytesPerPixel,
+																				final long pWidth,
+																				final long pHeight,
+																				final long pDepth)
 	{
 		DcamFrame lDcamFrame;
 		do
@@ -70,25 +70,24 @@ public class DcamFrame
 	private final ByteBuffer[] mByteBufferArray;
 	private final DcamFrame[] mSinglePlaneDcamFrameArray;
 
-	private final int mBytesPerPixel, mWidth, mHeight, mDepth;
+	private final long mBytesPerPixel, mWidth, mHeight, mDepth;
 	private long mIndex, mTimeStampInNs;
 
-	public DcamFrame(	final int pBytesPerPixel,
-										final int pWidth,
-										final int pHeight,
-										final int pDepth)
+	public DcamFrame(	final long pBytesPerPixel,
+										final long pWidth,
+										final long pHeight,
+										final long pDepth)
 	{
 		mBytesPerPixel = pBytesPerPixel;
 		mWidth = pWidth;
 		mHeight = pHeight;
 		mDepth = pDepth;
-		mByteBufferArray = new ByteBuffer[pDepth];
-		mSinglePlaneDcamFrameArray = new DcamFrame[pDepth];
+		mByteBufferArray = new ByteBuffer[(int) pDepth];
+		mSinglePlaneDcamFrameArray = new DcamFrame[(int) pDepth];
 
 		for (int i = 0; i < pDepth; i++)
 		{
-			mByteBufferArray[i] = ByteBuffer.allocateDirect(pBytesPerPixel * pWidth
-																											* pHeight)
+			mByteBufferArray[i] = ByteBuffer.allocateDirect((int) (pBytesPerPixel * pWidth * pHeight))
 																			.order(ByteOrder.nativeOrder());
 			mSinglePlaneDcamFrameArray[i] = new DcamFrame(getSinglePlaneByteBuffer(i),
 																										getPixelSizeInBytes(),
@@ -98,9 +97,9 @@ public class DcamFrame
 	}
 
 	public DcamFrame(	final ByteBuffer pSinglePlaneByteBuffer,
-										final int pBytesPerPixel,
-										final int pWidth,
-										final int pHeight)
+										final long pBytesPerPixel,
+										final long pWidth,
+										final long pHeight)
 	{
 		mBytesPerPixel = pBytesPerPixel;
 		mWidth = pWidth;
@@ -111,17 +110,17 @@ public class DcamFrame
 		mSinglePlaneDcamFrameArray = null;
 	}
 
-	public final int getWidth()
+	public final long getWidth()
 	{
 		return mWidth;
 	}
 
-	public final int getHeight()
+	public final long getHeight()
 	{
 		return mHeight;
 	}
 
-	public final int getDepth()
+	public final long getDepth()
 	{
 		return mDepth;
 	}
@@ -146,7 +145,7 @@ public class DcamFrame
 		return mTimeStampInNs;
 	}
 
-	public final int getPixelSizeInBytes()
+	public final long getPixelSizeInBytes()
 	{
 		return mBytesPerPixel;
 	}
@@ -197,12 +196,12 @@ public class DcamFrame
 		return true;
 	}
 
-	public DcamFrame getSinglePlaneDcamFrame(final int pIndex)
+	public DcamFrame getSinglePlaneDcamFrame(final long pIndex)
 	{
 		if (mSinglePlaneDcamFrameArray == null)
 			return this;
 		else
-			return mSinglePlaneDcamFrameArray[pIndex];
+			return mSinglePlaneDcamFrameArray[Math.toIntExact(pIndex)];
 	}
 
 	public Pointer<Byte> getSinglePlanePointer(final int pIndex)

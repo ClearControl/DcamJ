@@ -4,11 +4,7 @@ import static org.bridj.Pointer.pointerTo;
 
 import java.io.Closeable;
 import java.util.ArrayList;
-import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.CyclicBarrier;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 import org.bridj.BridJ;
 import org.bridj.IntValuedEnum;
@@ -331,11 +327,11 @@ public class DcamAcquisition implements Closeable
 		private volatile boolean mTrueIfStopped = false;
 		private volatile boolean mTrueIfError = false;
 
-		private final int mNumberOfFramesToCapture;
+		private final long mNumberOfFramesToCapture;
 		private final boolean mContinuousAcquisition;
 		private final boolean mStackAcquisition;
 
-		public DcamAquisitionRunnable(final int pNumberOfFramesToCapture,
+		public DcamAquisitionRunnable(final long pNumberOfFramesToCapture,
 																	final boolean pContinuousAcquisition,
 																	final boolean pStackAcquisition)
 		{
@@ -418,8 +414,8 @@ public class DcamAcquisition implements Closeable
 				System.out.format("DcamJ: DcamWait timeout set to %d ms \n",
 													lWaitTimeout);/**/
 
-			final int lNumberOfBuffers = getBufferControl().getNumberOfSinglePlaneBuffers();
-			int lLocalFrameIndex = 0;
+			final long lNumberOfBuffers = getBufferControl().getNumberOfSinglePlaneBuffers();
+			long lLocalFrameIndex = 0;
 
 			while (mStopIfFalse)
 			{
@@ -552,7 +548,7 @@ public class DcamAcquisition implements Closeable
 
 	private void notifyListeners(	final long pAbsoluteFrameIndex,
 																final long pArrivalTimeStampInNanoseconds,
-																final int pFrameIndexInBufferList,
+																final long pFrameIndexInBufferList,
 																final DcamFrame pDcamFrame)
 	{
 		for (final DcamAcquisitionListener lDcamAcquisitionListener : mListenersList)

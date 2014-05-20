@@ -3,9 +3,9 @@ package dcamj.demo;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.util.concurrent.TimeUnit;
 
+import org.bridj.Pointer;
 import org.junit.Test;
 
 import dcamj.DcamAcquisition;
@@ -54,7 +54,7 @@ public class DcamJDemo
 		lDcamAcquisition.open();
 		lDcamAcquisition.getProperties().setOutputTriggerToProgrammable();
 		lDcamAcquisition.startAcquisition();
-		Thread.sleep(100000);
+		Thread.sleep(10000);
 		lDcamAcquisition.stopAcquisition();
 		lDcamAcquisition.close();
 
@@ -109,8 +109,8 @@ public class DcamJDemo
 		final DcamAcquisition lDcamAcquisition = new DcamAcquisition(0);
 
 		final int lNumerOfDcamFrames = 4;
-		final int lNumberOfIterations = 10;
-		final int lNumberOfFramesToCapture = 512;
+		final int lNumberOfIterations = 1000;
+		final int lNumberOfFramesToCapture = 10;
 		final int lImageResolution = 512;
 
 		lDcamAcquisition.setFrameWidthAndHeight(lImageResolution,
@@ -128,6 +128,9 @@ public class DcamJDemo
 																									.computeTotalRequiredmemoryInBytes(lNumberOfFramesToCapture);
 		System.out.format("RequiredMemory is: %d MB \n",
 											lBufferCapacity / 1000000);
+
+		assertTrue(lDcamAcquisition.getBufferControl()
+																.allocateInternalBuffers(lNumberOfFramesToCapture));
 
 		final DcamFrame[] lDcamFrameArray = new DcamFrame[lNumerOfDcamFrames];
 		for (int i = 0; i < lNumerOfDcamFrames; i++)
@@ -148,8 +151,9 @@ public class DcamJDemo
 																final long pFrameIndexInBuffer,
 																final DcamFrame pDcamFrame)
 			{
-				System.out.format("Frame %d in buffer %d arrived at %d \n",
+				System.out.format("Frame %d of depth %d in buffer %d arrived at %d \n",
 													pAbsoluteFrameIndex,
+													pDcamFrame.getDepth(),
 													pFrameIndexInBuffer,
 													pArrivalTimeStamp);/**/
 				assertTrue(pDcamFrame.getDepth() != 1);
@@ -169,9 +173,9 @@ public class DcamJDemo
 
 			// Thread.sleep(1000);
 			lDcamFrameCounter = (lDcamFrameCounter + 1) % lNumerOfDcamFrames;
-			final DcamFrame lNewDcamFrame = lDcamFrameArray[lDcamFrameCounter];
+			/*final DcamFrame lNewDcamFrame = lDcamFrameArray[lDcamFrameCounter];
 			lDcamAcquisition.getBufferControl()
-											.attachExternalBuffers(lNewDcamFrame);
+											.attachExternalBuffers(lNewDcamFrame);/**/
 
 		}
 		final long lTimeInSeconds = lStopWatch.time(TimeUnit.SECONDS);
@@ -181,13 +185,14 @@ public class DcamJDemo
 
 		while (lDcamAcquisition.isAcquiring())
 		{
+			System.out.println(".");
 			Thread.sleep(100);
 		}
 
 		for (int j = 0; j < lNumerOfDcamFrames; j++)
 			for (int i = 0; i < lDcamFrameArray[j].getDepth(); i++)
 			{
-				final double average = computeAverageInBuffer(lDcamFrameArray[j].getSinglePlaneByteBuffer(i));
+				final double average = computeAverageInBuffer(lDcamFrameArray[j].getSinglePlanePointer(i));
 				System.out.format("avg=%g \n", average);
 				assertTrue(average != 0);
 			}
@@ -196,17 +201,16 @@ public class DcamJDemo
 
 	}
 
-	private double computeAverageInBuffer(final ByteBuffer pByteBuffer)
+	private double computeAverageInBuffer(final Pointer<Byte> pPointer)
 	{
 		double average = 0;
 
-		pByteBuffer.clear();
-		final int lCapacity = pByteBuffer.capacity();
-		final double lInverse = 1 / (double) lCapacity;
-		while (pByteBuffer.hasRemaining())
+		final long lLength = pPointer.getValidBytes();
+		final double lInverse = 1 / (double) lLength;
+		for (int i = 0; i < lLength; i++)
 		{
-			final int lShort = pByteBuffer.getShort();
-			average = average + lShort * lInverse;
+			final byte lByte = pPointer.getByteAtIndex(i);
+			average = average + lByte * lInverse;
 		}
 		return average;
 	}

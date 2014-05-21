@@ -92,7 +92,7 @@ public class DcamBufferControl extends DcamBase
 		for (int i = 0; i < lNumberOfBuffers; i++)
 		{
 			@SuppressWarnings("unchecked")
-			Pointer<Byte> lPointerToIndividualBuffer = pDcamFrame.getSinglePlanePointer(i);
+			Pointer<Byte> lPointerToIndividualBuffer = pDcamFrame.getPointerForSinglePlane(i);
 			mPointerToPointerArray.set(i, lPointerToIndividualBuffer);
 		}
 

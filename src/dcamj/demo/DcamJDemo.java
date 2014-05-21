@@ -192,7 +192,7 @@ public class DcamJDemo
 		for (int j = 0; j < lNumerOfDcamFrames; j++)
 			for (int i = 0; i < lDcamFrameArray[j].getDepth(); i++)
 			{
-				final double average = computeAverageInBuffer(lDcamFrameArray[j].getSinglePlanePointer(i));
+				final double average = computeAverageInBuffer(lDcamFrameArray[j].getPointerForSinglePlane(i));
 				System.out.format("avg=%g \n", average);
 				assertTrue(average != 0);
 			}

@@ -19,8 +19,8 @@ public class DcamAcquisition implements Closeable
 {
 
 	private final int mDeviceIndex;
-	private int mWidth = 2048;
-	private int mHeight = 2048;
+	private long mWidth = 2048;
+	private long mHeight = 2048;
 	private final int mNumberOfBuffersByDefault = 64;
 	private double mExposureInSeconds = 0.001;
 
@@ -66,39 +66,39 @@ public class DcamAcquisition implements Closeable
 		return mExposureInSeconds;
 	}
 
-	public int setFrameWidth(final int pWidth)
+	public long setFrameWidth(final long pWidth)
 	{
 		return mWidth = DcamProperties.roundto4(pWidth);
 	}
 
-	public int setFrameHeight(final int pHeight)
+	public long setFrameHeight(final long pHeight)
 	{
 		return mHeight = DcamProperties.roundto4(pHeight);
 	}
 
-	public void setFrameWidthAndHeight(	final int pWidth,
-																			final int pHeight)
+	public void setFrameWidthAndHeight(	final long pWidth,
+																			final long pHeight)
 	{
 		mWidth = DcamProperties.roundto4(pWidth);
 		mHeight = DcamProperties.roundto4(pHeight);
 	}
 
-	public int getWidth()
+	public long getWidth()
 	{
 		return mWidth;
 	}
 
-	public int getHeight()
+	public long getHeight()
 	{
 		return mHeight;
 	}
 
-	public int getFrameBytesPerPixel()
+	public long getFrameBytesPerPixel()
 	{
 		return 2;
 	}
 
-	public int getFrameSizeInBytes()
+	public long getFrameSizeInBytes()
 	{
 		return mWidth * mHeight * 2;
 	}

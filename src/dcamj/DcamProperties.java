@@ -312,14 +312,14 @@ public class DcamProperties extends DcamBase
 		return lEffectiveExposure;
 	}
 
-	public boolean setCenteredROI(final int pCenteredWidth,
-																final int pCenteredHeight)
+	public boolean setCenteredROI(final long pCenteredWidth,
+																final long pCenteredHeight)
 	{
-		final int lWidth = roundto4(pCenteredWidth);
-		final int lHeight = roundto4(pCenteredHeight);
+		final long lWidth = roundto4(pCenteredWidth);
+		final long lHeight = roundto4(pCenteredHeight);
 
-		final int hpos = roundto4(1024 - lWidth / 2);
-		final int vpos = roundto4(1024 - lHeight / 2);
+		final long hpos = roundto4(1024 - lWidth / 2);
+		final long vpos = roundto4(1024 - lHeight / 2);
 		boolean lSuccess = true;
 		lSuccess &= setPropertyValue(	DCAMIDPROP.DCAM_IDPROP_SUBARRAYHPOS,
 																	hpos);
@@ -437,8 +437,8 @@ public class DcamProperties extends DcamBase
 																						: DCAMPROPMODEVALUE.DCAMPROP_MODE__OFF);
 	}
 
-	public static int roundto4(int pWidth)
+	public static long roundto4(long pWidth)
 	{
-		return (int) (4 * Math.round(pWidth * 0.25));
+		return (4 * Math.round(pWidth * 0.25));
 	}
 }

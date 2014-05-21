@@ -46,11 +46,11 @@ public class DcamFrame
 		mAvailableFramesQueue.clear();
 	}
 
-	public static void preallocateFrames(	final int pNumberOfFramesToAllocate,
-																				final int pBytesPerPixel,
-																				final int pWidth,
-																				final int pHeight,
-																				final int pDepth)
+	public static void preallocateFrames(	final long pNumberOfFramesToAllocate,
+																				final long pBytesPerPixel,
+																				final long pWidth,
+																				final long pHeight,
+																				final long pDepth)
 	{
 		clearFrames();
 		for (int i = 0; i < pNumberOfFramesToAllocate; i++)
@@ -176,7 +176,7 @@ public class DcamFrame
 	}
 
 	public boolean copyAllPlanesToSinglePointer(final Pointer<Byte> pDestinationPointer,
-																							final int pMaxNumberOfPlanes)
+																							final long pMaxNumberOfPlanes)
 	{
 		final long lTotalSizeInBytes = getTotalSizeInBytesForAllPlanes();
 		if (pDestinationPointer.getValidBytes() != lTotalSizeInBytes)

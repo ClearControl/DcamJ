@@ -69,23 +69,29 @@ public class DcamProperties extends DcamBase
 				lDCAM_PROPERTYATTR.cbSize(BridJ.sizeOf(DCAM_PROPERTYATTR.class));
 				lDCAM_PROPERTYATTR.iProp(lPointerToPropertyId.getCLong());
 
-				@SuppressWarnings("unchecked")
-				final FlagSet<DCAMERR> lError = (FlagSet<DCAMERR>) DcamapiLibrary.dcampropGetattr(mDcamDevice.getHDCAMPointer(),
-																																													Pointer.pointerTo(lDCAM_PROPERTYATTR));
+				final IntValuedEnum<DcamapiLibrary.DCAMERR> lError = DcamapiLibrary.dcampropGetattr(mDcamDevice.getHDCAMPointer(),
+																																														Pointer.getPointer(lDCAM_PROPERTYATTR));
 				final boolean lSuccessGetAttribute = true; // always works...
 				lSuccess &= lSuccessGetAttribute;
-				// System.out.format("name: %s error: %s \n", lDcamProperty.name,
-				// lError.toString());
 
 				if (lSuccessGetAttribute)
 				{
+
+					final FlagSet<DCAMPROPATTRIBUTE> lFlagSetForAttribute = FlagSet.createFlagSet(lDCAM_PROPERTYATTR.attribute()
+																																																					.value(),
+																																												DCAMPROPATTRIBUTE.class);
+
+					final FlagSet<DCAMPROPUNIT> lFlagSetForUnit = FlagSet.createFlagSet(lDCAM_PROPERTYATTR.iUnit()
+																																																.value(),
+																																							DCAMPROPUNIT.class);
+					/*
 					final FlagSet<DCAMPROPATTRIBUTE> lFlagSetForAttribute = FlagSet.fromValue(lDCAM_PROPERTYATTR.attribute()
 																																																			.value(),
 																																										DCAMPROPATTRIBUTE.class);
 
 					final FlagSet<DCAMPROPUNIT> lFlagSetForUnit = FlagSet.fromValue(lDCAM_PROPERTYATTR.iUnit()
 																																														.value(),
-																																					DCAMPROPUNIT.class);
+																																					DCAMPROPUNIT.class);/**/
 
 					lDcamProperty.attribute = lFlagSetForAttribute;
 					lDcamProperty.writable = lFlagSetForAttribute.has(DCAMPROPATTRIBUTE.DCAMPROP_ATTR_WRITABLE);
@@ -433,8 +439,8 @@ public class DcamProperties extends DcamBase
 	public void setDefectCorectionMode(final boolean pDefectCorrections)
 	{
 		setPropertyValue(	DCAMIDPROP.DCAM_IDPROP_DEFECTCORRECT_MODE,
-		                 	pDefectCorrections	? DCAMPROPMODEVALUE.DCAMPROP_MODE__ON
-																						: DCAMPROPMODEVALUE.DCAMPROP_MODE__OFF);
+											pDefectCorrections ? DCAMPROPMODEVALUE.DCAMPROP_MODE__ON
+																				: DCAMPROPMODEVALUE.DCAMPROP_MODE__OFF);
 	}
 
 	public static long roundto4(long pWidth)

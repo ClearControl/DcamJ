@@ -54,7 +54,7 @@ public class DcamJDemo
 		lDcamAcquisition.open();
 		lDcamAcquisition.getProperties().setOutputTriggerToProgrammable();
 		lDcamAcquisition.startAcquisition();
-		Thread.sleep(10000);
+		Thread.sleep(5000);
 		lDcamAcquisition.stopAcquisition();
 		lDcamAcquisition.close();
 
@@ -109,7 +109,7 @@ public class DcamJDemo
 		final DcamAcquisition lDcamAcquisition = new DcamAcquisition(0);
 
 		final int lNumerOfDcamFrames = 4;
-		final int lNumberOfIterations = 1000;
+		final int lNumberOfIterations = 10;
 		final int lNumberOfFramesToCapture = 10;
 		final int lImageResolution = 512;
 

@@ -48,13 +48,16 @@ public class DcamJDemo
 													pAbsoluteFrameIndex,
 													pFrameIndexInBufferList,
 													pArrivalTimeStamp);
+				System.out.println("frameArrived: hashcode=" + pDcamFrame.hashCode()
+														+ " index="
+														+ pDcamFrame.getIndex());
 			}
 		});
 
 		lDcamAcquisition.open();
 		lDcamAcquisition.getProperties().setOutputTriggerToProgrammable();
 		lDcamAcquisition.startAcquisition();
-		Thread.sleep(5000);
+		Thread.sleep(250);
 		lDcamAcquisition.stopAcquisition();
 		lDcamAcquisition.close();
 

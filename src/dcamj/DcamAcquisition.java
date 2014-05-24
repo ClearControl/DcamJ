@@ -12,8 +12,6 @@ import org.bridj.IntValuedEnum;
 import dcamapi.DCAMCAP_TRANSFERINFO;
 import dcamapi.DcamapiLibrary;
 import dcamapi.DcamapiLibrary.DCAMERR;
-import dcamapi.DcamapiLibrary.DCAMWAIT_EVENT;
-import dcamj.utils.StopWatch;
 
 public class DcamAcquisition implements Closeable
 {
@@ -32,15 +30,15 @@ public class DcamAcquisition implements Closeable
 	private TriggerType mTriggerType = TriggerType.Internal;
 
 	private final boolean mShowErrors = false;
-	private final boolean mDebug = false;
+	final boolean mDebug = false;
 
-	private DcamDevice mDcamDevice;
+	DcamDevice mDcamDevice;
 	private DcamBufferControl mBufferControl;
 
 	private Thread mAcquisitionThread;
 	private DcamAquisitionRunnable mDcamAquisitionRunnable;
-	private CountDownLatch mAcquisitionStartedSignal;
-	private CountDownLatch mAcquisitionFinishedSignal;
+	CountDownLatch mAcquisitionStartedSignal;
+	CountDownLatch mAcquisitionFinishedSignal;
 
 	public volatile long mFrameIndex = 0;
 
@@ -294,7 +292,7 @@ public class DcamAcquisition implements Closeable
 
 		mAcquisitionStartedSignal = new CountDownLatch(1);
 		mAcquisitionFinishedSignal = new CountDownLatch(1);
-		mDcamAquisitionRunnable = new DcamAquisitionRunnable(	pDcamFrame.getDepth(),
+		mDcamAquisitionRunnable = new DcamAquisitionRunnable(	this, pDcamFrame.getDepth(),
 																													pContinuousAcquisition,
 																													pStackAcquisition);
 		mAcquisitionThread = new Thread(mDcamAquisitionRunnable);
@@ -318,235 +316,7 @@ public class DcamAcquisition implements Closeable
 		return isEverythingFine;
 	}
 	
-	private class DcamAquisitionRunnable implements Runnable
-	{
-
-		private volatile boolean mTrueIfStarted = false;
-		private volatile boolean mStopContinousIfFalse = true;
-		private volatile boolean mStopIfFalse = true;
-		private volatile boolean mTrueIfStopped = false;
-		private volatile boolean mTrueIfError = false;
-
-		private final long mNumberOfFramesToCapture;
-		private final boolean mContinuousAcquisition;
-		private final boolean mStackAcquisition;
-
-		public DcamAquisitionRunnable(final long pNumberOfFramesToCapture,
-																	final boolean pContinuousAcquisition,
-																	final boolean pStackAcquisition)
-		{
-			mNumberOfFramesToCapture = pNumberOfFramesToCapture;
-			mContinuousAcquisition = pContinuousAcquisition;
-			mStackAcquisition = pStackAcquisition;
-		}
-
-		@SuppressWarnings("unused")
-		@Override
-		public void run()
-		{
-
-			try
-			{
-				System.out.println("DcamJ: Starting acquisition:");
-
-				mTrueIfStarted = true;
-				mFrameIndex = 0;
-
-				if (mStackAcquisition && mContinuousAcquisition)
-					while (mStopContinousIfFalse)
-					{
-						runOnce();
-					}
-				else
-				{
-					runOnce();
-				}
-
-			}
-			catch (final Throwable e)
-			{
-				e.printStackTrace();
-				mTrueIfError = true;
-			}
-			finally
-			{
-				if (!mStackAcquisition && mContinuousAcquisition)
-					mDcamDevice.stop();
-				mTrueIfStopped = true;
-				System.out.println("DcamJ: stopping acquisition:");
-				mAcquisitionFinishedSignal.countDown();
-			}
-
-		}
-
-		private void runOnce()
-		{
-			mStopIfFalse = true;
-
-			if (mContinuousAcquisition && !mStackAcquisition)
-			{
-				if (mDebug)
-					System.out.format("DcamJ: Starting continuous acquisition \n");
-				mDcamDevice.startContinuous();
-			}
-			else
-			{
-				if (mDebug)
-					System.out.format("DcamJ: Starting acquisition sequence of %d frames \n",
-														mNumberOfFramesToCapture);/**/
-				mDcamDevice.startSequence();
-			}
-
-			int lWaitTimeout;
-
-			if (mStackAcquisition)
-				lWaitTimeout = 3000; // + (int) (10 * 1000 * mNumberOfFramesToCapture *
-															// mExposureInSeconds)
-			else
-			{
-				if (isExternalTriggering())
-					lWaitTimeout = 5000;
-				else
-					lWaitTimeout = 3000;
-			}
-
-			if (mDebug)
-				System.out.format("DcamJ: DcamWait timeout set to %d ms \n",
-													lWaitTimeout);/**/
-
-			final long lNumberOfBuffers = getBufferControl().getNumberOfSinglePlaneBuffers();
-			long lLocalFrameIndex = 0;
-
-			while (mStopIfFalse)
-			{
-
-				// DCAMCAP_EVENT_FRAMEREADYORSTOPPED(2|16),
-				final DCAMWAIT_EVENT lDcamcapEventToWaitFor;
-
-				if (mContinuousAcquisition && !mStackAcquisition)
-					lDcamcapEventToWaitFor = DCAMWAIT_EVENT.DCAMCAP_EVENT_FRAMEREADYORSTOPPED;
-				else if (mStackAcquisition)
-					lDcamcapEventToWaitFor = DCAMWAIT_EVENT.DCAMCAP_EVENT_FRAMEREADYORSTOPPED;
-				else
-					lDcamcapEventToWaitFor = DCAMWAIT_EVENT.DCAMCAP_EVENT_FRAMEREADY;
-
-				mAcquisitionStartedSignal.countDown();
-				if (mDebug)
-					System.out.print("waitForEvent.before... ");
-				final boolean lWaitSuccess = (mDcamDevice.getDcamWait().waitForEvent(	lDcamcapEventToWaitFor,
-																																							lWaitTimeout));
-				if (mDebug)
-					System.out.println(" ...after.");
-				final long lArrivalTimeStampInNanoseconds = StopWatch.absoluteTimeInNanoseconds();
-				//System.out.println(System.nanoTime());
-
-				if (!lWaitSuccess)
-				{
-					System.err.println("DcamJ: waiting for event failed!!!!");
-					System.err.format("DcamJ: frame index = %d (local index = %d) out of %d frames to capture (%s acquisition)  \n",
-														mFrameIndex,
-														lLocalFrameIndex,
-														mNumberOfFramesToCapture,
-														mStackAcquisition	? "stack"
-																							: "single plane");
-					if (!isExternalTriggering())
-					{
-						System.err.println("DcamJ: timeout waiting for frame!");
-						break;
-					}
-					continue;
-				}
-
-				final long lDcamWaitEvent = mDcamDevice.getDcamWait()
-																								.getEvent();
-				final boolean lReceivedStopEvent = lDcamWaitEvent == DCAMWAIT_EVENT.DCAMCAP_EVENT_STOPPED.value;
-				final boolean lReceivedFrameReadyEvent = lDcamWaitEvent == DCAMWAIT_EVENT.DCAMCAP_EVENT_FRAMEREADY.value;
-
-				DcamFrame lDcamFrame = null;
-
-				if (mStackAcquisition && lReceivedStopEvent)
-				{
-					if (mDebug)
-						System.out.println("DcamJ: Received Stop Event");
-					if (mStackAcquisition)
-					{
-						lDcamFrame = getBufferControl().getStackDcamFrame();
-						lDcamFrame.setIndex(mFrameIndex);
-						lDcamFrame.setTimeStampInNs(lArrivalTimeStampInNanoseconds);
-						notifyListeners(mFrameIndex,
-														lArrivalTimeStampInNanoseconds,
-														0,
-														lDcamFrame);
-						mFrameIndex++;
-						mStopIfFalse = false;
-					}
-				}
-
-				if (!mStackAcquisition && lReceivedFrameReadyEvent)
-				{
-					lDcamFrame = getBufferControl().getDcamFrameForIndex(lLocalFrameIndex);
-					lDcamFrame.setIndex(mFrameIndex);
-					lDcamFrame.setTimeStampInNs(lArrivalTimeStampInNanoseconds);
-					notifyListeners(mFrameIndex,
-													lArrivalTimeStampInNanoseconds,
-													lLocalFrameIndex,
-													lDcamFrame);
-					mFrameIndex++;
-				}
-
-				if (lDcamFrame != null)
-				{
-					if (mDebug)
-						System.out.format("DcamJ: frame index = %d (local index = %d) \n",
-															mFrameIndex,
-															lLocalFrameIndex);
-
-					lDcamFrame.setIndex(mFrameIndex);
-					lDcamFrame.setTimeStampInNs(lArrivalTimeStampInNanoseconds);
-				}
-
-				if (lReceivedFrameReadyEvent)
-				{
-					if (mDebug)
-						System.out.println("DcamJ: Received frame ready Event");
-
-					if (!mContinuousAcquisition && !mStackAcquisition
-							&& lLocalFrameIndex >= mNumberOfFramesToCapture - 1)
-					{
-						mStopIfFalse = false;
-					}
-
-					lLocalFrameIndex = (lLocalFrameIndex + 1) % lNumberOfBuffers;
-				}
-
-			}
-
-			// if (!mContinuousAcquisition)
-			{
-				// System.out.println("getTransferinfo.before");
-				final DCAMCAP_TRANSFERINFO lTransferinfo = getTransferinfo();
-				// System.out.println("getTransferinfo.after");
-
-				final int lNumberOfFramesWrittentoExternalBuffer = (int) lTransferinfo.nFrameCount();
-
-				if (mDebug)
-					System.out.format("DcamJ: Wrote %d frames into external buffers (local frame index=%d) \n",
-														lNumberOfFramesWrittentoExternalBuffer,
-														lLocalFrameIndex);/**/
-
-				final boolean lWrongNumberofFramesAcquired = lNumberOfFramesWrittentoExternalBuffer != mNumberOfFramesToCapture;
-				if (lWrongNumberofFramesAcquired)
-				{
-					System.err.format("DcamJ: Wrong number of frames acquired!\n");
-					mTrueIfError = true;
-				}
-
-			}
-		}
-
-	};
-
-	private void notifyListeners(	final long pAbsoluteFrameIndex,
+	void notifyListeners(	final long pAbsoluteFrameIndex,
 																final long pArrivalTimeStampInNanoseconds,
 																final long pFrameIndexInBufferList,
 																final DcamFrame pDcamFrame)
@@ -651,7 +421,7 @@ public class DcamAcquisition implements Closeable
 
 	DCAMCAP_TRANSFERINFO mDcamCapTransfertInfo;
 
-	private DCAMCAP_TRANSFERINFO getTransferinfo()
+	DCAMCAP_TRANSFERINFO getTransferinfo()
 	{
 		mDcamCapTransfertInfo = new DCAMCAP_TRANSFERINFO();
 		mDcamCapTransfertInfo.size(BridJ.sizeOf(DCAMCAP_TRANSFERINFO.class));

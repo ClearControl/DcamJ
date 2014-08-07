@@ -21,7 +21,8 @@ class DcamAquisitionRunnable implements Runnable
 	private final boolean mContinuousAcquisition;
 	private final boolean mStackAcquisition;
 
-	public DcamAquisitionRunnable(DcamAcquisition pDcamAcquisition, final long pNumberOfFramesToCapture,
+	public DcamAquisitionRunnable(DcamAcquisition pDcamAcquisition,
+																final long pNumberOfFramesToCapture,
 																final boolean pContinuousAcquisition,
 																final boolean pStackAcquisition)
 	{
@@ -41,7 +42,7 @@ class DcamAquisitionRunnable implements Runnable
 			System.out.println("DcamJ: Starting acquisition:");
 
 			mTrueIfStarted = true;
-			mDcamAcquisition.mFrameIndex = 0;
+			mDcamAcquisition.mAcquiredFrameIndex = 0;
 
 			if (mStackAcquisition && mContinuousAcquisition)
 				while (mStopContinousIfFalse)
@@ -105,8 +106,11 @@ class DcamAquisitionRunnable implements Runnable
 			System.out.format("DcamJ: DcamWait timeout set to %d ms \n",
 												lWaitTimeout);/**/
 
-		final long lNumberOfBuffers = mDcamAcquisition.getBufferControl().getNumberOfSinglePlaneBuffers();
-		long lLocalFrameIndex = 0;
+		final long lNumberOfBuffers = mDcamAcquisition.getBufferControl()
+																									.getNumberOfSinglePlaneBuffers();
+
+		DCAMCAP_TRANSFERINFO lTransferinfo = mDcamAcquisition.getTransferinfo();
+		mDcamAcquisition.mAcquiredFrameIndex = lTransferinfo.nFrameCount();
 
 		while (mStopIfFalse)
 		{
@@ -124,19 +128,31 @@ class DcamAquisitionRunnable implements Runnable
 			mDcamAcquisition.mAcquisitionStartedSignal.countDown();
 			if (mDcamAcquisition.mDebug)
 				System.out.print("waitForEvent.before... ");
-			final boolean lWaitSuccess = (mDcamAcquisition.mDcamDevice.getDcamWait().waitForEvent(	lDcamcapEventToWaitFor,
-																																						lWaitTimeout));
+			final boolean lWaitSuccess = (mDcamAcquisition.mDcamDevice.getDcamWait().waitForEvent(lDcamcapEventToWaitFor,
+																																														lWaitTimeout));
 			if (mDcamAcquisition.mDebug)
 				System.out.println(" ...after.");
-			final long lArrivalTimeStampInNanoseconds = StopWatch.absoluteTimeInNanoseconds();
-			//System.out.println(System.nanoTime());
+			final long lAcquisitionTimeStampInNanoseconds = StopWatch.absoluteTimeInNanoseconds();
+			// System.out.println(System.nanoTime());
+
+			lTransferinfo = mDcamAcquisition.getTransferinfo();
+
+			final long lNumberOfFramesWrittenByDrivertoBuffers = lTransferinfo.nFrameCount();
+			final long lDriversFrameIndex = lNumberOfFramesWrittenByDrivertoBuffers - 1;
+			final long lReceivedFrameIndexInBufferList = lTransferinfo.nNewestFrameIndex();
+
+			if (mDcamAcquisition.mDebug)
+			{
+				System.out.println("lDriversFrameIndex=" + lDriversFrameIndex);
+				System.out.println("lReceivedFrameIndexInBufferList=" + lReceivedFrameIndexInBufferList);
+			}
 
 			if (!lWaitSuccess)
 			{
 				System.err.println("DcamJ: waiting for event failed!!!!");
 				System.err.format("DcamJ: frame index = %d (local index = %d) out of %d frames to capture (%s acquisition)  \n",
-													mDcamAcquisition.mFrameIndex,
-													lLocalFrameIndex,
+													mDcamAcquisition.mAcquiredFrameIndex,
+													lReceivedFrameIndexInBufferList,
 													mNumberOfFramesToCapture,
 													mStackAcquisition	? "stack"
 																						: "single plane");
@@ -149,7 +165,7 @@ class DcamAquisitionRunnable implements Runnable
 			}
 
 			final long lDcamWaitEvent = mDcamAcquisition.mDcamDevice.getDcamWait()
-																							.getEvent();
+																															.getEvent();
 			final boolean lReceivedStopEvent = lDcamWaitEvent == DCAMWAIT_EVENT.DCAMCAP_EVENT_STOPPED.value;
 			final boolean lReceivedFrameReadyEvent = lDcamWaitEvent == DCAMWAIT_EVENT.DCAMCAP_EVENT_FRAMEREADY.value;
 
@@ -161,39 +177,49 @@ class DcamAquisitionRunnable implements Runnable
 					System.out.println("DcamJ: Received Stop Event");
 				if (mStackAcquisition)
 				{
-					lDcamFrame = mDcamAcquisition.getBufferControl().getStackDcamFrame();
-					lDcamFrame.setIndex(mDcamAcquisition.mFrameIndex);
-					lDcamFrame.setTimeStampInNs(lArrivalTimeStampInNanoseconds);
-					mDcamAcquisition.notifyListeners(mDcamAcquisition.mFrameIndex,
-													lArrivalTimeStampInNanoseconds,
-													0,
-													lDcamFrame);
-					mDcamAcquisition.mFrameIndex++;
+					lDcamFrame = mDcamAcquisition.getBufferControl()
+																				.getStackDcamFrame();
+					lDcamFrame.setIndex(lDriversFrameIndex);
+					lDcamFrame.setTimeStampInNs(lAcquisitionTimeStampInNanoseconds);
+					mDcamAcquisition.notifyListeners(	mDcamAcquisition.mAcquiredFrameIndex,
+																						lAcquisitionTimeStampInNanoseconds,
+																						0,
+																						lDcamFrame);
+					mDcamAcquisition.mAcquiredFrameIndex++;
 					mStopIfFalse = false;
 				}
 			}
 
 			if (!mStackAcquisition && lReceivedFrameReadyEvent)
 			{
-				lDcamFrame = mDcamAcquisition.getBufferControl().getDcamFrameForIndex(lLocalFrameIndex);
-				lDcamFrame.setIndex(mDcamAcquisition.mFrameIndex);
-				lDcamFrame.setTimeStampInNs(lArrivalTimeStampInNanoseconds);
-				mDcamAcquisition.notifyListeners(mDcamAcquisition.mFrameIndex,
-												lArrivalTimeStampInNanoseconds,
-												lLocalFrameIndex,
-												lDcamFrame);
-				mDcamAcquisition.mFrameIndex++;
+				long lFirstFrameNotYetAcquired = mDcamAcquisition.mAcquiredFrameIndex;
+				long lNumberOfFramesToAcquire = lDriversFrameIndex - lFirstFrameNotYetAcquired;
+				long lRingBufferFrameIndex = (lReceivedFrameIndexInBufferList + lNumberOfBuffers - lNumberOfFramesToAcquire) % lNumberOfBuffers;
+				for (long lFrameIndex = lFirstFrameNotYetAcquired; lFrameIndex <= lDriversFrameIndex; lFrameIndex++)
+				{
+					lDcamFrame = mDcamAcquisition.getBufferControl()
+																				.getDcamFrameForIndex(lRingBufferFrameIndex);
+					lDcamFrame.setIndex(lFrameIndex);
+					lDcamFrame.setTimeStampInNs(lAcquisitionTimeStampInNanoseconds);
+					mDcamAcquisition.notifyListeners(	lFrameIndex,
+																						lAcquisitionTimeStampInNanoseconds,
+																						lRingBufferFrameIndex,
+																						lDcamFrame);
+					mDcamAcquisition.mAcquiredFrameIndex++;
+					lRingBufferFrameIndex = (lRingBufferFrameIndex + 1) % lNumberOfBuffers;
+				}
 			}
 
 			if (lDcamFrame != null)
 			{
 				if (mDcamAcquisition.mDebug)
-					System.out.format("DcamJ: frame index = %d (local index = %d) \n",
-														mDcamAcquisition.mFrameIndex,
-														lLocalFrameIndex);
+					System.out.format("DcamJ: true frame index = %d, acquired frame index = %d (local index = %d) \n",
+														lDriversFrameIndex,
+														mDcamAcquisition.mAcquiredFrameIndex,
+														lReceivedFrameIndexInBufferList);
 
-				lDcamFrame.setIndex(mDcamAcquisition.mFrameIndex);
-				lDcamFrame.setTimeStampInNs(lArrivalTimeStampInNanoseconds);
+				lDcamFrame.setIndex(lDriversFrameIndex);
+				lDcamFrame.setTimeStampInNs(lAcquisitionTimeStampInNanoseconds);
 			}
 
 			if (lReceivedFrameReadyEvent)
@@ -202,12 +228,11 @@ class DcamAquisitionRunnable implements Runnable
 					System.out.println("DcamJ: Received frame ready Event");
 
 				if (!mContinuousAcquisition && !mStackAcquisition
-						&& lLocalFrameIndex >= mNumberOfFramesToCapture - 1)
+						&& lReceivedFrameIndexInBufferList >= mNumberOfFramesToCapture - 1)
 				{
 					mStopIfFalse = false;
 				}
 
-				lLocalFrameIndex = (lLocalFrameIndex + 1) % lNumberOfBuffers;
 			}
 
 		}
@@ -215,18 +240,24 @@ class DcamAquisitionRunnable implements Runnable
 		// if (!mContinuousAcquisition)
 		{
 			// System.out.println("getTransferinfo.before");
-			final DCAMCAP_TRANSFERINFO lTransferinfo = mDcamAcquisition.getTransferinfo();
+			lTransferinfo = mDcamAcquisition.getTransferinfo();
 			// System.out.println("getTransferinfo.after");
 
-			final int lNumberOfFramesWrittentoExternalBuffer = (int) lTransferinfo.nFrameCount();
+			final int lNumberOfFramesWrittenByDrivertoBuffers = (int) lTransferinfo.nFrameCount();
+
+			final long lReceivedFrameIndexInBufferList = lTransferinfo.nNewestFrameIndex();
 
 			if (mDcamAcquisition.mDebug)
+			{
+				System.out.println("lNumberOfFramesWrittenByDrivertoBuffers=" + lNumberOfFramesWrittenByDrivertoBuffers);
+				System.out.println("lReceivedFrameIndexInBufferList=" + lReceivedFrameIndexInBufferList);
 				System.out.format("DcamJ: Wrote %d frames into external buffers (local frame index=%d) \n",
-													lNumberOfFramesWrittentoExternalBuffer,
-													lLocalFrameIndex);/**/
+													lNumberOfFramesWrittenByDrivertoBuffers,
+													lReceivedFrameIndexInBufferList);/**/
+			}
 
-			final boolean lWrongNumberofFramesAcquired = lNumberOfFramesWrittentoExternalBuffer != mNumberOfFramesToCapture;
-			if (lWrongNumberofFramesAcquired)
+			final boolean lWrongNumberofFramesAcquired = lNumberOfFramesWrittenByDrivertoBuffers != mNumberOfFramesToCapture;
+			if (!mContinuousAcquisition && lWrongNumberofFramesAcquired)
 			{
 				System.err.format("DcamJ: Wrong number of frames acquired!\n");
 				mTrueIfError = true;

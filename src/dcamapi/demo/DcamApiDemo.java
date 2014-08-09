@@ -15,6 +15,7 @@ import dcamapi.DCAMDEV_STRING;
 import dcamapi.DcamapiLibrary;
 import dcamapi.DcamapiLibrary.DCAMERR;
 import dcamapi.DcamapiLibrary.DCAM_IDSTR;
+import dcamapi.HDCAM_struct;
 
 public class DcamApiDemo
 {
@@ -52,7 +53,7 @@ public class DcamApiDemo
 		lDCAMDEV_STRING.textbytes(model.getValidBytes());
 
 		// dcamdev_getstring
-		DcamapiLibrary.dcamdevGetstring(Pointer.NULL,
+		DcamapiLibrary.dcamdevGetstring((Pointer<HDCAM_struct>) Pointer.NULL,
 																		pointerTo(lDCAMDEV_STRING));
 
 		final String lModel = new String(model.getBytes());

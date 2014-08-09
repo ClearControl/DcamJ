@@ -40,7 +40,7 @@ public class DcamAcquisition implements Closeable
 	CountDownLatch mAcquisitionStartedSignal;
 	CountDownLatch mAcquisitionFinishedSignal;
 
-	public volatile long mFrameIndex = 0;
+	public volatile long mAcquiredFrameIndex = 0;
 
 	private final ArrayList<DcamAcquisitionListener> mListenersList = new ArrayList<DcamAcquisitionListener>();
 	private DcamProperties mProperties;

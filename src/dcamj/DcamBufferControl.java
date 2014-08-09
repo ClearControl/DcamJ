@@ -117,7 +117,7 @@ public class DcamBufferControl extends DcamBase
 		return lSuccess;
 	}
 
-	public long computeTotalRequiredmemoryInBytes(int pNumberOfBuffers)
+	public long computeTotalRequiredMemoryInBytes(int pNumberOfBuffers)
 	{
 		final long lImageSizeInBytes = (long) mDcamDevice.getProperties()
 																											.getPropertyValue(DCAMIDPROP.DCAM_IDPROP_BUFFER_FRAMEBYTES);

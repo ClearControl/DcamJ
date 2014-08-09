@@ -128,7 +128,7 @@ public class DcamJDemo
 		lDcamAcquisition.getProperties().setOutputTriggerToProgrammable();
 
 		final long lBufferCapacity = lDcamAcquisition.getBufferControl()
-																									.computeTotalRequiredmemoryInBytes(lNumberOfFramesToCapture);
+																									.computeTotalRequiredMemoryInBytes(lNumberOfFramesToCapture);
 		System.out.format("RequiredMemory is: %d MB \n",
 											lBufferCapacity / 1000000);
 

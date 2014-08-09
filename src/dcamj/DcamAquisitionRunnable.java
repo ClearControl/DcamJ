@@ -194,7 +194,10 @@ class DcamAquisitionRunnable implements Runnable
 			{
 				long lFirstFrameNotYetAcquired = mDcamAcquisition.mAcquiredFrameIndex;
 				long lNumberOfFramesToAcquire = lDriversFrameIndex - lFirstFrameNotYetAcquired;
-				long lRingBufferFrameIndex = (lReceivedFrameIndexInBufferList + lNumberOfBuffers - lNumberOfFramesToAcquire) % lNumberOfBuffers;
+				long lRingBufferFrameIndex = (lReceivedFrameIndexInBufferList - lNumberOfFramesToAcquire);
+				while (lRingBufferFrameIndex < 0)
+					lRingBufferFrameIndex += lNumberOfBuffers;
+				lRingBufferFrameIndex %= lNumberOfBuffers;
 				for (long lFrameIndex = lFirstFrameNotYetAcquired; lFrameIndex <= lDriversFrameIndex; lFrameIndex++)
 				{
 					lDcamFrame = mDcamAcquisition.getBufferControl()

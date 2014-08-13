@@ -156,7 +156,7 @@ class DcamAquisitionRunnable implements Runnable
 													mNumberOfFramesToCapture,
 													mStackAcquisition	? "stack"
 																						: "single plane");
-				if (!mDcamAcquisition.isExternalTriggering())
+				if (!mDcamAcquisition.isExternalTriggering() || mDcamAcquisition.isSoftwareTriggering())
 				{
 					System.err.println("DcamJ: timeout waiting for frame!");
 					break;

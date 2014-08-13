@@ -135,6 +135,11 @@ public class DcamAcquisition implements Closeable
 						|| mTriggerType == TriggerType.ExternalLevel;
 	}
 
+	public boolean isSoftwareTriggering()
+	{
+		return mTriggerType == TriggerType.Software;
+	}
+
 	public void addListener(final DcamAcquisitionListener pDcamAcquisitionListener)
 	{
 		if (!mListenersList.contains(pDcamAcquisitionListener))
@@ -436,6 +441,11 @@ public class DcamAcquisition implements Closeable
 		getProperties().setDefectCorectionMode(pDefectCorrection);
 	}
 
+	public void trigger()
+	{
+		DcamapiLibrary.dcamcapFiretrigger(mDcamDevice.getHDCAMPointer(),
+																			0);
+	}
 
 
 }

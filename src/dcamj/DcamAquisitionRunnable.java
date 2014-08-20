@@ -89,18 +89,18 @@ class DcamAquisitionRunnable implements Runnable
 			mDcamAcquisition.mDcamDevice.startSequence();
 		}
 
-		int lWaitTimeout;
+		int lWaitTimeout = 1;
 
-		if (mStackAcquisition)
+		/*if (mStackAcquisition)
 			lWaitTimeout = 3000; // + (int) (10 * 1000 * mNumberOfFramesToCapture *
 														// mExposureInSeconds)
-		else
+		/*else
 		{
 			if (mDcamAcquisition.isExternalTriggering())
 				lWaitTimeout = 5000;
 			else
 				lWaitTimeout = 3000;
-		}
+		}/**/
 
 		if (mDcamAcquisition.mDebug)
 			System.out.format("DcamJ: DcamWait timeout set to %d ms \n",
@@ -149,15 +149,15 @@ class DcamAquisitionRunnable implements Runnable
 
 			if (!lWaitSuccess)
 			{
-				System.err.println("DcamJ: waiting for event failed!!!!");
-				System.err.format("DcamJ: frame index = %d (local index = %d) out of %d frames to capture (%s acquisition)  \n",
-													mDcamAcquisition.mAcquiredFrameIndex,
-													lReceivedFrameIndexInBufferList,
-													mNumberOfFramesToCapture,
-													mStackAcquisition	? "stack"
-																						: "single plane");
-				if (!mDcamAcquisition.isExternalTriggering() || mDcamAcquisition.isSoftwareTriggering())
+				if (!mDcamAcquisition.isExternalTriggering() && !mDcamAcquisition.isSoftwareTriggering())
 				{
+					System.err.println("DcamJ: waiting for event failed!!!!");
+					System.err.format("DcamJ: frame index = %d (local index = %d) out of %d frames to capture (%s acquisition)  \n",
+														mDcamAcquisition.mAcquiredFrameIndex,
+														lReceivedFrameIndexInBufferList,
+														mNumberOfFramesToCapture,
+														mStackAcquisition	? "stack"
+																							: "single plane");
 					System.err.println("DcamJ: timeout waiting for frame!");
 					break;
 				}

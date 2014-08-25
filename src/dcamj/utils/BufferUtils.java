@@ -49,7 +49,6 @@ public class BufferUtils
 				}
 				catch (final Throwable e)
 				{
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}

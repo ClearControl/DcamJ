@@ -35,6 +35,22 @@ public class DcamLibrary
 
 			sNumberOfDevices = lDCAMAPI_INIT.iDeviceCount();
 
+			Runtime.getRuntime().addShutdownHook(new Thread()
+			{
+				@Override
+				public void run()
+				{
+					try
+					{
+						uninitialize();
+					}
+					catch (Throwable e)
+					{
+						e.printStackTrace();
+					}
+				}
+			});
+
 			return true;
 		}
 		else

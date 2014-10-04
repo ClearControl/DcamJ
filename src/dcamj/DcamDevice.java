@@ -4,8 +4,6 @@ import static org.bridj.Pointer.allocateBytes;
 import static org.bridj.Pointer.pointerTo;
 import static org.junit.Assert.assertTrue;
 
-import java.io.Closeable;
-
 import org.bridj.BridJ;
 import org.bridj.IntValuedEnum;
 import org.bridj.Pointer;
@@ -20,7 +18,7 @@ import dcamapi.DcamapiLibrary.DCAMERR;
 import dcamapi.DcamapiLibrary.DCAM_IDSTR;
 import dcamapi.HDCAM_struct;
 
-public class DcamDevice extends DcamBase implements Closeable
+public class DcamDevice extends DcamBase implements AutoCloseable
 {
 	private long mDeviceID;
 

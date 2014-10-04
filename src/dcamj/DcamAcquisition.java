@@ -2,7 +2,6 @@ package dcamj;
 
 import static org.bridj.Pointer.pointerTo;
 
-import java.io.Closeable;
 import java.util.ArrayList;
 import java.util.concurrent.CountDownLatch;
 
@@ -13,7 +12,7 @@ import dcamapi.DCAMCAP_TRANSFERINFO;
 import dcamapi.DcamapiLibrary;
 import dcamapi.DcamapiLibrary.DCAMERR;
 
-public class DcamAcquisition implements Closeable
+public class DcamAcquisition implements AutoCloseable
 {
 
 	private final int mDeviceIndex;

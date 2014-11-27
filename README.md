@@ -5,8 +5,8 @@ Powered by the awesome BridJ and Jnaerator libraries.
 
 ### How to build the project? ###
 
-* Building DCamJ
-To build DCamJ you need Gradle build tool - http://www.gradle.org/overview
+* Building DcamJ
+To build DcamJ you need Gradle build tool - http://www.gradle.org/overview
 Tip: Make sure that the gradle executable is in your path.
 
 to build the project:
@@ -21,4 +21,4 @@ To clean-up modified eclipse project files:
 
     gradle cleanEclipse
 
-That's it, now you can import all RTlib projects in Eclipse. 
+That's it, now you can import the DcamJ project into Eclipse.

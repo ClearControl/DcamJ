@@ -69,23 +69,29 @@ public class DcamProperties extends DcamBase
 				lDCAM_PROPERTYATTR.cbSize(BridJ.sizeOf(DCAM_PROPERTYATTR.class));
 				lDCAM_PROPERTYATTR.iProp(lPointerToPropertyId.getCLong());
 
-				@SuppressWarnings("unchecked")
-				final FlagSet<DCAMERR> lError = (FlagSet<DCAMERR>) DcamapiLibrary.dcampropGetattr(mDcamDevice.getHDCAMPointer(),
-																																													Pointer.pointerTo(lDCAM_PROPERTYATTR));
+				final IntValuedEnum<DcamapiLibrary.DCAMERR> lError = DcamapiLibrary.dcampropGetattr(mDcamDevice.getHDCAMPointer(),
+																																														Pointer.getPointer(lDCAM_PROPERTYATTR));
 				final boolean lSuccessGetAttribute = true; // always works...
 				lSuccess &= lSuccessGetAttribute;
-				// System.out.format("name: %s error: %s \n", lDcamProperty.name,
-				// lError.toString());
 
 				if (lSuccessGetAttribute)
 				{
+
+					final FlagSet<DCAMPROPATTRIBUTE> lFlagSetForAttribute = FlagSet.createFlagSet(lDCAM_PROPERTYATTR.attribute()
+																																																					.value(),
+																																												DCAMPROPATTRIBUTE.class);
+
+					final FlagSet<DCAMPROPUNIT> lFlagSetForUnit = FlagSet.createFlagSet(lDCAM_PROPERTYATTR.iUnit()
+																																																.value(),
+																																							DCAMPROPUNIT.class);
+					/*
 					final FlagSet<DCAMPROPATTRIBUTE> lFlagSetForAttribute = FlagSet.fromValue(lDCAM_PROPERTYATTR.attribute()
 																																																			.value(),
 																																										DCAMPROPATTRIBUTE.class);
 
 					final FlagSet<DCAMPROPUNIT> lFlagSetForUnit = FlagSet.fromValue(lDCAM_PROPERTYATTR.iUnit()
 																																														.value(),
-																																					DCAMPROPUNIT.class);
+																																					DCAMPROPUNIT.class);/**/
 
 					lDcamProperty.attribute = lFlagSetForAttribute;
 					lDcamProperty.writable = lFlagSetForAttribute.has(DCAMPROPATTRIBUTE.DCAMPROP_ATTR_WRITABLE);
@@ -312,14 +318,14 @@ public class DcamProperties extends DcamBase
 		return lEffectiveExposure;
 	}
 
-	public boolean setCenteredROI(final int pCenteredWidth,
-																final int pCenteredHeight)
+	public boolean setCenteredROI(final long pCenteredWidth,
+																final long pCenteredHeight)
 	{
-		final int lWidth = roundto4(pCenteredWidth);
-		final int lHeight = roundto4(pCenteredHeight);
+		final long lWidth = roundto4(pCenteredWidth);
+		final long lHeight = roundto4(pCenteredHeight);
 
-		final int hpos = roundto4(1024 - lWidth / 2);
-		final int vpos = roundto4(1024 - lHeight / 2);
+		final long hpos = roundto4(1024 - lWidth / 2);
+		final long vpos = roundto4(1024 - lHeight / 2);
 		boolean lSuccess = true;
 		lSuccess &= setPropertyValue(	DCAMIDPROP.DCAM_IDPROP_SUBARRAYHPOS,
 																	hpos);
@@ -433,12 +439,12 @@ public class DcamProperties extends DcamBase
 	public void setDefectCorectionMode(final boolean pDefectCorrections)
 	{
 		setPropertyValue(	DCAMIDPROP.DCAM_IDPROP_DEFECTCORRECT_MODE,
-		                 	pDefectCorrections	? DCAMPROPMODEVALUE.DCAMPROP_MODE__ON
-																						: DCAMPROPMODEVALUE.DCAMPROP_MODE__OFF);
+											pDefectCorrections ? DCAMPROPMODEVALUE.DCAMPROP_MODE__ON
+																				: DCAMPROPMODEVALUE.DCAMPROP_MODE__OFF);
 	}
 
-	public static int roundto4(int pWidth)
+	public static long roundto4(long pWidth)
 	{
-		return (int) (4 * Math.round(pWidth * 0.25));
+		return (4 * Math.round(pWidth * 0.25));
 	}
 }

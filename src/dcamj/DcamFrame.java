@@ -1,22 +1,21 @@
 package dcamj;
 
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 
 import org.bridj.Pointer;
-
-import dcamj.utils.BufferUtils;
 
 public class DcamFrame
 {
 
-	public static LinkedBlockingQueue<DcamFrame> mAvailableFramesQueue = new LinkedBlockingQueue<DcamFrame>(1000);
+	private static final int cPageAlignment = 4096;
 
-	public static DcamFrame requestFrame(	final int pBytesPerPixel,
-																				final int pWidth,
-																				final int pHeight,
-																				final int pDepth)
+	public static BlockingQueue<DcamFrame> mAvailableFramesQueue = new ArrayBlockingQueue<DcamFrame>(1000);
+
+	public static DcamFrame requestFrame(	final long pBytesPerPixel,
+																				final long pWidth,
+																				final long pHeight,
+																				final long pDepth)
 	{
 		DcamFrame lDcamFrame;
 		do
@@ -44,15 +43,14 @@ public class DcamFrame
 
 	public static void clearFrames()
 	{
-		final DcamFrame lDcamFrame;
 		mAvailableFramesQueue.clear();
 	}
 
-	public static void preallocateFrames(	final int pNumberOfFramesToAllocate,
-																				final int pBytesPerPixel,
-																				final int pWidth,
-																				final int pHeight,
-																				final int pDepth)
+	public static void preallocateFrames(	final long pNumberOfFramesToAllocate,
+																				final long pBytesPerPixel,
+																				final long pWidth,
+																				final long pHeight,
+																				final long pDepth)
 	{
 		clearFrames();
 		for (int i = 0; i < pNumberOfFramesToAllocate; i++)
@@ -67,61 +65,66 @@ public class DcamFrame
 
 	/****************************************************/
 
-	private final ByteBuffer[] mByteBufferArray;
+	private final Pointer<Byte>[] mPointerArray;
 	private final DcamFrame[] mSinglePlaneDcamFrameArray;
 
-	private final int mBytesPerPixel, mWidth, mHeight, mDepth;
+	private final long mBytesPerPixel, mWidth, mHeight, mDepth;
 	private long mIndex, mTimeStampInNs;
 
-	public DcamFrame(	final int pBytesPerPixel,
-										final int pWidth,
-										final int pHeight,
-										final int pDepth)
+	@SuppressWarnings("unchecked")
+	public DcamFrame(	final long pBytesPerPixel,
+										final long pWidth,
+										final long pHeight,
+										final long pDepth)
 	{
 		mBytesPerPixel = pBytesPerPixel;
 		mWidth = pWidth;
 		mHeight = pHeight;
 		mDepth = pDepth;
-		mByteBufferArray = new ByteBuffer[pDepth];
-		mSinglePlaneDcamFrameArray = new DcamFrame[pDepth];
+		mPointerArray = new Pointer[(int) pDepth];
+		mSinglePlaneDcamFrameArray = new DcamFrame[(int) pDepth];
 
 		for (int i = 0; i < pDepth; i++)
 		{
-			mByteBufferArray[i] = ByteBuffer.allocateDirect(pBytesPerPixel * pWidth
-																											* pHeight)
-																			.order(ByteOrder.nativeOrder());
-			mSinglePlaneDcamFrameArray[i] = new DcamFrame(getSinglePlaneByteBuffer(i),
+			mPointerArray[i] = Pointer.allocateAlignedArray(	byte.class,
+																													pBytesPerPixel * pWidth
+																															* pHeight,
+																													cPageAlignment);
+			/*mByteBufferArray[i] = ByteBuffer.allocateDirect((int) (pBytesPerPixel * pWidth * pHeight))
+																			.order(ByteOrder.nativeOrder());/**/
+			mSinglePlaneDcamFrameArray[i] = new DcamFrame(getPointerForSinglePlane(i),
 																										getPixelSizeInBytes(),
 																										getWidth(),
 																										getHeight());
 		}
 	}
 
-	public DcamFrame(	final ByteBuffer pSinglePlaneByteBuffer,
-										final int pBytesPerPixel,
-										final int pWidth,
-										final int pHeight)
+	@SuppressWarnings("unchecked")
+	public DcamFrame(	final Pointer<Byte> pSinglePlanePointer,
+										final long pBytesPerPixel,
+										final long pWidth,
+										final long pHeight)
 	{
 		mBytesPerPixel = pBytesPerPixel;
 		mWidth = pWidth;
 		mHeight = pHeight;
 		mDepth = 1;
-		mByteBufferArray = new ByteBuffer[1];
-		mByteBufferArray[0] = pSinglePlaneByteBuffer;
+		mPointerArray = new Pointer[1];
+		mPointerArray[0] = pSinglePlanePointer;
 		mSinglePlaneDcamFrameArray = null;
 	}
 
-	public final int getWidth()
+	public final long getWidth()
 	{
 		return mWidth;
 	}
 
-	public final int getHeight()
+	public final long getHeight()
 	{
 		return mHeight;
 	}
 
-	public final int getDepth()
+	public final long getDepth()
 	{
 		return mDepth;
 	}
@@ -146,71 +149,63 @@ public class DcamFrame
 		return mTimeStampInNs;
 	}
 
-	public final int getPixelSizeInBytes()
+	public final long getPixelSizeInBytes()
 	{
 		return mBytesPerPixel;
 	}
 
-	public ByteBuffer getSinglePlaneByteBuffer()
+	public Pointer<Byte> getPointerForSinglePlane(final int pIndex)
 	{
-		return getSinglePlaneByteBuffer(0);
-	}
-
-	public ByteBuffer getSinglePlaneByteBuffer(final int pIndex)
-	{
-		return mByteBufferArray[pIndex];
+		return mPointerArray[pIndex];
 	}
 
 	public long getTotalSizeInBytesForAllPlanes()
 	{
 		long size = 0;
-		for (final ByteBuffer lByteBuffer : mByteBufferArray)
+		for (final Pointer<Byte> lPointer : mPointerArray)
 		{
-			size += lByteBuffer.capacity();
+			size += lPointer.getValidBytes();
 		}
 		return size;
 	}
 
-	public boolean getSingleByteBufferForAllPlanes(final ByteBuffer pByteBuffer)
+	public boolean copyAllPlanesToSinglePointer(final Pointer<Byte> pDestinationPointer)
 	{
-		return getSingleByteBufferForPlanes(pByteBuffer,
-																				mByteBufferArray.length);
+		return copyAllPlanesToSinglePointer(pDestinationPointer,
+																				mPointerArray.length);
 	}
 
-	public boolean getSingleByteBufferForPlanes(final ByteBuffer pByteBuffer,
-																							final int pMaxNumberOfPlanes)
+	public boolean copyAllPlanesToSinglePointer(final Pointer<Byte> pDestinationPointer,
+																							final long pMaxNumberOfPlanes)
 	{
 		final long lTotalSizeInBytes = getTotalSizeInBytesForAllPlanes();
-		if (pByteBuffer.capacity() != lTotalSizeInBytes)
+		if (pDestinationPointer.getValidBytes() != lTotalSizeInBytes)
 			return false;
+		
+		Pointer<Byte> lDestinationPointer = pDestinationPointer;
 
-		pByteBuffer.clear();
 
-		for (int i = 0; i < Math.min(	mByteBufferArray.length,
+		for (int i = 0; i < Math.min(	mPointerArray.length,
 																	pMaxNumberOfPlanes); i++)
 		{
-			final ByteBuffer lPlaneByteBuffer = mByteBufferArray[i];
-			lPlaneByteBuffer.rewind();
-			pByteBuffer.put(lPlaneByteBuffer);
+			final Pointer<Byte> lPlanePointer = mPointerArray[i];
+			lPlanePointer.copyTo(lDestinationPointer);
+			lDestinationPointer = lDestinationPointer.next(lPlanePointer.getValidElements());
 		}
 
 		return true;
 	}
 
-	public DcamFrame getSinglePlaneDcamFrame(final int pIndex)
+	public DcamFrame getSinglePlaneDcamFrame(final long pIndex)
 	{
 		if (mSinglePlaneDcamFrameArray == null)
 			return this;
 		else
-			return mSinglePlaneDcamFrameArray[pIndex];
+			return mSinglePlaneDcamFrameArray[Math.toIntExact(pIndex)];
 	}
 
-	public Pointer<Byte> getSinglePlanePointer(final int pIndex)
-	{
-		return Pointer.pointerToBytes(getSinglePlaneByteBuffer(pIndex));
-	}
 
-	public final long getSinglePlaneBufferLengthInBytes(final int pIndex)
+	public final long getLengthInBytesForSinplePlane(final int pIndex)
 	{
 		return getPixelSizeInBytes() * getWidth() * getHeight();
 	}
@@ -224,9 +219,15 @@ public class DcamFrame
 	{
 		try
 		{
-			for (final ByteBuffer lByteBuffer : mByteBufferArray)
-				if (lByteBuffer != null)
-					BufferUtils.destroyDirectByteBuffer(lByteBuffer);
+			for (int i = 0; i < mPointerArray.length; i++)
+			{
+				final Pointer<Byte> lPointer = mPointerArray[i];
+				if (lPointer != null)
+				{
+					lPointer.release();
+					mPointerArray[i] = null;
+				}
+			}
 		}
 		catch (final Throwable e)
 		{

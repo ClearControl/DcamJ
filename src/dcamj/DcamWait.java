@@ -2,8 +2,6 @@ package dcamj;
 
 import static org.bridj.Pointer.pointerTo;
 
-import java.io.Closeable;
-
 import org.bridj.BridJ;
 import org.bridj.IntValuedEnum;
 import org.bridj.Pointer;
@@ -15,7 +13,7 @@ import dcamapi.DcamapiLibrary.DCAMERR;
 import dcamapi.DcamapiLibrary.DCAMWAIT_EVENT;
 import dcamapi.HDCAMWAIT_struct;
 
-public class DcamWait extends DcamBase implements Closeable
+public class DcamWait extends DcamBase implements AutoCloseable
 {
 	private static final long cSizeOf_DCAMWAIT_START = BridJ.sizeOf(DCAMWAIT_START.class);
 	private final DcamDevice mDcamDevice;

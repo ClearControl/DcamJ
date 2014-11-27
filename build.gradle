@@ -1,5 +1,7 @@
 apply plugin: 'java'
 apply plugin: 'eclipse'
+apply plugin: 'maven'
+apply plugin: 'maven-publish'
 
 sourceSets 
 {
@@ -29,7 +31,8 @@ sourceSets
 
 
 sourceCompatibility = 1.8
-version = '1.0'
+group = 'royer'
+version = '2.0'
 
 test 
 {
@@ -52,7 +55,8 @@ dependencies
     compile group: 'commons-io', name: 'commons-io', version: '2.+'
     compile group: 'org.apache.commons', name: 'commons-math3', version: '3.+'
     //compile 'net.java.dev.jna:jna:4.1.0'
-    compile 'com.nativelibs4java:bridj:0.6.2'
+    compile 'com.nativelibs4java:bridj:0.7-SNAPSHOT'
+    //compile 'com.nativelibs4java:bridj:0.6.2'
     //compile 'com.nativelibs4java:bridj:0.7-SNAPSHOT'
 
     compile group: 'junit', name: 'junit', version: '4.+'
@@ -66,6 +70,34 @@ repositories
     {
         url "http://oss.sonatype.org/content/groups/public"
     } 
+}
+
+
+task sourcesJar(type: Jar, dependsOn:classes) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+task javadocJar(type: Jar, dependsOn:javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+artifacts 
+{
+    archives sourcesJar
+    archives javadocJar
+}
+
+uploadArchives 
+{
+    repositories 
+    {
+        mavenDeployer 
+        {
+            repository(url: "file:../../Repos/")
+        }
+    }
 }
 
 

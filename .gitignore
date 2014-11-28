@@ -6,3 +6,4 @@ build/
 .gradle
 *.class
 .DS_Store
+.settings

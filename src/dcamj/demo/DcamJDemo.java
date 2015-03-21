@@ -168,7 +168,7 @@ public class DcamJDemo
 		final StopWatch lStopWatch = StopWatch.start();
 		for (int i = 0; i < lNumberOfIterations; i++)
 		{
-			// System.out.println("ITERATION=" + i);
+			System.out.println("ITERATION=" + i);
 			assertTrue(lDcamAcquisition.startAcquisition(	false,
 																										true,
 																										lDcamFrameArray[lDcamFrameCounter]));

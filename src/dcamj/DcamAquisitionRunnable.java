@@ -89,7 +89,7 @@ class DcamAquisitionRunnable implements Runnable
 			mDcamAcquisition.mDcamDevice.startSequence();
 		}
 
-		int lWaitTimeout = 1;
+
 
 		/*if (mStackAcquisition)
 			lWaitTimeout = 3000; // + (int) (10 * 1000 * mNumberOfFramesToCapture *
@@ -102,9 +102,6 @@ class DcamAquisitionRunnable implements Runnable
 				lWaitTimeout = 3000;
 		}/**/
 
-		if (mDcamAcquisition.mDebug)
-			System.out.format("DcamJ: DcamWait timeout set to %d ms \n",
-												lWaitTimeout);/**/
 
 		final long lNumberOfBuffers = mDcamAcquisition.getBufferControl()
 																									.getNumberOfSinglePlaneBuffers();
@@ -128,8 +125,14 @@ class DcamAquisitionRunnable implements Runnable
 			mDcamAcquisition.mAcquisitionStartedSignal.countDown();
 			if (mDcamAcquisition.mDebug)
 				System.out.print("waitForEvent.before... ");
-			final boolean lWaitSuccess = (mDcamAcquisition.mDcamDevice.getDcamWait().waitForEvent(lDcamcapEventToWaitFor,
+
+			int lWaitTimeout = 1;
+			boolean lWaitSuccess = false;
+			while (!lWaitSuccess && mStopIfFalse)
+			{
+				lWaitSuccess = (mDcamAcquisition.mDcamDevice.getDcamWait().waitForEvent(lDcamcapEventToWaitFor,
 																																														lWaitTimeout));
+			}
 			if (mDcamAcquisition.mDebug)
 				System.out.println(" ...after.");
 			final long lAcquisitionTimeStampInNanoseconds = StopWatch.absoluteTimeInNanoseconds();

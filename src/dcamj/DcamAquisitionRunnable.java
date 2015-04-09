@@ -39,6 +39,7 @@ class DcamAquisitionRunnable implements Runnable
 
 		try
 		{
+			if (mDcamAcquisition.mDebug)
 			System.out.println("DcamJ: Starting acquisition:");
 
 			mTrueIfStarted = true;
@@ -65,6 +66,7 @@ class DcamAquisitionRunnable implements Runnable
 			if (!mStackAcquisition && mContinuousAcquisition)
 				mDcamAcquisition.mDcamDevice.stop();
 			mTrueIfStopped = true;
+			if (mDcamAcquisition.mDebug)
 			System.out.println("DcamJ: stopping acquisition:");
 			mDcamAcquisition.mAcquisitionFinishedSignal.countDown();
 		}
@@ -88,6 +90,8 @@ class DcamAquisitionRunnable implements Runnable
 													mNumberOfFramesToCapture);/**/
 			mDcamAcquisition.mDcamDevice.startSequence();
 		}
+
+		mDcamAcquisition.mAcquisitionStartedSignal.countDown();
 
 
 
@@ -122,11 +126,11 @@ class DcamAquisitionRunnable implements Runnable
 			else
 				lDcamcapEventToWaitFor = DCAMWAIT_EVENT.DCAMCAP_EVENT_FRAMEREADY;
 
-			mDcamAcquisition.mAcquisitionStartedSignal.countDown();
+
 			if (mDcamAcquisition.mDebug)
 				System.out.print("waitForEvent.before... ");
 
-			int lWaitTimeout = 1;
+			int lWaitTimeout = 5;
 			boolean lWaitSuccess = false;
 			while (!lWaitSuccess && mStopIfFalse)
 			{

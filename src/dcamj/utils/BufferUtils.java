@@ -8,6 +8,8 @@ import java.util.concurrent.Executors;
 
 public class BufferUtils
 {
+	private static Executor sCleanerExecutor = Executors.newSingleThreadExecutor();
+
 	/**
 	 * DirectByteBuffers are garbage collected by using a phantom reference and a
 	 * reference queue. Every once a while, the JVM checks the reference queue and
@@ -16,14 +18,21 @@ public class BufferUtils
 	 * OutOfMemoryError yourself using DirectByteBuffers. This function explicitly
 	 * calls the Cleaner method of a DirectByteBuffer.
 	 * 
-	 * @param toBeDestroyed
+	 * @param pToBeDestroyed
 	 *          The DirectByteBuffer that will be "cleaned". Utilizes reflection.
+	 * @throws IllegalArgumentException
+	 *           exception thrown
+	 * @throws IllegalAccessException
+	 *           exception thrown
+	 * @throws InvocationTargetException
+	 *           exception thrown
+	 * @throws SecurityException
+	 *           exception thrown
+	 * @throws NoSuchMethodException
+	 *           exception thrown
 	 * 
 	 */
-
-	private static Executor sCleanerExecutor = Executors.newSingleThreadExecutor();
-
-	public static void destroyDirectByteBuffer(final ByteBuffer toBeDestroyed) throws IllegalArgumentException,
+	public static void destroyDirectByteBuffer(final ByteBuffer pToBeDestroyed) throws IllegalArgumentException,
 																																						IllegalAccessException,
 																																						InvocationTargetException,
 																																						SecurityException,
@@ -38,10 +47,10 @@ public class BufferUtils
 			{
 				try
 				{
-					final Method cleanerMethod = toBeDestroyed.getClass()
+					final Method cleanerMethod = pToBeDestroyed.getClass()
 																										.getMethod("cleaner");
 					cleanerMethod.setAccessible(true);
-					final Object cleaner = cleanerMethod.invoke(toBeDestroyed);
+					final Object cleaner = cleanerMethod.invoke(pToBeDestroyed);
 					final Method cleanMethod = cleaner.getClass()
 																						.getMethod("clean");
 					cleanMethod.setAccessible(true);

@@ -40,7 +40,7 @@ class DcamAquisitionRunnable implements Runnable
 		try
 		{
 			if (mDcamAcquisition.mDebug)
-			System.out.println("DcamJ: Starting acquisition:");
+				System.out.println("DcamJ(Runnable): Starting acquisition:");
 
 			mTrueIfStarted = true;
 			mDcamAcquisition.mAcquiredFrameIndex = 0;
@@ -67,7 +67,7 @@ class DcamAquisitionRunnable implements Runnable
 				mDcamAcquisition.mDcamDevice.stop();
 			mTrueIfStopped = true;
 			if (mDcamAcquisition.mDebug)
-			System.out.println("DcamJ: stopping acquisition:");
+				System.out.println("DcamJ(Runnable): stopping acquisition:");
 			mDcamAcquisition.mAcquisitionFinishedSignal.countDown();
 		}
 
@@ -77,19 +77,25 @@ class DcamAquisitionRunnable implements Runnable
 	{
 		mStopIfFalse = true;
 
+		if (mDcamAcquisition.mDebug)
+			System.out.println("DcamJ(Runnable): mDcamDevice.getStatus()=" + mDcamAcquisition.mDcamDevice.getStatus());
+
 		if (mContinuousAcquisition && !mStackAcquisition)
 		{
 			if (mDcamAcquisition.mDebug)
-				System.out.format("DcamJ: Starting continuous acquisition \n");
+				System.out.format("DcamJ(Runnable): Starting continuous acquisition \n");
 			mDcamAcquisition.mDcamDevice.startContinuous();
 		}
 		else
 		{
 			if (mDcamAcquisition.mDebug)
-				System.out.format("DcamJ: Starting acquisition sequence of %d frames \n",
+				System.out.format("DcamJ(Runnable): Starting acquisition sequence of %d frames \n",
 													mNumberOfFramesToCapture);/**/
 			mDcamAcquisition.mDcamDevice.startSequence();
 		}
+
+		if (mDcamAcquisition.mDebug)
+			System.out.println("DcamJ(Runnable): mDcamDevice.getStatus()=" + mDcamAcquisition.mDcamDevice.getStatus());
 
 		mDcamAcquisition.mAcquisitionStartedSignal.countDown();
 
@@ -128,7 +134,7 @@ class DcamAquisitionRunnable implements Runnable
 
 
 			if (mDcamAcquisition.mDebug)
-				System.out.print("waitForEvent.before... ");
+				System.out.print("DcamJ(Runnable): waitForEvent: before... ");
 
 			int lWaitTimeout = 5;
 			boolean lWaitSuccess = false;
@@ -138,7 +144,7 @@ class DcamAquisitionRunnable implements Runnable
 																																														lWaitTimeout));
 			}
 			if (mDcamAcquisition.mDebug)
-				System.out.println(" ...after.");
+				System.out.println("DcamJ(Runnable): ...after.");
 			final long lAcquisitionTimeStampInNanoseconds = StopWatch.absoluteTimeInNanoseconds();
 			// System.out.println(System.nanoTime());
 
@@ -150,22 +156,22 @@ class DcamAquisitionRunnable implements Runnable
 
 			if (mDcamAcquisition.mDebug)
 			{
-				System.out.println("lDriversFrameIndex=" + lDriversFrameIndex);
-				System.out.println("lReceivedFrameIndexInBufferList=" + lReceivedFrameIndexInBufferList);
+				System.out.println("DcamJ(Runnable): lDriversFrameIndex=" + lDriversFrameIndex);
+				System.out.println("DcamJ(Runnable): lReceivedFrameIndexInBufferList=" + lReceivedFrameIndexInBufferList);
 			}
 
 			if (!lWaitSuccess)
 			{
 				if (!mDcamAcquisition.isExternalTriggering() && !mDcamAcquisition.isSoftwareTriggering())
 				{
-					System.err.println("DcamJ: waiting for event failed!!!!");
-					System.err.format("DcamJ: frame index = %d (local index = %d) out of %d frames to capture (%s acquisition)  \n",
+					System.err.println("DcamJ(Runnable): waiting for event failed!!!!");
+					System.err.format("DcamJ(Runnable): frame index = %d (local index = %d) out of %d frames to capture (%s acquisition)  \n",
 														mDcamAcquisition.mAcquiredFrameIndex,
 														lReceivedFrameIndexInBufferList,
 														mNumberOfFramesToCapture,
 														mStackAcquisition	? "stack"
 																							: "single plane");
-					System.err.println("DcamJ: timeout waiting for frame!");
+					System.err.println("DcamJ(Runnable): timeout waiting for frame!");
 					break;
 				}
 				continue;
@@ -181,7 +187,7 @@ class DcamAquisitionRunnable implements Runnable
 			if (mStackAcquisition && lReceivedStopEvent)
 			{
 				if (mDcamAcquisition.mDebug)
-					System.out.println("DcamJ: Received Stop Event");
+					System.out.println("DcamJ(Runnable): Received Stop Event");
 				if (mStackAcquisition)
 				{
 					lDcamFrame = mDcamAcquisition.getBufferControl()
@@ -223,7 +229,7 @@ class DcamAquisitionRunnable implements Runnable
 			if (lDcamFrame != null)
 			{
 				if (mDcamAcquisition.mDebug)
-					System.out.format("DcamJ: true frame index = %d, acquired frame index = %d (local index = %d) \n",
+					System.out.format("DcamJ(Runnable): true frame index = %d, acquired frame index = %d (local index = %d) \n",
 														lDriversFrameIndex,
 														mDcamAcquisition.mAcquiredFrameIndex,
 														lReceivedFrameIndexInBufferList);
@@ -235,7 +241,7 @@ class DcamAquisitionRunnable implements Runnable
 			if (lReceivedFrameReadyEvent)
 			{
 				if (mDcamAcquisition.mDebug)
-					System.out.println("DcamJ: Received frame ready Event");
+					System.out.println("DcamJ(Runnable): Received frame ready Event");
 
 				if (!mContinuousAcquisition && !mStackAcquisition
 						&& lReceivedFrameIndexInBufferList >= mNumberOfFramesToCapture - 1)
@@ -259,9 +265,9 @@ class DcamAquisitionRunnable implements Runnable
 
 			if (mDcamAcquisition.mDebug)
 			{
-				System.out.println("lNumberOfFramesWrittenByDrivertoBuffers=" + lNumberOfFramesWrittenByDrivertoBuffers);
-				System.out.println("lReceivedFrameIndexInBufferList=" + lReceivedFrameIndexInBufferList);
-				System.out.format("DcamJ: Wrote %d frames into external buffers (local frame index=%d) \n",
+				System.out.println("DcamJ(Runnable):lNumberOfFramesWrittenByDrivertoBuffers=" + lNumberOfFramesWrittenByDrivertoBuffers);
+				System.out.println("DcamJ(Runnable):lReceivedFrameIndexInBufferList=" + lReceivedFrameIndexInBufferList);
+				System.out.format("DcamJ(Runnable): Wrote %d frames into external buffers (local frame index=%d) \n",
 													lNumberOfFramesWrittenByDrivertoBuffers,
 													lReceivedFrameIndexInBufferList);/**/
 			}
@@ -269,7 +275,7 @@ class DcamAquisitionRunnable implements Runnable
 			final boolean lWrongNumberofFramesAcquired = lNumberOfFramesWrittenByDrivertoBuffers != mNumberOfFramesToCapture;
 			if (!mContinuousAcquisition && lWrongNumberofFramesAcquired)
 			{
-				System.err.format("DcamJ: Wrong number of frames acquired!\n");
+				System.err.format("DcamJ(Runnable): Wrong number of frames acquired!\n");
 				mTrueIfError = true;
 			}
 

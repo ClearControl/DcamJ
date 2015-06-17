@@ -52,6 +52,9 @@ public class DcamAcquisition implements AutoCloseable
 
 	public double setExposureInSeconds(final double exposure)
 	{
+		if (mDebug)
+			System.out.format("DcamJ: setExposureInSeconds(%g) \n",
+												exposure);
 		mExposureInSeconds = exposure;
 		if (mProperties != null)
 			mExposureInSeconds = mProperties.setAndGetExposure(mExposureInSeconds);
@@ -176,20 +179,26 @@ public class DcamAcquisition implements AutoCloseable
 
 	public void reopen()
 	{
+		if (mDebug)
+			System.out.format("DcamJ: reopening device %d begin \n",
+												mDeviceIndex);
 		if (mBufferControl != null)
 			mBufferControl.releaseBuffers();
 		if (mDcamDevice != null)
 			mDcamDevice.close();
 		mDcamDevice = DcamLibrary.getDeviceForId(mDeviceIndex);
 		setCurrentProperties();
-
+		if (mDebug)
+			System.out.format("DcamJ: reopening device %d end \n",
+												mDeviceIndex);
 	}
 
 	private boolean provideExternalBuffers(final DcamFrame pDcamFrame)
 	{
-		/*System.out.format("DcamJ: provide %d external buffers for a total buffer capacity of %d\n",
-											pDcamFrame.getDepth(),
-											pDcamFrame.getBufferLengthInBytes());/**/
+		if (mDebug)
+			System.out.format("DcamJ: provide %d external buffers for a total buffer capacity of %d\n",
+												pDcamFrame.getDepth(),
+												pDcamFrame.getTotalSizeInBytesForAllPlanes());/**/
 		mBufferControl = getBufferControl();
 		mBufferControl.mShowErrors = true;
 		mBufferControl.mDebug = false;
@@ -219,15 +228,17 @@ public class DcamAcquisition implements AutoCloseable
 
 		final double lExposureRequested = mExposureInSeconds;
 		final double lEffectiveExposure = setExposureInSeconds(lExposureRequested);
-		System.out.format("DcamJ: exposure requested: %g, exposure set at: %g \n",
-											lExposureRequested,
-											lEffectiveExposure);
+		if (mDebug)
+			System.out.format("DcamJ: exposure requested: %g, exposure set at: %g \n",
+												lExposureRequested,
+												lEffectiveExposure);
 
 		if (mProperties != null)
 			mProperties.setCenteredROI(mWidth, mHeight);
-		System.out.format("DcamJ: Centered ROI set cwidth=%d cheight=%d \n",
-											mWidth,
-											mHeight);
+		if (mDebug)
+			System.out.format("DcamJ: Centered ROI set cwidth=%d cheight=%d \n",
+												mWidth,
+												mHeight);
 
 		setTriggerType(mTriggerType);
 	}
@@ -280,6 +291,8 @@ public class DcamAcquisition implements AutoCloseable
 																				final boolean pWaitToFinish,
 																				final DcamFrame pDcamFrame)
 	{
+		if (mDebug)
+			System.out.println("DcamJ: startAcquisition begin!");
 
 		if (!checkDimensions(pDcamFrame))
 			return false;
@@ -296,7 +309,8 @@ public class DcamAcquisition implements AutoCloseable
 
 		mAcquisitionStartedSignal = new CountDownLatch(1);
 		mAcquisitionFinishedSignal = new CountDownLatch(1);
-		mDcamAquisitionRunnable = new DcamAquisitionRunnable(	this, pDcamFrame.getDepth(),
+		mDcamAquisitionRunnable = new DcamAquisitionRunnable(	this,
+																													pDcamFrame.getDepth(),
 																													pContinuousAcquisition,
 																													pStackAcquisition);
 		mAcquisitionThread = new Thread(mDcamAquisitionRunnable);
@@ -306,10 +320,22 @@ public class DcamAcquisition implements AutoCloseable
 		mAcquisitionThread.start();
 
 		if (pWaitToStart)
+		{
+			if (mDebug)
+				System.out.format("DcamJ: wait to start acquisition active! \n");
 			waitAcquisitionStarted();
+		}
 
 		if (pWaitToFinish)
+		{
+			if (mDebug)
+				System.out.format("DcamJ: wait to stop acquisition active! \n");
+
 			waitAcquisitionFinishedAndStop();
+		}
+
+		if (mDebug)
+			System.out.println("DcamJ: startAcquisition end!");
 
 		return !mDcamAquisitionRunnable.mTrueIfError;
 	}
@@ -319,11 +345,11 @@ public class DcamAcquisition implements AutoCloseable
 		final boolean isEverythingFine = pDcamFrame.getWidth() == getWidth() && pDcamFrame.getHeight() == getHeight();
 		return isEverythingFine;
 	}
-	
+
 	void notifyListeners(	final long pAbsoluteFrameIndex,
-																final long pArrivalTimeStampInNanoseconds,
-																final long pFrameIndexInBufferList,
-																final DcamFrame pDcamFrame)
+												final long pArrivalTimeStampInNanoseconds,
+												final long pFrameIndexInBufferList,
+												final DcamFrame pDcamFrame)
 	{
 		for (final DcamAcquisitionListener lDcamAcquisitionListener : mListenersList)
 		{
@@ -338,6 +364,8 @@ public class DcamAcquisition implements AutoCloseable
 
 	public final void stopAcquisition()
 	{
+		if (mDebug)
+			System.out.println("DcamJ: stopAcquisition!");
 		if (mDcamAquisitionRunnable == null)
 			return;
 		mDcamAquisitionRunnable.mStopIfFalse = false;
@@ -345,7 +373,7 @@ public class DcamAcquisition implements AutoCloseable
 		waitAcquisitionFinishedAndStop();
 	}
 
-	private void waitAcquisitionStarted()
+	public void waitAcquisitionStarted()
 	{
 		try
 		{
@@ -357,7 +385,7 @@ public class DcamAcquisition implements AutoCloseable
 		}
 	}
 
-	private void waitAcquisitionFinishedAndStop()
+	public void waitAcquisitionFinishedAndStop()
 	{
 		try
 		{
@@ -445,6 +473,5 @@ public class DcamAcquisition implements AutoCloseable
 		DcamapiLibrary.dcamcapFiretrigger(mDcamDevice.getHDCAMPointer(),
 																			0);
 	}
-
 
 }

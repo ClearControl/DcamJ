@@ -50,6 +50,11 @@ public class DcamAcquisition implements AutoCloseable
 		mDeviceIndex = pDeviceIndex;
 	}
 
+	public int getDeviceIndex()
+	{
+		return mDeviceIndex;
+	}
+
 	public double setExposureInSeconds(final double exposure)
 	{
 		if (mDebug)
@@ -157,14 +162,14 @@ public class DcamAcquisition implements AutoCloseable
 		System.out.format("DcamJ: Number of devices connected: %d \n",
 											lNumberOfDevices);
 
-		if (mDeviceIndex >= lNumberOfDevices)
+		if (getDeviceIndex() >= lNumberOfDevices)
 		{
 			System.out.format("DcamJ: device not found for index %d \n",
-												mDeviceIndex);
+												getDeviceIndex());
 			return false;
 		}
 
-		mDcamDevice = DcamLibrary.getDeviceForId(mDeviceIndex);
+		mDcamDevice = DcamLibrary.getDeviceForId(getDeviceIndex());
 		mDcamDevice.mShowErrors = mShowErrors;
 		mDcamDevice.mDebug = mDebug;
 
@@ -181,16 +186,16 @@ public class DcamAcquisition implements AutoCloseable
 	{
 		if (mDebug)
 			System.out.format("DcamJ: reopening device %d begin \n",
-												mDeviceIndex);
+												getDeviceIndex());
 		if (mBufferControl != null)
 			mBufferControl.releaseBuffers();
 		if (mDcamDevice != null)
 			mDcamDevice.close();
-		mDcamDevice = DcamLibrary.getDeviceForId(mDeviceIndex);
+		mDcamDevice = DcamLibrary.getDeviceForId(getDeviceIndex());
 		setCurrentProperties();
 		if (mDebug)
 			System.out.format("DcamJ: reopening device %d end \n",
-												mDeviceIndex);
+												getDeviceIndex());
 	}
 
 	private boolean provideExternalBuffers(final DcamFrame pDcamFrame)
@@ -473,5 +478,6 @@ public class DcamAcquisition implements AutoCloseable
 		DcamapiLibrary.dcamcapFiretrigger(mDcamDevice.getHDCAMPointer(),
 																			0);
 	}
+
 
 }

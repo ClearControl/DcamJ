@@ -97,7 +97,7 @@ class DcamAquisitionRunnable implements Runnable
 		if (mDcamAcquisition.mDebug)
 			System.out.println("DcamJ(Runnable): mDcamDevice.getStatus()=" + mDcamAcquisition.mDcamDevice.getStatus());
 
-		mDcamAcquisition.mAcquisitionStartedSignal.countDown();
+
 
 
 
@@ -111,6 +111,11 @@ class DcamAquisitionRunnable implements Runnable
 			else
 				lWaitTimeout = 3000;
 		}/**/
+
+		// if (mDcamAcquisition.isExternalTriggering())
+		// sleep(1000);
+
+		mDcamAcquisition.mAcquisitionStartedSignal.countDown();
 
 
 		final long lNumberOfBuffers = mDcamAcquisition.getBufferControl()
@@ -279,6 +284,18 @@ class DcamAquisitionRunnable implements Runnable
 				mTrueIfError = true;
 			}
 
+		}
+	}
+
+	private void sleep(int pMilliseconds)
+	{
+		try
+		{
+			Thread.sleep(pMilliseconds);
+		}
+		catch (InterruptedException e)
+		{
+			e.printStackTrace();
 		}
 	}
 

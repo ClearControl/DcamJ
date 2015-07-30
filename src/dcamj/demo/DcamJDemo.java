@@ -28,8 +28,8 @@ public class DcamJDemo
 	}
 
 	@Test
-	public void testDcamAcquisition()	throws InterruptedException,
-																		IOException
+	public void testDcamAcquisitionOneCamera() throws InterruptedException,
+																						IOException
 	{
 
 		final DcamAcquisition lDcamAcquisition = new DcamAcquisition(0);
@@ -60,6 +60,57 @@ public class DcamJDemo
 		Thread.sleep(250);
 		lDcamAcquisition.stopAcquisition();
 		lDcamAcquisition.close();
+
+	}
+
+	@Test
+	public void testDcamAcquisitionTwoCameras()	throws InterruptedException,
+																							IOException
+	{
+
+		final DcamAcquisition lDcamAcquisition0 = new DcamAcquisition(0);
+		final DcamAcquisition lDcamAcquisition1 = new DcamAcquisition(1);
+
+		DcamAcquisitionListener lDcamAcquisitionListener = new DcamAcquisitionListener()
+		{
+
+			@Override
+			public void frameArrived(	final DcamAcquisition pDcamAquisition,
+																final long pAbsoluteFrameIndex,
+																final long pArrivalTimeStamp,
+																final long pFrameIndexInBufferList,
+																final DcamFrame pDcamFrame)
+			{
+				System.out.format("Camera %d \n",
+													pDcamAquisition.getDeviceIndex());
+				System.out.format("Frame %d in buffer %d arrived at %d \n",
+													pAbsoluteFrameIndex,
+													pFrameIndexInBufferList,
+													pArrivalTimeStamp);
+				System.out.format("frameArrived: hashcode= %d index= %d \n",
+													pDcamFrame.hashCode(),
+													pDcamFrame.getIndex());
+			}
+		};
+
+		lDcamAcquisition0.addListener(lDcamAcquisitionListener);
+		lDcamAcquisition1.addListener(lDcamAcquisitionListener);
+
+		lDcamAcquisition0.open();
+		lDcamAcquisition1.open();
+		lDcamAcquisition0.getProperties()
+											.setOutputTriggerToProgrammable();
+		lDcamAcquisition1.getProperties()
+											.setOutputTriggerToProgrammable();
+		lDcamAcquisition0.setFrameWidthAndHeight(2048, 2048);
+		lDcamAcquisition1.setFrameWidthAndHeight(2048, 2048);
+		lDcamAcquisition0.startAcquisition();
+		lDcamAcquisition1.startAcquisition();
+		Thread.sleep(2500);
+		lDcamAcquisition0.stopAcquisition();
+		lDcamAcquisition1.stopAcquisition();
+		lDcamAcquisition0.close();
+		lDcamAcquisition1.close();
 
 	}
 

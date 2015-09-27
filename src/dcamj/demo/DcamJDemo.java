@@ -48,14 +48,22 @@ public class DcamJDemo
 													pAbsoluteFrameIndex,
 													pFrameIndexInBufferList,
 													pArrivalTimeStamp);
-				System.out.println("frameArrived: hashcode=" + pDcamFrame.hashCode()
-														+ " index="
-														+ pDcamFrame.getIndex());
+				System.out.format("frameArrived: hashcode= %d index=%d dimensions: (%d,%d) \n ",
+													pDcamFrame.hashCode(),
+													pDcamFrame.getIndex(),
+													pDcamFrame.getWidth(),
+													pDcamFrame.getHeight());
 			}
 		});
 
-		lDcamAcquisition.open();
+		assertTrue(lDcamAcquisition.open());
 		lDcamAcquisition.getProperties().setOutputTriggerToProgrammable();
+		assertTrue(lDcamAcquisition.getProperties().setBinning(2));
+		assertTrue(lDcamAcquisition.getProperties().setCenteredROI(	2048,
+																																2048));
+
+
+
 		lDcamAcquisition.startAcquisition();
 		Thread.sleep(250);
 		lDcamAcquisition.stopAcquisition();

@@ -351,6 +351,15 @@ public class DcamProperties extends DcamBase
 		return lSuccess;
 	}
 
+	public boolean setBinning(final int pBinSize)
+	{
+		boolean lSuccess = true;
+		lSuccess &= setPropertyValue(	DCAMIDPROP.DCAM_IDPROP_BINNING,
+																	pBinSize);
+
+		return lSuccess;
+	}
+
 	public void setInputTriggerDefaults()
 	{
 		setPropertyValue(	DCAMIDPROP.DCAM_IDPROP_TRIGGER_MODE,

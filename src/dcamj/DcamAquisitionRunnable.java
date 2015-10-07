@@ -80,6 +80,20 @@ class DcamAquisitionRunnable implements Runnable
 		if (mDcamAcquisition.mDebug)
 			System.out.println("DcamJ(Runnable): mDcamDevice.getStatus()=" + mDcamAcquisition.mDcamDevice.getStatus());
 
+		
+		System.out.println(mDcamAcquisition.mDcamDevice.getStatus()+" -> "+mDcamAcquisition.mDcamDevice.getStatus().value());
+		while (mDcamAcquisition.mDcamDevice.getStatus().value() != 2)
+		{
+			try
+			{
+				Thread.sleep(1);
+			}
+			catch (InterruptedException e)
+			{
+			}
+		}/**/
+		
+		
 		if (mContinuousAcquisition && !mStackAcquisition)
 		{
 			if (mDcamAcquisition.mDebug)
@@ -147,6 +161,8 @@ class DcamAquisitionRunnable implements Runnable
 			{
 				lWaitSuccess = (mDcamAcquisition.mDcamDevice.getDcamWait().waitForEvent(lDcamcapEventToWaitFor,
 																																														lWaitTimeout));
+				
+				
 			}
 			if (mDcamAcquisition.mDebug)
 				System.out.println("DcamJ(Runnable): ...after.");

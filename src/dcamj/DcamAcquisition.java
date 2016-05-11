@@ -416,39 +416,17 @@ public class DcamAcquisition implements AutoCloseable
 		System.out.println("mBufferControl.releaseBuffers();");
 		try
 		{
-			Thread.sleep(2000);
-		}
-		catch (final InterruptedException e)
-		{
-			e.printStackTrace();
-		}
-		if (mBufferControl != null)
-			mBufferControl.releaseBuffers();
-		try
-		{
-			Thread.sleep(2000);
-		}
-		catch (final InterruptedException e)
-		{
-			e.printStackTrace();
-		}
-		System.out.println("mDcamDevice.close();");
-
-		if (mDcamDevice != null)
-			mDcamDevice.close();
-		try
-		{
-			Thread.sleep(2000);
-		}
-		catch (final InterruptedException e)
-		{
-			e.printStackTrace();
-		}
-		System.out.println("DcamLibrary.uninitialize();");
-		DcamLibrary.uninitialize();
-		try
-		{
-			Thread.sleep(2000);
+			Thread.sleep(100);
+			if (mBufferControl != null)
+				mBufferControl.releaseBuffers();
+			Thread.sleep(100);
+			System.out.println("mDcamDevice.close();");
+			if (mDcamDevice != null)
+				mDcamDevice.close();
+			Thread.sleep(100);
+			System.out.println("DcamLibrary.uninitialize();");
+			DcamLibrary.uninitialize();
+			Thread.sleep(100);
 		}
 		catch (final InterruptedException e)
 		{
@@ -478,6 +456,5 @@ public class DcamAcquisition implements AutoCloseable
 		DcamapiLibrary.dcamcapFiretrigger(mDcamDevice.getHDCAMPointer(),
 																			0);
 	}
-
 
 }

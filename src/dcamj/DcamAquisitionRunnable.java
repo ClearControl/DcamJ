@@ -80,8 +80,10 @@ class DcamAquisitionRunnable implements Runnable
 		if (mDcamAcquisition.mDebug)
 			System.out.println("DcamJ(Runnable): mDcamDevice.getStatus()=" + mDcamAcquisition.mDcamDevice.getStatus());
 
-		
-		System.out.println(mDcamAcquisition.mDcamDevice.getStatus()+" -> "+mDcamAcquisition.mDcamDevice.getStatus().value());
+		if (mDcamAcquisition.mDebug)
+			System.out.println(mDcamAcquisition.mDcamDevice.getStatus() + " -> "
+													+ mDcamAcquisition.mDcamDevice.getStatus()
+																												.value());
 		while (mDcamAcquisition.mDcamDevice.getStatus().value() != 2)
 		{
 			try
@@ -92,8 +94,7 @@ class DcamAquisitionRunnable implements Runnable
 			{
 			}
 		}/**/
-		
-		
+
 		if (mContinuousAcquisition && !mStackAcquisition)
 		{
 			if (mDcamAcquisition.mDebug)
@@ -111,10 +112,6 @@ class DcamAquisitionRunnable implements Runnable
 		if (mDcamAcquisition.mDebug)
 			System.out.println("DcamJ(Runnable): mDcamDevice.getStatus()=" + mDcamAcquisition.mDcamDevice.getStatus());
 
-
-
-
-
 		/*if (mStackAcquisition)
 			lWaitTimeout = 3000; // + (int) (10 * 1000 * mNumberOfFramesToCapture *
 														// mExposureInSeconds)
@@ -130,7 +127,6 @@ class DcamAquisitionRunnable implements Runnable
 		// sleep(1000);
 
 		mDcamAcquisition.mAcquisitionStartedSignal.countDown();
-
 
 		final long lNumberOfBuffers = mDcamAcquisition.getBufferControl()
 																									.getNumberOfSinglePlaneBuffers();
@@ -151,7 +147,6 @@ class DcamAquisitionRunnable implements Runnable
 			else
 				lDcamcapEventToWaitFor = DCAMWAIT_EVENT.DCAMCAP_EVENT_FRAMEREADY;
 
-
 			if (mDcamAcquisition.mDebug)
 				System.out.print("DcamJ(Runnable): waitForEvent: before... ");
 
@@ -160,9 +155,8 @@ class DcamAquisitionRunnable implements Runnable
 			while (!lWaitSuccess && mStopIfFalse)
 			{
 				lWaitSuccess = (mDcamAcquisition.mDcamDevice.getDcamWait().waitForEvent(lDcamcapEventToWaitFor,
-																																														lWaitTimeout));
-				
-				
+																																								lWaitTimeout));
+
 			}
 			if (mDcamAcquisition.mDebug)
 				System.out.println("DcamJ(Runnable): ...after.");
@@ -213,7 +207,7 @@ class DcamAquisitionRunnable implements Runnable
 				{
 					lDcamFrame = mDcamAcquisition.getBufferControl()
 																				.getStackDcamFrame();
-					lDcamFrame.setIndex(lDriversFrameIndex);
+					lDcamFrame.setIndex(mDcamAcquisition.mAcquiredFrameIndex);
 					lDcamFrame.setTimeStampInNs(lAcquisitionTimeStampInNanoseconds);
 					mDcamAcquisition.notifyListeners(	mDcamAcquisition.mAcquiredFrameIndex,
 																						lAcquisitionTimeStampInNanoseconds,
@@ -236,7 +230,7 @@ class DcamAquisitionRunnable implements Runnable
 				{
 					lDcamFrame = mDcamAcquisition.getBufferControl()
 																				.getDcamFrameForIndex(lRingBufferFrameIndex);
-					lDcamFrame.setIndex(lFrameIndex);
+					lDcamFrame.setIndex(mDcamAcquisition.mAcquiredFrameIndex);
 					lDcamFrame.setTimeStampInNs(lAcquisitionTimeStampInNanoseconds);
 					mDcamAcquisition.notifyListeners(	lFrameIndex,
 																						lAcquisitionTimeStampInNanoseconds,

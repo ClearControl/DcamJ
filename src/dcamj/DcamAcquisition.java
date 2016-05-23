@@ -212,8 +212,9 @@ public class DcamAcquisition implements AutoCloseable
 
 	private boolean allocateInternalBuffers()
 	{
-		System.out.format("DcamJ: allocate %d internal buffers \n",
-											mNumberOfBuffersByDefault);
+		if (mDebug)
+			System.out.format("DcamJ: allocate %d internal buffers \n",
+												mNumberOfBuffersByDefault);
 		mBufferControl = getBufferControl();
 		mBufferControl.mShowErrors = true;
 		mBufferControl.mDebug = false;
@@ -413,18 +414,21 @@ public class DcamAcquisition implements AutoCloseable
 	@Override
 	public final void close()
 	{
-		System.out.println("mBufferControl.releaseBuffers();");
+		if (mDebug)
+			System.out.println("mBufferControl.releaseBuffers();");
 		try
 		{
 			Thread.sleep(100);
 			if (mBufferControl != null)
 				mBufferControl.releaseBuffers();
 			Thread.sleep(100);
-			System.out.println("mDcamDevice.close();");
+			if (mDebug)
+				System.out.println("mDcamDevice.close();");
 			if (mDcamDevice != null)
 				mDcamDevice.close();
 			Thread.sleep(100);
-			System.out.println("DcamLibrary.uninitialize();");
+			if (mDebug)
+				System.out.println("DcamLibrary.uninitialize();");
 			DcamLibrary.uninitialize();
 			Thread.sleep(100);
 		}

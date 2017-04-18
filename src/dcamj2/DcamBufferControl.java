@@ -12,151 +12,225 @@ import dcamapi.DcamapiLibrary;
 import dcamapi.DcamapiLibrary.DCAMERR;
 import dcamapi.DcamapiLibrary.DCAMIDPROP;
 
+/**
+ * Dcam buffer control
+ *
+ * @author royer
+ */
 public class DcamBufferControl extends DcamBase
 {
 
-	private final DcamDevice mDcamDevice;
-	private DcamAcquisition mDcamAcquisition;
+  private final DcamDevice mDcamDevice;
 
-	private DcamFrame mAttachedDcamFrame;
-	private DCAMBUF_ATTACH mDCAMBUF_ATTACH;
-	private Pointer<Pointer<?>> mPointerToPointerArray;
-	private Pointer<DCAM_FRAME> mInternalDcamFramePointer;
+  private DcamFrame mAttachedDcamFrame;
+  private DCAMBUF_ATTACH mDCAMBUF_ATTACH;
+  private Pointer<Pointer<?>> mPointerToPointerArray;
+  private Pointer<DCAM_FRAME> mInternalDcamFramePointer;
 
-	public DcamBufferControl(	final DcamDevice pDcamDevice,
-														final DcamAcquisition pDcamAcquisition)
-	{
-		mDcamDevice = pDcamDevice;
-		mDcamAcquisition = pDcamAcquisition;
-	}
+  /**
+   * Instantiates a Dcam buffer control
+   * 
+   * @param pDcamDevice
+   *          Dcam camera device
+   */
+  public DcamBufferControl(final DcamDevice pDcamDevice)
+  {
+    mDcamDevice = pDcamDevice;
+  }
 
-	public final boolean allocateInternalBuffers(final int pNumberOfBuffers)
-	{
-		if (pNumberOfBuffers < 1)
-		{
-			return false;
-		}
+  /**
+   * Allocates internal buffers
+   * 
+   * @param pNumberOfBuffers
+   *          number of internal buffers to allocate
+   * @return true -> success, false otherwise
+   */
+  public final boolean allocateInternalBuffers(final int pNumberOfBuffers)
+  {
+    if (pNumberOfBuffers < 1)
+    {
+      return false;
+    }
 
-		final IntValuedEnum<DCAMERR> lError = DcamapiLibrary.dcambufAlloc(mDcamDevice.getHDCAMPointer(),
-																																			pNumberOfBuffers);
-		final boolean lSuccess = addErrorToListAndCheckHasSucceeded(lError);
-		return lSuccess;
-	}
+    final IntValuedEnum<DCAMERR> lError =
+                                        DcamapiLibrary.dcambufAlloc(mDcamDevice.getHDCAMPointer(),
+                                                                    pNumberOfBuffers);
+    final boolean lSuccess =
+                           addErrorToListAndCheckHasSucceeded(lError);
+    return lSuccess;
+  }
 
-	public final Pointer<DCAM_FRAME> lockFrame()
-	{
-		if (mInternalDcamFramePointer == null)
-			mInternalDcamFramePointer = Pointer.allocate(DCAM_FRAME.class);
+  /**
+   * Locks a frame (whatever that means!)
+   * 
+   * @return pointer to frame
+   */
+  public final Pointer<DCAM_FRAME> lockFrame()
+  {
+    if (mInternalDcamFramePointer == null)
+      mInternalDcamFramePointer = Pointer.allocate(DCAM_FRAME.class);
 
-		final IntValuedEnum<DCAMERR> lError = DcamapiLibrary.dcambufLockframe(mDcamDevice.getHDCAMPointer(),
-																																					mInternalDcamFramePointer);
-		final boolean lSuccess = addErrorToListAndCheckHasSucceeded(lError);
-		if (!lSuccess)
-		{
-			return null;
-		}
+    final IntValuedEnum<DCAMERR> lError =
+                                        DcamapiLibrary.dcambufLockframe(mDcamDevice.getHDCAMPointer(),
+                                                                        mInternalDcamFramePointer);
+    final boolean lSuccess =
+                           addErrorToListAndCheckHasSucceeded(lError);
+    if (!lSuccess)
+    {
+      return null;
+    }
 
-		return mInternalDcamFramePointer;
-	}
+    return mInternalDcamFramePointer;
+  }
 
-	public final Pointer<DCAM_FRAME> copyFrame()
-	{
-		if (mInternalDcamFramePointer == null)
-			mInternalDcamFramePointer = Pointer.allocate(DCAM_FRAME.class);
+  /**
+   * Copies frame.
+   * 
+   * @return pointer to Dcam frame
+   */
+  public final Pointer<DCAM_FRAME> copyFrame()
+  {
+    if (mInternalDcamFramePointer == null)
+      mInternalDcamFramePointer = Pointer.allocate(DCAM_FRAME.class);
 
-		final IntValuedEnum<DCAMERR> lError = DcamapiLibrary.dcambufCopyframe(mDcamDevice.getHDCAMPointer(),
-																																					mInternalDcamFramePointer);
-		final boolean lSuccess = addErrorToListAndCheckHasSucceeded(lError);
-		if (!lSuccess)
-		{
-			return null;
-		}
-		return mInternalDcamFramePointer;
-	}
+    final IntValuedEnum<DCAMERR> lError =
+                                        DcamapiLibrary.dcambufCopyframe(mDcamDevice.getHDCAMPointer(),
+                                                                        mInternalDcamFramePointer);
+    final boolean lSuccess =
+                           addErrorToListAndCheckHasSucceeded(lError);
+    if (!lSuccess)
+    {
+      return null;
+    }
+    return mInternalDcamFramePointer;
+  }
 
-	/**/
+  /**
+   * Attach external buffers provided as a Dcam frame
+   * 
+   * @param pDcamFrame
+   *          Dcam frame
+   * @return true -> success, false otherwise.
+   */
+  public final boolean attachExternalBuffers(DcamFrame pDcamFrame)
+  {
+    if (mAttachedDcamFrame == pDcamFrame)
+      return true;
 
-	public final boolean attachExternalBuffers(DcamFrame pDcamFrame)
-	{
-		if (mAttachedDcamFrame == pDcamFrame)
-			return true;
+    mAttachedDcamFrame = pDcamFrame;
 
-		mAttachedDcamFrame = pDcamFrame;
+    final long lNumberOfBuffers = pDcamFrame.getDepth();
 
-		final long lNumberOfBuffers = pDcamFrame.getDepth();
+    if (mPointerToPointerArray == null
+        || mPointerToPointerArray.getValidElements() != lNumberOfBuffers)
+      mPointerToPointerArray =
+                             Pointer.allocatePointers((int) lNumberOfBuffers);
 
-		if(mPointerToPointerArray==null || mPointerToPointerArray.getValidElements()!=lNumberOfBuffers)
-			mPointerToPointerArray = Pointer.allocatePointers((int) lNumberOfBuffers);
+    for (int i = 0; i < lNumberOfBuffers; i++)
+    {
+      Pointer<Byte> lPointerToIndividualBuffer =
+                                               pDcamFrame.getPointerForSinglePlane(i);
+      mPointerToPointerArray.set(i, lPointerToIndividualBuffer);
+    }
 
-		
-		for (int i = 0; i < lNumberOfBuffers; i++)
-		{
-			@SuppressWarnings("unchecked")
-			Pointer<Byte> lPointerToIndividualBuffer = pDcamFrame.getPointerForSinglePlane(i);
-			mPointerToPointerArray.set(i, lPointerToIndividualBuffer);
-		}
+    final boolean lSuccess = releaseBuffers()
+                             && attachBuffersInternal(lNumberOfBuffers);
+    return lSuccess;
+  }
 
-		
-		final boolean lSuccess = releaseBuffers() && attachBuffersInternal(lNumberOfBuffers);
-		return lSuccess;
-	}
+  private boolean attachBuffersInternal(final long lNumberOfBuffers)
+  {
+    if (mDCAMBUF_ATTACH == null)
+    {
+      mDCAMBUF_ATTACH = new DCAMBUF_ATTACH();
+      mDCAMBUF_ATTACH.size(BridJ.sizeOf(DCAMBUF_ATTACH.class));
+    }
+    mDCAMBUF_ATTACH.buffercount(lNumberOfBuffers);
+    mDCAMBUF_ATTACH.buffer(mPointerToPointerArray);
 
-	private boolean attachBuffersInternal(final long lNumberOfBuffers)
-	{
-		if (mDCAMBUF_ATTACH == null)
-		{
-			mDCAMBUF_ATTACH = new DCAMBUF_ATTACH();
-			mDCAMBUF_ATTACH.size(BridJ.sizeOf(DCAMBUF_ATTACH.class));
-		}
-		mDCAMBUF_ATTACH.buffercount(lNumberOfBuffers);
-		mDCAMBUF_ATTACH.buffer(mPointerToPointerArray);
+    @SuppressWarnings("deprecation")
+    final IntValuedEnum<DCAMERR> lError =
+                                        DcamapiLibrary.dcambufAttach(mDcamDevice.getHDCAMPointer(),
+                                                                     pointerTo(mDCAMBUF_ATTACH));
+    final boolean lSuccess =
+                           addErrorToListAndCheckHasSucceeded(lError);
+    return lSuccess;
+  }
 
-		final IntValuedEnum<DCAMERR> lError = DcamapiLibrary.dcambufAttach(	mDcamDevice.getHDCAMPointer(),
-																																				pointerTo(mDCAMBUF_ATTACH));
-		final boolean lSuccess = addErrorToListAndCheckHasSucceeded(lError);
-		return lSuccess;
-	}
+  /**
+   * Computes total required memory in bytes for the given number of buffers and
+   * the current image dimensions.f
+   * 
+   * @param pNumberOfBuffers
+   *          number of buffers
+   * @return total required memory in bytes
+   */
+  public long computeTotalRequiredMemoryInBytes(int pNumberOfBuffers)
+  {
+    final long lImageSizeInBytes =
+                                 (long) mDcamDevice.getProperties()
+                                                   .getPropertyValue(DCAMIDPROP.DCAM_IDPROP_BUFFER_FRAMEBYTES);
 
-	public long computeTotalRequiredMemoryInBytes(int pNumberOfBuffers)
-	{
-		final long lImageSizeInBytes = (long) mDcamDevice.getProperties()
-																											.getPropertyValue(DCAMIDPROP.DCAM_IDPROP_BUFFER_FRAMEBYTES);
+    final long lTotalRequiredmemoryInBytes = pNumberOfBuffers
+                                             * lImageSizeInBytes;
 
-		final long lTotalRequiredmemoryInBytes = pNumberOfBuffers * lImageSizeInBytes;
+    return lTotalRequiredmemoryInBytes;
+  }
 
-		return lTotalRequiredmemoryInBytes;
-	}
+  /**
+   * Returns the Dcam frame for a given frame index
+   * 
+   * @param pFrameIndex
+   *          frame index
+   * @return Dcam frame
+   */
+  public DcamFrame getDcamFrameForIndex(long pFrameIndex)
+  {
+    return mAttachedDcamFrame.getSinglePlaneDcamFrame(pFrameIndex);
+  }
 
-	public DcamFrame getDcamFrameForIndex(long pFrameIndex)
-	{
-		return mAttachedDcamFrame.getSinglePlaneDcamFrame(pFrameIndex);
-	}
+  /**
+   * Returns the number of single plane buffers.
+   * 
+   * @return number of single plane buffers
+   */
+  public long getNumberOfSinglePlaneBuffers()
+  {
+    return mAttachedDcamFrame.getDepth();
+  }
 
-	public long getNumberOfSinglePlaneBuffers()
-	{
-		return mAttachedDcamFrame.getDepth();
-	}
+  /**
+   * Releases buffers
+   * 
+   * @return true -> success, false otherwise
+   */
+  public final boolean releaseBuffers()
+  {
+    final IntValuedEnum<DCAMERR> lError =
+                                        DcamapiLibrary.dcambufRelease(mDcamDevice.getHDCAMPointer(),
+                                                                      0);
+    final boolean lSuccess =
+                           addErrorToListAndCheckHasSucceeded(lError);
 
-	public final boolean releaseBuffers()
-	{
-		final IntValuedEnum<DCAMERR> lError = DcamapiLibrary.dcambufRelease(mDcamDevice.getHDCAMPointer(),
-																																				0);
-		final boolean lSuccess = addErrorToListAndCheckHasSucceeded(lError);
+    return lSuccess;
+  }
 
-		return lSuccess;
-	}
+  /**
+   * Returns the Dcam frame
+   * 
+   * @return Dcam frame
+   */
+  public DcamFrame getStackDcamFrame()
+  {
+    return mAttachedDcamFrame;
+  }
 
-	public DcamFrame getStackDcamFrame()
-	{
-		return mAttachedDcamFrame;
-	}
-
-	// DCAMERR DCAMAPI dcambuf_alloc ( HDCAM h, long framecount ); // call
-	// dcambuf_release() to free.
-	// DCAMERR DCAMAPI dcambuf_attach ( HDCAM h, const DCAMBUF_ATTACH* param );
-	// DCAMERR DCAMAPI dcambuf_release ( HDCAM h, long iKind DCAM_DEFAULT_ARG );
-	// DCAMERR DCAMAPI dcambuf_lockframe ( HDCAM h, DCAM_FRAME* pFrame );
-	// DCAMERR DCAMAPI dcambuf_copyframe ( HDCAM h, DCAM_FRAME* pFrame );
-	// DCAMERR DCAMAPI dcambuf_copymetadata ( HDCAM h, DCAM_METADATAHDR* hdr );
+  // DCAMERR DCAMAPI dcambuf_alloc ( HDCAM h, long framecount ); // call
+  // dcambuf_release() to free.
+  // DCAMERR DCAMAPI dcambuf_attach ( HDCAM h, const DCAMBUF_ATTACH* param );
+  // DCAMERR DCAMAPI dcambuf_release ( HDCAM h, long iKind DCAM_DEFAULT_ARG );
+  // DCAMERR DCAMAPI dcambuf_lockframe ( HDCAM h, DCAM_FRAME* pFrame );
+  // DCAMERR DCAMAPI dcambuf_copyframe ( HDCAM h, DCAM_FRAME* pFrame );
+  // DCAMERR DCAMAPI dcambuf_copymetadata ( HDCAM h, DCAM_METADATAHDR* hdr );
 
 }

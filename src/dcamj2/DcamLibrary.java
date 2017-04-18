@@ -9,89 +9,131 @@ import dcamapi.DCAMAPI_INIT;
 import dcamapi.DcamapiLibrary;
 import dcamapi.DcamapiLibrary.DCAMERR;
 
+/**
+ * Dcam Library
+ *
+ * @author royer
+ */
 public class DcamLibrary
 {
 
-	// Prevents instantiation
-	private DcamLibrary()
-	{
-		super();
-	}
+  // Prevents instantiation
+  private DcamLibrary()
+  {
+    super();
+  }
 
-	private static boolean sInitialized = false;
-	private static long sNumberOfDevices = -1;
+  private static boolean sInitialized = false;
+  private static long sNumberOfDevices = -1;
 
-	public static final boolean initialize()
-	{
-		final DCAMAPI_INIT lDCAMAPI_INIT = new DCAMAPI_INIT();
-		lDCAMAPI_INIT.size(BridJ.sizeOf(DCAMAPI_INIT.class));
-		final IntValuedEnum<DCAMERR> dcamapiInit = DcamapiLibrary.dcamapiInit(pointerTo(lDCAMAPI_INIT));
+  /**
+   * Initializes the library
+   * 
+   * @return true -> success
+   */
+  public static final boolean initialize()
+  {
+    if (isInitialized())
+      return true;
 
-		final boolean lSuccess = hasSucceeded(dcamapiInit);
+    final DCAMAPI_INIT lDCAMAPI_INIT = new DCAMAPI_INIT();
+    lDCAMAPI_INIT.size(BridJ.sizeOf(DCAMAPI_INIT.class));
+    @SuppressWarnings("deprecation")
+    final IntValuedEnum<DCAMERR> dcamapiInit =
+                                             DcamapiLibrary.dcamapiInit(pointerTo(lDCAMAPI_INIT));
 
-		if (lSuccess)
-		{
-			sInitialized = true;
+    final boolean lSuccess = hasSucceeded(dcamapiInit);
 
-			sNumberOfDevices = lDCAMAPI_INIT.iDeviceCount();
+    if (lSuccess)
+    {
+      sInitialized = true;
 
-			Runtime.getRuntime().addShutdownHook(new Thread()
-			{
-				@Override
-				public void run()
-				{
-					try
-					{
-						uninitialize();
-					}
-					catch (Throwable e)
-					{
-						e.printStackTrace();
-					}
-				}
-			});
+      sNumberOfDevices = lDCAMAPI_INIT.iDeviceCount();
 
-			return true;
-		}
-		else
-		{
-			return false;
-		}
-	}
+      Runtime.getRuntime().addShutdownHook(new Thread()
+      {
+        @Override
+        public void run()
+        {
+          try
+          {
+            uninitialize();
+          }
+          catch (Throwable e)
+          {
+            e.printStackTrace();
+          }
+        }
+      });
 
-	public static final boolean isInitialized()
-	{
-		return sInitialized;
-	}
+      return true;
+    }
+    else
+    {
+      return false;
+    }
+  }
 
-	public static final int getNumberOfDevices()
-	{
-		return (int) sNumberOfDevices;
-	}
+  /**
+   * Returns true if library successfully initialized
+   * 
+   * @return true-> success, false otherwise
+   */
+  public static final boolean isInitialized()
+  {
+    return sInitialized;
+  }
 
-	public static final DcamDevice getDeviceForId(final int pDeviceId)
-	{
-		if (!isInitialized())
-		{
-			return null;
-		}
-		final DcamDevice lDcamDevice = new DcamDevice(pDeviceId);
-		return lDcamDevice;
-	}
+  /**
+   * Returns the number of connected devices
+   * 
+   * @return number of connected devices
+   */
+  public static final int getNumberOfDevices()
+  {
+    return (int) sNumberOfDevices;
+  }
 
-	public static final boolean uninitialize()
-	{
-		if (!isInitialized())
-		{
-			return false;
-		}
-		final IntValuedEnum<DCAMERR> lDcamapiUninit = DcamapiLibrary.dcamapiUninit();
-		final boolean lSuccess = hasSucceeded(lDcamapiUninit);
-		return lSuccess;
-	}
+  /**
+   * Returns a camera device for a given device index
+   * 
+   * @param pDeviceId
+   *          device index
+   * @return camera device
+   */
+  public static final DcamDevice getDeviceForId(final int pDeviceId)
+  {
+    if (!isInitialized())
+      throw new DcamException("Library must be first initialized");
 
-	public static boolean hasSucceeded(final IntValuedEnum<DCAMERR> dcamapiInit)
-	{
-		return dcamapiInit == DCAMERR.DCAMERR_SUCCESS;
-	}
+    final DcamDevice lDcamDevice = new DcamDevice(pDeviceId);
+    return lDcamDevice;
+  }
+
+  /**
+   * Uninitialized library
+   * 
+   * @return true -> success, false otherwise
+   */
+  public static final boolean uninitialize()
+  {
+    if (!isInitialized())
+      return false;
+
+    final IntValuedEnum<DCAMERR> lDcamapiUninit =
+                                                DcamapiLibrary.dcamapiUninit();
+    final boolean lSuccess = hasSucceeded(lDcamapiUninit);
+    return lSuccess;
+  }
+
+  /**
+   * Returns true if the corresponding Dcam API return code means success.
+   * 
+   * @param pDcamReturnCode Dcam return code
+   * @return true -> success, false otherwise
+   */
+  public static boolean hasSucceeded(final IntValuedEnum<DCAMERR> pDcamReturnCode)
+  {
+    return pDcamReturnCode == DCAMERR.DCAMERR_SUCCESS;
+  }
 }

@@ -63,7 +63,7 @@ dependencies
     compile 'com.nativelibs4java:bridj:0.7.0'
     
     // CoreMem:
-    compile ('net.coremem:CoreMem:0.4.1')  {transitive= true; changing= true}
+    compile ('net.coremem:CoreMem:0.4.2')  {transitive= true; changing= true}
 
 
     compile group: 'junit', name: 'junit', version: '4.+'
@@ -77,6 +77,10 @@ repositories
     {
         url "http://oss.sonatype.org/content/groups/public"
     } 
+
+    // ClearControl:
+    maven { url  "http://dl.bintray.com/clearcontrol/ClearControl"  }
+
 }
 
 

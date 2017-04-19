@@ -101,7 +101,7 @@ public class DcamLibrary
    *          device index
    * @return camera device
    */
-  public static final DcamDevice getDeviceForId(final int pDeviceId)
+  public static final DcamDevice getDeviceForId(final long pDeviceId)
   {
     if (!isInitialized())
       throw new DcamException("Library must be first initialized");

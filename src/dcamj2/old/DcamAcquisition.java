@@ -1,4 +1,4 @@
-package dcamj2;
+package dcamj2.old;
 
 import static org.bridj.Pointer.pointerTo;
 
@@ -11,6 +11,11 @@ import org.bridj.IntValuedEnum;
 import dcamapi.DCAMCAP_TRANSFERINFO;
 import dcamapi.DcamapiLibrary;
 import dcamapi.DcamapiLibrary.DCAMERR;
+import dcamj2.DcamBufferControl;
+import dcamj2.DcamDevice;
+import dcamj2.DcamImageSequence;
+import dcamj2.DcamLibrary;
+import dcamj2.DcamProperties;
 
 public class DcamAcquisition implements AutoCloseable
 {
@@ -198,7 +203,7 @@ public class DcamAcquisition implements AutoCloseable
 												getDeviceIndex());
 	}
 
-	private boolean provideExternalBuffers(final DcamFrame pDcamFrame)
+	private boolean provideExternalBuffers(final DcamImageSequence pDcamFrame)
 	{
 		if (mDebug)
 			System.out.format("DcamJ: provide %d external buffers for a total buffer capacity of %d\n",
@@ -265,9 +270,9 @@ public class DcamAcquisition implements AutoCloseable
 														allocateDefaultDcamFrame(mNumberOfBuffersByDefault));
 	}
 
-	private DcamFrame allocateDefaultDcamFrame(final int pNumberOfFramesToCapture)
+	private DcamImageSequence allocateDefaultDcamFrame(final int pNumberOfFramesToCapture)
 	{
-		return DcamFrame.requestFrame(getFrameBytesPerPixel(),
+		return DcamImageSequence.requestFrame(getFrameBytesPerPixel(),
 																	getWidth(),
 																	getHeight(),
 																	pNumberOfFramesToCapture);
@@ -282,7 +287,7 @@ public class DcamAcquisition implements AutoCloseable
 
 	public final boolean startAcquisition(final boolean pContinuousAcquisition,
 																				final boolean pStackAcquisition,
-																				final DcamFrame pDcamFrame)
+																				final DcamImageSequence pDcamFrame)
 	{
 		return startAcquisition(pContinuousAcquisition,
 														pStackAcquisition,
@@ -295,7 +300,7 @@ public class DcamAcquisition implements AutoCloseable
 																				final boolean pStackAcquisition,
 																				final boolean pWaitToStart,
 																				final boolean pWaitToFinish,
-																				final DcamFrame pDcamFrame)
+																				final DcamImageSequence pDcamFrame)
 	{
 		if (mDebug)
 			System.out.println("DcamJ: startAcquisition begin!");
@@ -346,7 +351,7 @@ public class DcamAcquisition implements AutoCloseable
 		return !mDcamAquisitionRunnable.mTrueIfError;
 	}
 
-	private boolean checkDimensions(final DcamFrame pDcamFrame)
+	private boolean checkDimensions(final DcamImageSequence pDcamFrame)
 	{
 		final boolean isEverythingFine = pDcamFrame.getWidth() == getWidth() && pDcamFrame.getHeight() == getHeight();
 		return isEverythingFine;
@@ -355,7 +360,7 @@ public class DcamAcquisition implements AutoCloseable
 	void notifyListeners(	final long pAbsoluteFrameIndex,
 												final long pArrivalTimeStampInNanoseconds,
 												final long pFrameIndexInBufferList,
-												final DcamFrame pDcamFrame)
+												final DcamImageSequence pDcamFrame)
 	{
 		for (final DcamAcquisitionListener lDcamAcquisitionListener : mListenersList)
 		{

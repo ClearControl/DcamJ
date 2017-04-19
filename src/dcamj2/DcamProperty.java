@@ -5,10 +5,17 @@ import org.bridj.FlagSet;
 import dcamapi.DcamapiLibrary.DCAMPROPATTRIBUTE;
 import dcamapi.DcamapiLibrary.DCAMPROPUNIT;
 
+/**
+ * Dcam property
+ *
+ * @author royer
+ */
+@SuppressWarnings("javadoc")
 public class DcamProperty
 {
 
-	public FlagSet<DCAMPROPATTRIBUTE> attribute;
+
+  public FlagSet<DCAMPROPATTRIBUTE> attribute;
 	public FlagSet<DCAMPROPATTRIBUTE> type;
 
 	public long id;

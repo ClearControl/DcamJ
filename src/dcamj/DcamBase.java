@@ -11,18 +11,43 @@ public class DcamBase
 {
 	private final ConcurrentLinkedQueue<IntValuedEnum<DCAMERR>> mErrorList = new ConcurrentLinkedQueue<IntValuedEnum<DCAMERR>>();
 
-	public boolean mDebug = false;
-	public boolean mShowErrors = false;
+	private boolean mDebug = false;
+	private boolean mShowErrors = false;
 
+	
+  /**
+   * 
+   * @return
+   */
+  public boolean isDebug()
+  {
+    return mDebug;
+  }
+
+  public void setDebug(boolean pDebug)
+  {
+    mDebug = pDebug;
+  }
+
+  public boolean isShowErrors()
+  {
+    return mShowErrors;
+  }
+
+  public void setShowErrors(boolean pShowErrors)
+  {
+    mShowErrors = pShowErrors;
+  }
+	
 	protected final void addError(final IntValuedEnum<DCAMERR> pError)
 	{
-		if (mDebug)
+		if (isDebug())
 		{
 			mErrorList.add(pError);
 			System.out.println(pError);
 		}
 
-		if (mShowErrors && !DcamLibrary.hasSucceeded(pError))
+		if (isShowErrors() && !DcamLibrary.hasSucceeded(pError))
 		{
 			System.err.println(pError);
 		}
@@ -62,5 +87,7 @@ public class DcamBase
 		}
 		return true;
 	}
+
+
 
 }

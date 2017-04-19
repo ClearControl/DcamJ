@@ -1,7 +1,8 @@
-package dcamj2;
+package dcamj2.old;
 
 import dcamapi.DCAMCAP_TRANSFERINFO;
 import dcamapi.DcamapiLibrary.DCAMWAIT_EVENT;
+import dcamj2.DcamImageSequence;
 import dcamj2.utils.StopWatch;
 
 class DcamAquisitionRunnable implements Runnable
@@ -133,7 +134,7 @@ class DcamAquisitionRunnable implements Runnable
 
     final long lNumberOfBuffers =
                                 mDcamAcquisition.getBufferControl()
-                                                .getNumberOfSinglePlaneBuffers();
+                                                .getAttachedImageSequenceDepth();
 
     DCAMCAP_TRANSFERINFO lTransferinfo =
                                        mDcamAcquisition.getTransferinfo();
@@ -213,13 +214,13 @@ class DcamAquisitionRunnable implements Runnable
 
       final long lDcamWaitEvent =
                                 mDcamAcquisition.mDcamDevice.getDcamWait()
-                                                            .getEvent();
+                                                            .getLastEvent();
       final boolean lReceivedStopEvent =
                                        lDcamWaitEvent == DCAMWAIT_EVENT.DCAMCAP_EVENT_STOPPED.value;
       final boolean lReceivedFrameReadyEvent =
                                              lDcamWaitEvent == DCAMWAIT_EVENT.DCAMCAP_EVENT_FRAMEREADY.value;
 
-      DcamFrame lDcamFrame = null;
+      DcamImageSequence lDcamFrame = null;
 
       if (mStackAcquisition && lReceivedStopEvent)
       {

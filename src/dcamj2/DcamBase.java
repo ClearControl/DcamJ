@@ -7,60 +7,91 @@ import org.bridj.IntValuedEnum;
 
 import dcamapi.DcamapiLibrary.DCAMERR;
 
+/**
+ *
+ *
+ * @author royer
+ */
 public class DcamBase
 {
-	private final ConcurrentLinkedQueue<IntValuedEnum<DCAMERR>> mErrorList = new ConcurrentLinkedQueue<IntValuedEnum<DCAMERR>>();
+  private final ConcurrentLinkedQueue<IntValuedEnum<DCAMERR>> mErrorList =
+                                                                         new ConcurrentLinkedQueue<IntValuedEnum<DCAMERR>>();
 
-	public boolean mDebug = false;
-	public boolean mShowErrors = false;
+  /**
+   * Debug flag
+   */
+  public boolean mDebug = false;
 
-	protected final void addError(final IntValuedEnum<DCAMERR> pError)
-	{
-		if (mDebug)
-		{
-			mErrorList.add(pError);
-			System.out.println(pError);
-		}
+  /**
+   * Show errors flag
+   */
+  public boolean mShowErrors = false;
 
-		if (mShowErrors && !DcamLibrary.hasSucceeded(pError))
-		{
-			System.err.println(pError);
-		}
-	}
+  protected final void addError(final IntValuedEnum<DCAMERR> pError)
+  {
+    if (mDebug)
+    {
+      mErrorList.add(pError);
+      System.out.println(pError);
+    }
 
-	protected final boolean addErrorToListAndCheckHasSucceeded(final IntValuedEnum<DCAMERR> lError)
-	{
-		addError(lError);
-		final boolean lSuccess = DcamLibrary.hasSucceeded(lError);
-		return lSuccess;
-	}
+    if (mShowErrors && !DcamLibrary.hasSucceeded(pError))
+    {
+      System.err.println(pError);
+    }
+  }
 
-	public final Collection<IntValuedEnum<DCAMERR>> getErrorList()
-	{
-		return mErrorList;
-	}
+  protected final boolean addErrorToListAndCheckHasSucceeded(final IntValuedEnum<DCAMERR> lError)
+  {
+    addError(lError);
+    final boolean lSuccess = DcamLibrary.hasSucceeded(lError);
+    return lSuccess;
+  }
 
-	public final void displayErrorList()
-	{
-		System.out.println(mErrorList);
-	}
+  /**
+   * Returns list of errors that occurred.
+   * 
+   * @return error list
+   */
+  public final Collection<IntValuedEnum<DCAMERR>> getErrorList()
+  {
+    return mErrorList;
+  }
 
-	public final void clearErrorList()
-	{
-		mErrorList.clear();
-	}
+  /**
+   * Display error list
+   */
+  public final void displayErrorList()
+  {
+    System.out.println(mErrorList);
+  }
 
-	public final boolean haveAllSucceeded()
-	{
-		for (final IntValuedEnum<DCAMERR> lEntry : mErrorList)
-		{
-			final boolean lHasSucceeded = DcamLibrary.hasSucceeded(lEntry);
-			if (!lHasSucceeded)
-			{
-				return false;
-			}
-		}
-		return true;
-	}
+  /**
+   * Clear error list
+   */
+  public final void clearErrorList()
+  {
+    mErrorList.clear();
+  }
+
+  /**
+   * Checks the error list and makes sure that the error list does not contain -
+   * well errors ... :-) != error list empty, since one type of error is success
+   *
+   * 
+   * @return true -> all successes
+   */
+  public final boolean haveAllSucceeded()
+  {
+    for (final IntValuedEnum<DCAMERR> lEntry : mErrorList)
+    {
+      final boolean lHasSucceeded = DcamLibrary.hasSucceeded(lEntry);
+      if (!lHasSucceeded)
+      {
+        return false;
+      }
+    }
+    return true;
+  }
 
 }

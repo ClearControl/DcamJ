@@ -1,0 +1,275 @@
+package dcamj2;
+
+import org.bridj.Pointer;
+
+import coremem.ContiguousMemoryInterface;
+import coremem.exceptions.FreedException;
+import coremem.fragmented.FragmentedMemory;
+import coremem.fragmented.FragmentedMemoryInterface;
+import coremem.interfaces.SizedInBytes;
+import coremem.offheap.OffHeapMemory;
+import coremem.rgc.Freeable;
+
+/**
+ * Dcam image sequence
+ *
+ * @author royer
+ */
+public class DcamImageSequence implements SizedInBytes, Freeable
+{
+
+  private static final int cPageAlignment = 4096;
+
+  private final FragmentedMemoryInterface mFragmentedMemory;
+
+  private volatile long mBytesPerPixel, mWidth, mHeight, mDepth;
+  private volatile long mTimeStampInNs;
+
+  /**
+   * Initializes a Dcam image sequence given the number of bytes per pixel, and
+   * image sequence width, height and depth. The memory allocation is handled by
+   * this constructor.
+   * 
+   * @param pBytesPerPixel
+   *          bytes per pixel/voxel
+   * @param pWidth
+   *          width
+   * @param pHeight
+   *          height
+   * @param pDepth
+   *          depth
+   * @param pFragmented
+   *          true-> allocates multiple independent buffers, false -> allocates
+   *          a single contiguous buffer
+   */
+  public DcamImageSequence(final long pBytesPerPixel,
+                           final long pWidth,
+                           final long pHeight,
+                           final long pDepth,
+                           boolean pFragmented)
+  {
+    mBytesPerPixel = pBytesPerPixel;
+    mWidth = pWidth;
+    mHeight = pHeight;
+    mDepth = pDepth;
+
+    if (pFragmented)
+    {
+      mFragmentedMemory = new FragmentedMemory();
+      for (int i = 0; i < pDepth; i++)
+      {
+        long lNumberOfBytes = pBytesPerPixel * pWidth * pHeight;
+        OffHeapMemory lAllocatedMemory =
+                                       OffHeapMemory.allocateAlignedBytes("DcamImageSequence"
+                                                                          + i,
+                                                                          lNumberOfBytes,
+                                                                          cPageAlignment);
+        mFragmentedMemory.add(lAllocatedMemory);
+      }
+    }
+    else
+    {
+      long lNumberOfBytes =
+                          pBytesPerPixel * pWidth * pHeight * pDepth;
+      OffHeapMemory lAllocatedMemory =
+                                     OffHeapMemory.allocateAlignedBytes("DcamImageSequence",
+                                                                        lNumberOfBytes,
+                                                                        cPageAlignment);
+      mFragmentedMemory = FragmentedMemory.split(lAllocatedMemory,
+                                                 mDepth);
+    }
+
+  }
+
+  /**
+   * Instantiates a Dcam image sequence given a fragmented memory object and
+   * corresponding number of bytes per pixel, image width, height and depth.
+   * 
+   * @param pFragmentedMemory
+   *          fragmented memory object
+   * @param pBytesPerPixel
+   *          bytes per pixel
+   * @param pWidth
+   *          width
+   * @param pHeight
+   *          height
+   * @param pDepth
+   *          depth
+   */
+  public DcamImageSequence(final FragmentedMemoryInterface pFragmentedMemory,
+                           final long pBytesPerPixel,
+                           final long pWidth,
+                           final long pHeight,
+                           final long pDepth)
+  {
+    mBytesPerPixel = pBytesPerPixel;
+    mWidth = pWidth;
+    mHeight = pHeight;
+    mDepth = pDepth;
+    mFragmentedMemory = pFragmentedMemory;
+  }
+
+  /**
+   * Returns the number of bytes per pixel
+   * 
+   * @return number of bytes per pixel
+   */
+  public final long getBytesPerPixel()
+  {
+    return mBytesPerPixel;
+  }
+
+  /**
+   * Returns this image sequence width
+   * 
+   * @return image sequence width
+   */
+  public final long getWidth()
+  {
+    return mWidth;
+  }
+
+  /**
+   * Returns this image sequence height
+   * 
+   * @return image sequence height
+   */
+  public final long getHeight()
+  {
+    return mHeight;
+  }
+
+  /**
+   * Returns this image sequence depth
+   * 
+   * @return image sequence depth
+   */
+  public final long getDepth()
+  {
+    return mDepth;
+  }
+
+  /**
+   * Sets this image sequence time stamp.
+   * 
+   * @param pTimeStampInNs
+   *          image sequence time stamp.
+   */
+  public void setTimeStampInNs(final long pTimeStampInNs)
+  {
+    mTimeStampInNs = pTimeStampInNs;
+  }
+
+  /**
+   * Returns this image sequence time stamp
+   * 
+   * @return image sequence time stamp
+   */
+  public final long getTimeStampInNs()
+  {
+    return mTimeStampInNs;
+  }
+
+  /**
+   * Returns a BridJ pointer for the plane of given index
+   * 
+   * @param pIndex
+   *          plane index
+   * @return BridK pointer
+   */
+  public Pointer<Byte> getPointerForPlane(final int pIndex)
+  {
+    ContiguousMemoryInterface lMemoryForPlane =
+                                              getMemoryForPlane(pIndex);
+    return lMemoryForPlane.getBridJPointer(Byte.class);
+  }
+
+  /**
+   * Returns memory for a given plane index
+   * 
+   * @param pIndex
+   *          plane index
+   * @return memory object for plane
+   */
+  public ContiguousMemoryInterface getMemoryForPlane(final int pIndex)
+  {
+    return mFragmentedMemory.get(pIndex);
+  }
+
+  /**
+   * Returns a Dcam image sequence for a single image of given index from this
+   * image sequence
+   * 
+   * @param pIndex
+   *          image index
+   * @return Dcam image sequence
+   */
+  public DcamImageSequence getSinglePlaneImageSequence(final int pIndex)
+  {
+    ContiguousMemoryInterface lMemory = getMemoryForPlane(pIndex);
+    DcamImageSequence lDcamImageSequence =
+                                         new DcamImageSequence(FragmentedMemory.wrap(lMemory),
+                                                               getBytesPerPixel(),
+                                                               getWidth(),
+                                                               getDepth(),
+                                                               1);
+    return lDcamImageSequence;
+  }
+
+  /**
+   * Consolidates (copies) the contents of this image sequence into a
+   * 
+   * @param pDestinationMemory
+   *          destination memory
+   */
+  public void consolidateTo(final ContiguousMemoryInterface pDestinationMemory)
+  {
+    mFragmentedMemory.makeConsolidatedCopy(pDestinationMemory);
+  }
+
+  /**
+   * Returns the number of fragments
+   * 
+   * @return number of fragments
+   */
+  public long getNumberOfFragments()
+  {
+    return mFragmentedMemory.getNumberOfFragments();
+  }
+
+  @Override
+  public long getSizeInBytes()
+  {
+    return mFragmentedMemory.getSizeInBytes();
+  }
+
+  @Override
+  public void free()
+  {
+    mFragmentedMemory.free();
+  }
+
+  @Override
+  public boolean isFree()
+  {
+    return mFragmentedMemory.isFree();
+  }
+
+  @Override
+  public void complainIfFreed() throws FreedException
+  {
+    mFragmentedMemory.complainIfFreed();
+  }
+
+  @Override
+  public String toString()
+  {
+    return String.format("DcamImageSequence [mBytesPerPixel=%s, mWidth=%s, mHeight=%s, mDepth=%s, mIndex=%s, mTimeStampInNs=%s]",
+                         mBytesPerPixel,
+                         mWidth,
+                         mHeight,
+                         mDepth,
+                         mTimeStampInNs);
+  }
+
+}

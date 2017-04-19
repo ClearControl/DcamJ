@@ -22,7 +22,7 @@ public class DcamBufferControl extends DcamBase
 
   private final DcamDevice mDcamDevice;
 
-  private DcamFrame mAttachedDcamFrame;
+  private DcamImageSequence mAttachedDcamFrame;
   private DCAMBUF_ATTACH mDCAMBUF_ATTACH;
   private Pointer<Pointer<?>> mPointerToPointerArray;
   private Pointer<DCAM_FRAME> mInternalDcamFramePointer;
@@ -33,7 +33,7 @@ public class DcamBufferControl extends DcamBase
    * @param pDcamDevice
    *          Dcam camera device
    */
-  public DcamBufferControl(final DcamDevice pDcamDevice)
+  DcamBufferControl(final DcamDevice pDcamDevice)
   {
     mDcamDevice = pDcamDevice;
   }
@@ -108,18 +108,18 @@ public class DcamBufferControl extends DcamBase
   /**
    * Attach external buffers provided as a Dcam frame
    * 
-   * @param pDcamFrame
+   * @param pImageSequence
    *          Dcam frame
    * @return true -> success, false otherwise.
    */
-  public final boolean attachExternalBuffers(DcamFrame pDcamFrame)
+  public final boolean attachExternalBuffers(DcamImageSequence pImageSequence)
   {
-    if (mAttachedDcamFrame == pDcamFrame)
+    if (mAttachedDcamFrame == pImageSequence)
       return true;
 
-    mAttachedDcamFrame = pDcamFrame;
+    mAttachedDcamFrame = pImageSequence;
 
-    final long lNumberOfBuffers = pDcamFrame.getDepth();
+    final long lNumberOfBuffers = pImageSequence.getDepth();
 
     if (mPointerToPointerArray == null
         || mPointerToPointerArray.getValidElements() != lNumberOfBuffers)
@@ -129,7 +129,7 @@ public class DcamBufferControl extends DcamBase
     for (int i = 0; i < lNumberOfBuffers; i++)
     {
       Pointer<Byte> lPointerToIndividualBuffer =
-                                               pDcamFrame.getPointerForSinglePlane(i);
+                                               pImageSequence.getPointerForPlane(i);
       mPointerToPointerArray.set(i, lPointerToIndividualBuffer);
     }
 
@@ -159,7 +159,7 @@ public class DcamBufferControl extends DcamBase
 
   /**
    * Computes total required memory in bytes for the given number of buffers and
-   * the current image dimensions.f
+   * the current image dimensions.
    * 
    * @param pNumberOfBuffers
    *          number of buffers
@@ -169,7 +169,7 @@ public class DcamBufferControl extends DcamBase
   {
     final long lImageSizeInBytes =
                                  (long) mDcamDevice.getProperties()
-                                                   .getPropertyValue(DCAMIDPROP.DCAM_IDPROP_BUFFER_FRAMEBYTES);
+                                                   .getDoublePropertyValue(DCAMIDPROP.DCAM_IDPROP_BUFFER_FRAMEBYTES);
 
     final long lTotalRequiredmemoryInBytes = pNumberOfBuffers
                                              * lImageSizeInBytes;
@@ -178,23 +178,23 @@ public class DcamBufferControl extends DcamBase
   }
 
   /**
-   * Returns the Dcam frame for a given frame index
+   * Returns the Dcam image sequence for a given frame index
    * 
    * @param pFrameIndex
    *          frame index
-   * @return Dcam frame
+   * @return Dcam image sequence for single plane
    */
-  public DcamFrame getDcamFrameForIndex(long pFrameIndex)
+  public DcamImageSequence getDcamFrameForIndex(int pFrameIndex)
   {
-    return mAttachedDcamFrame.getSinglePlaneDcamFrame(pFrameIndex);
+    return mAttachedDcamFrame.getSinglePlaneImageSequence(pFrameIndex);
   }
 
   /**
-   * Returns the number of single plane buffers.
+   * Returns the current attached image sequence depth.
    * 
    * @return number of single plane buffers
    */
-  public long getNumberOfSinglePlaneBuffers()
+  public long getAttachedImageSequenceDepth()
   {
     return mAttachedDcamFrame.getDepth();
   }
@@ -220,7 +220,7 @@ public class DcamBufferControl extends DcamBase
    * 
    * @return Dcam frame
    */
-  public DcamFrame getStackDcamFrame()
+  public DcamImageSequence getStackDcamFrame()
   {
     return mAttachedDcamFrame;
   }

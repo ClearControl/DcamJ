@@ -19,17 +19,30 @@ public class DcamFrame
   private volatile long mBytesPerPixel, mWidth, mHeight, mDepth;
   private volatile long mIndex, mTimeStampInNs;
 
-  @SuppressWarnings("unchecked")
+  /**
+   * Initialises 
+   * @param pBytesPerPixel bytes per pixel/voxel
+   * @param pWidth width
+   * @param pHeight height 
+   * @param pDepth depth
+   */
   public DcamFrame(final long pBytesPerPixel,
                    final long pWidth,
                    final long pHeight,
-                   final long pDepth)
+                   final long pDept,
+                   boolean pFragmented)
   {
     mBytesPerPixel = pBytesPerPixel;
     mWidth = pWidth;
     mHeight = pHeight;
     mDepth = pDepth;
 
+    if(pFragmented)
+    {
+      
+    }
+    FragmentedMemory.
+    
     for (int i = 0; i < pDepth; i++)
     {
       mPointerArray[i] = Pointer.allocateAlignedArray(byte.class,

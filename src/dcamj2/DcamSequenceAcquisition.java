@@ -40,11 +40,14 @@ public class DcamSequenceAcquisition
    */
   public void acquireSequence(long pWidth, long pHeight, long pDepth)
   {
-
-    mDcamDevice.startSequence();
-
     System.out.println("DcamJ(Runnable): mDcamDevice.getStatus()="
                        + mDcamDevice.getStatus());
+
+    mDcamDevice.getBufferControl();
+
+    mBufferControl.mShowErrors = true;
+
+    mDcamDevice.startSequence();
 
     final long lNumberOfBuffers =
                                 mDcamDevice.getBufferControl()
@@ -93,7 +96,6 @@ public class DcamSequenceAcquisition
                                       .getStackDcamFrame();
     lDcamFrame.setIndex(mAcquiredFrameIndex);
     lDcamFrame.setTimeStampInNs(lAcquisitionTimeStampInNanoseconds);
-
 
     System.out.println("DcamJ(Runnable):lNumberOfFramesWrittenByDrivertoBuffers="
                        + lNumberOfFramesWrittenByDrivertoBuffers);

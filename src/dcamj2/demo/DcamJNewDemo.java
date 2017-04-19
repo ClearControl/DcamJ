@@ -22,6 +22,10 @@ public class DcamJNewDemo
   @Test
   public void testSequenceAcquisition()
   {
+    int lWidth = 512;
+    int lHeight = 512;
+    int lDepth = 10;
+
     DcamLibrary.initialize();
 
     DcamDevice lDcamDevice = DcamLibrary.getDeviceForId(0);
@@ -31,7 +35,7 @@ public class DcamJNewDemo
     DcamSequenceAcquisition lDcamSequenceAcquisition =
                                                      new DcamSequenceAcquisition(lDcamDevice);
 
-    lDcamSequenceAcquisition.acquireSequence(512, 512, 10);
+    lDcamSequenceAcquisition.acquireSequence(lWidth, lHeight, lDepth);
 
   }
 

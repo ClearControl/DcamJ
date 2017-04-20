@@ -28,9 +28,9 @@ public class DcamJDemo
   @Test
   public void testSequenceAcquisition() throws InterruptedException
   {
-    int lWidth = 512;
-    int lHeight = 512;
-    int lDepth = 10;
+    int lWidth = 2048;
+    int lHeight = 2048;
+    int lDepth = 512;
 
     assertTrue(DcamLibrary.initialize());
 
@@ -58,9 +58,9 @@ public class DcamJDemo
     System.out.println("SECOND SEQUENCE");
     DcamImageSequence lSequence2 = new DcamImageSequence(lDcamDevice,
                                                          2,
-                                                         lWidth * 2,
-                                                         lHeight * 2,
-                                                         lDepth * 2);
+                                                         lWidth / 2,
+                                                         lHeight / 2,
+                                                         lDepth / 2);
 
     assertTrue(lDcamSequenceAcquisition.acquireSequence(0.01,
                                                         lSequence2));

@@ -57,7 +57,7 @@ public class DcamSequenceAcquisition extends DcamBase
       return false;
     }
 
-    System.out.println("set exposure");
+    System.out.format("set exposure %g seconds", pExposure);
     mDcamDevice.setExposure(pExposure);
 
     System.out.println("attach buffers");
@@ -67,18 +67,22 @@ public class DcamSequenceAcquisition extends DcamBase
     System.out.println("start sequence");
     mDcamDevice.startSequence();
 
-    int lWaitTimeout = (int) (2 * (1000 * pExposure
-                                   * pImageSequence.getDepth()));
+    int lWaitTimeoutInSeconds =
+                              (int) (2
+                                     * (1000 * pExposure
+                                        * pImageSequence.getDepth()));
 
     int lCurrentPriority = Thread.currentThread().getPriority();
     Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
 
-    System.out.println("waiting...");
+    // doc not clear if timepout is in seconds...
+    System.out.print("waiting...");
     boolean lWaitSuccess =
                          mDcamDevice.getDcamWait()
-                                    .waitForEventStopped(lWaitTimeout);
+                                    .waitForEventStopped(lWaitTimeoutInSeconds);
     final long lAcquisitionTimeStampInNanoseconds =
                                                   StopWatch.absoluteTimeInNanoseconds();
+    System.out.println("    ...done!");
     Thread.currentThread().setPriority(lCurrentPriority);
 
     DCAMCAP_TRANSFERINFO lTransferinfo =
@@ -119,8 +123,10 @@ public class DcamSequenceAcquisition extends DcamBase
 
     lDcamFrame.setTimeStampInNs(lAcquisitionTimeStampInNanoseconds);
 
+    System.out.format("Stopping acquisition");
     mDcamDevice.stop();
 
+    System.out.format("Releasing buffers");
     mDcamDevice.getBufferControl().releaseBuffers();
 
     return true;

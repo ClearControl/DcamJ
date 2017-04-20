@@ -1,8 +1,11 @@
 package dcamj2;
 
+import java.util.ArrayList;
+
 import org.bridj.Pointer;
 
 import coremem.ContiguousMemoryInterface;
+import coremem.buffers.ContiguousBuffer;
 import coremem.exceptions.FreedException;
 import coremem.fragmented.FragmentedMemory;
 import coremem.fragmented.FragmentedMemoryInterface;
@@ -20,7 +23,8 @@ public class DcamImageSequence implements SizedInBytes, Freeable
 
   private static final int cPageAlignment = 4096;
 
-  private final FragmentedMemoryInterface mFragmentedMemory;
+  private DcamDevice mDcamDevice;
+  private FragmentedMemoryInterface mFragmentedMemory;
 
   private volatile long mBytesPerPixel, mWidth, mHeight, mDepth;
   private volatile long mTimeStampInNs;
@@ -80,14 +84,7 @@ public class DcamImageSequence implements SizedInBytes, Freeable
                            final long pDepth,
                            boolean pFragmented)
   {
-    mBytesPerPixel = pBytesPerPixel;
-    mWidth =
-           pDcamDevice.adjustWidthHeight(pWidth,
-                                         4 / pDcamDevice.getBinning());
-    mHeight =
-            pDcamDevice.adjustWidthHeight(pHeight,
-                                          4 / pDcamDevice.getBinning());
-    mDepth = pDepth;
+    this(pDcamDevice, null, pBytesPerPixel, pWidth, pHeight, pDepth);
 
     if (pFragmented)
     {
@@ -121,6 +118,10 @@ public class DcamImageSequence implements SizedInBytes, Freeable
    * Instantiates a Dcam image sequence given a fragmented memory object and
    * corresponding number of bytes per pixel, image width, height and depth.
    * 
+   * @param pDcamDevice
+   *          device to use for acquisition, this is used to adjust height and
+   *          width
+   * 
    * @param pFragmentedMemory
    *          fragmented memory object
    * @param pBytesPerPixel
@@ -132,16 +133,23 @@ public class DcamImageSequence implements SizedInBytes, Freeable
    * @param pDepth
    *          depth
    */
-  public DcamImageSequence(final FragmentedMemoryInterface pFragmentedMemory,
+  public DcamImageSequence(DcamDevice pDcamDevice,
+                           final FragmentedMemoryInterface pFragmentedMemory,
                            final long pBytesPerPixel,
                            final long pWidth,
                            final long pHeight,
                            final long pDepth)
   {
+    mDcamDevice = pDcamDevice;
     mBytesPerPixel = pBytesPerPixel;
-    mWidth = pWidth;
-    mHeight = pHeight;
+    mWidth =
+           pDcamDevice.adjustWidthHeight(pWidth,
+                                         4 / pDcamDevice.getBinning());
+    mHeight =
+            pDcamDevice.adjustWidthHeight(pHeight,
+                                          4 / pDcamDevice.getBinning());
     mDepth = pDepth;
+
     mFragmentedMemory = pFragmentedMemory;
   }
 
@@ -244,23 +252,46 @@ public class DcamImageSequence implements SizedInBytes, Freeable
   {
     ContiguousMemoryInterface lMemory = getMemoryForPlane(pIndex);
     DcamImageSequence lDcamImageSequence =
-                                         new DcamImageSequence(FragmentedMemory.wrap(lMemory),
+                                         new DcamImageSequence(mDcamDevice,
+                                                               FragmentedMemory.wrap(lMemory),
                                                                getBytesPerPixel(),
                                                                getWidth(),
                                                                getDepth(),
-                                                               1);
+                                                               1L);
     return lDcamImageSequence;
   }
 
   /**
    * Consolidates (copies) the contents of this image sequence into a
    * 
+   * @param pKeepPlaneList
+   *          list of boolean flags indicating which planes to keep
+   * 
    * @param pDestinationMemory
    *          destination memory
    */
-  public void consolidateTo(final ContiguousMemoryInterface pDestinationMemory)
+  public void consolidateTo(ArrayList<Boolean> pKeepPlaneList,
+                            final ContiguousMemoryInterface pDestinationMemory)
   {
-    mFragmentedMemory.makeConsolidatedCopy(pDestinationMemory);
+    if (pKeepPlaneList == null || pKeepPlaneList.isEmpty())
+      mFragmentedMemory.makeConsolidatedCopy(pDestinationMemory);
+    else
+    {
+      final ContiguousBuffer lContiguousBuffer =
+                                               ContiguousBuffer.wrap(pDestinationMemory);
+
+      int lNumberOfFragments =
+                             mFragmentedMemory.getNumberOfFragments();
+
+      for (int i = 0; i < lNumberOfFragments; i++)
+        if (pKeepPlaneList.get(i))
+        {
+          ContiguousMemoryInterface lContiguousMemoryInterface =
+                                                               mFragmentedMemory.get(i);
+          lContiguousBuffer.writeContiguousMemory(lContiguousMemoryInterface);
+        }
+
+    }
   }
 
   /**

@@ -1,4 +1,4 @@
-package dcamj.demo;
+package dcamj1.demo;
 
 import static org.junit.Assert.assertTrue;
 
@@ -8,11 +8,11 @@ import java.util.concurrent.TimeUnit;
 import org.bridj.Pointer;
 import org.junit.Test;
 
-import dcamj.DcamAcquisition;
-import dcamj.DcamAcquisition.TriggerType;
-import dcamj.DcamAcquisitionListener;
-import dcamj.DcamFrame;
-import dcamj.utils.StopWatch;
+import dcamj1.DcamAcquisition;
+import dcamj1.DcamAcquisitionListener;
+import dcamj1.DcamFrame;
+import dcamj1.DcamAcquisition.TriggerType;
+import dcamj1.utils.StopWatch;
 
 public class DcamJDemo
 {

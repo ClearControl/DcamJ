@@ -1,4 +1,4 @@
-package dcamj;
+package dcamj1;
 
 import static org.bridj.Pointer.pointerTo;
 

@@ -1,4 +1,4 @@
-package dcamj;
+package dcamj1;
 
 import java.util.Collection;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -11,8 +11,8 @@ public class DcamBase
 {
 	private final ConcurrentLinkedQueue<IntValuedEnum<DCAMERR>> mErrorList = new ConcurrentLinkedQueue<IntValuedEnum<DCAMERR>>();
 
-	private boolean mDebug = false;
-	private boolean mShowErrors = false;
+	boolean mDebug = false;
+	boolean mShowErrors = false;
 
 	
   /**

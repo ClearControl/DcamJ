@@ -1,4 +1,4 @@
-package dcamj.utils;
+package dcamj1.utils;
 
 import java.util.concurrent.TimeUnit;
 

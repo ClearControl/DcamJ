@@ -1,8 +1,8 @@
-package dcamj;
+package dcamj1;
 
 import dcamapi.DCAMCAP_TRANSFERINFO;
 import dcamapi.DcamapiLibrary.DCAMWAIT_EVENT;
-import dcamj.utils.StopWatch;
+import dcamj1.utils.StopWatch;
 
 class DcamAquisitionRunnable implements Runnable
 {

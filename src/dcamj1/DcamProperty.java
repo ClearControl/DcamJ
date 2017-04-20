@@ -1,4 +1,4 @@
-package dcamj;
+package dcamj1;
 
 import org.bridj.FlagSet;
 

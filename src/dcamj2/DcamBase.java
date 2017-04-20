@@ -14,18 +14,19 @@ import dcamapi.DcamapiLibrary.DCAMERR;
  */
 public class DcamBase
 {
+
   private final ConcurrentLinkedQueue<IntValuedEnum<DCAMERR>> mErrorList =
                                                                          new ConcurrentLinkedQueue<IntValuedEnum<DCAMERR>>();
 
   /**
    * Debug flag
    */
-  public boolean mDebug = false;
+  public boolean mDebug = true;
 
   /**
    * Show errors flag
    */
-  public boolean mShowErrors = false;
+  public boolean mShowErrors = true;
 
   protected final void addError(final IntValuedEnum<DCAMERR> pError)
   {

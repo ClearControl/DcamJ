@@ -57,6 +57,7 @@ public class DcamLibrary
         {
           try
           {
+            System.out.println("DcamJ: shutdown thread uninitializing Dcam driver");
             uninitialize();
           }
           catch (Throwable e)
@@ -129,7 +130,8 @@ public class DcamLibrary
   /**
    * Returns true if the corresponding Dcam API return code means success.
    * 
-   * @param pDcamReturnCode Dcam return code
+   * @param pDcamReturnCode
+   *          Dcam return code
    * @return true -> success, false otherwise
    */
   public static boolean hasSucceeded(final IntValuedEnum<DCAMERR> pDcamReturnCode)

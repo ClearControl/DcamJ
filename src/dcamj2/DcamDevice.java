@@ -28,11 +28,12 @@ import dcamapi.HDCAM_struct;
 public class DcamDevice extends DcamBase implements AutoCloseable
 {
   private long mDeviceID;
+  private long mDevicePeer;
 
-  private DcamProperties mDcamProperties;
-  private DcamWait mDcamWait;
+  DcamProperties mDcamProperties;
+  DcamWait mDcamWait;
 
-  private DcamBufferControl mBufferControl;
+  DcamBufferControl mBufferControl;
 
   /**
    * Instantiates a camera device given a device id (index)
@@ -44,7 +45,6 @@ public class DcamDevice extends DcamBase implements AutoCloseable
   {
     super();
     mDeviceID = pDeviceID;
-    open();
   }
 
   /**
@@ -57,7 +57,12 @@ public class DcamDevice extends DcamBase implements AutoCloseable
     return mDeviceID;
   }
 
-  private final boolean open()
+  /**
+   * Opens camera device
+   * 
+   * @return true -> success
+   */
+  public final boolean open()
   {
     final DCAMDEV_OPEN lDCAMDEV_OPEN = new DCAMDEV_OPEN();
     final long size = BridJ.sizeOf(DCAMDEV_OPEN.class);
@@ -73,7 +78,7 @@ public class DcamDevice extends DcamBase implements AutoCloseable
 
     if (lSuccess)
     {
-      mDeviceID = lDCAMDEV_OPEN.hdcam().getPeer();
+      mDevicePeer = lDCAMDEV_OPEN.hdcam().getPeer();
     }
 
     return lSuccess;
@@ -133,11 +138,11 @@ public class DcamDevice extends DcamBase implements AutoCloseable
   public boolean setCenteredROI(final long pCenteredWidth,
                                 final long pCenteredHeight)
   {
-    final long lWidth = roundto4(pCenteredWidth);
-    final long lHeight = roundto4(pCenteredHeight);
+    final long lWidth = adjustWidthHeight(pCenteredWidth, 4);
+    final long lHeight = adjustWidthHeight(pCenteredHeight, 4);
 
-    final long hpos = roundto4(1024 - lWidth / 2);
-    final long vpos = roundto4(1024 - lHeight / 2);
+    final long hpos = adjustWidthHeight(1024 - lWidth / 2, 4);
+    final long vpos = adjustWidthHeight(1024 - lHeight / 2, 4);
     boolean lSuccess = true;
     lSuccess &=
              getProperties().setDoublePropertyValue(DCAMIDPROP.DCAM_IDPROP_SUBARRAYHPOS,
@@ -156,7 +161,7 @@ public class DcamDevice extends DcamBase implements AutoCloseable
              getProperties().setDoublePropertyValue(DCAMIDPROP.DCAM_IDPROP_SUBARRAYMODE,
                                                     2);
 
-    /*System.out.format("DcamJ: ROI: parameters: cwidth=%d, cheight=%d, hpos=%d, vpos=%d, width=%d, height=%d --> success=%s  \n",
+    System.out.format("DcamJ: ROI: parameters: cwidth=%d, cheight=%d, hpos=%d, vpos=%d, width=%d, height=%d --> success=%s  \n",
                       pCenteredWidth,
                       pCenteredHeight,
                       hpos,
@@ -231,6 +236,16 @@ public class DcamDevice extends DcamBase implements AutoCloseable
                                                     pBinSize);
 
     return lSuccess;
+  }
+
+  /**
+   * Returns current pixel binning (1, 2 or 4)
+   * 
+   * @return binning (1, 2 or 4)
+   */
+  public long getBinning()
+  {
+    return (long) getProperties().getDoublePropertyValue(DCAMIDPROP.DCAM_IDPROP_BINNING);
   }
 
   /**
@@ -361,23 +376,24 @@ public class DcamDevice extends DcamBase implements AutoCloseable
   }
 
   /**
-   * Utility function to round the width and height of camera images to the
-   * closest allowed multiple of 4.
+   * Utility function to adjust the width and height of camera images to the for
+   * a given multiple.
    * 
    * @param pWidthOrHeight
    *          camera image width or height
+   * @param pMultiple
+   *          Multiple to adjust camera width or height
    * @return closest multiple of 4
    */
-  public static long roundto4(long pWidthOrHeight)
+  public long adjustWidthHeight(long pWidthOrHeight, long pMultiple)
   {
-    return (4 * Math.round(pWidthOrHeight * 0.25));
+    return (pMultiple * Math.round(pWidthOrHeight / pMultiple));
   }
 
   @SuppressWarnings("deprecation")
   final Pointer<HDCAM_struct> getHDCAMPointer()
   {
-    return Pointer.pointerToAddress(getDeviceID(),
-                                    HDCAM_struct.class);
+    return Pointer.pointerToAddress(mDevicePeer, HDCAM_struct.class);
   }
 
   final String getDeviceString(final DCAM_IDSTR pDCAM_IDSTR)
@@ -412,7 +428,7 @@ public class DcamDevice extends DcamBase implements AutoCloseable
   /**
    * Returns information about this device on the standard output
    */
-  public final void displayDeviceInfo()
+  public final void printDeviceInfo()
   {
     final String lVendor =
                          getDeviceString(DCAM_IDSTR.DCAM_IDSTR_VENDOR);
@@ -514,9 +530,16 @@ public class DcamDevice extends DcamBase implements AutoCloseable
   @Override
   public final void close()
   {
+    if (mBufferControl != null)
+      mBufferControl.releaseBuffers();
+
+    if (mDcamWait != null)
+      mDcamWait.close();
+
     final IntValuedEnum<DCAMERR> lError =
                                         DcamapiLibrary.dcamdevClose(getHDCAMPointer());
     addErrorToListAndCheckHasSucceeded(lError);
+
   }
 
   /**
@@ -576,7 +599,12 @@ public class DcamDevice extends DcamBase implements AutoCloseable
     return lSuccess;
   }
 
-  final IntValuedEnum<DCAMCAP_STATUS> getStatus()
+  /**
+   * Returns this device status
+   * 
+   * @return camera device status
+   */
+  public final IntValuedEnum<DCAMCAP_STATUS> getStatus()
   {
     @SuppressWarnings(
     { "unchecked", "rawtypes" })

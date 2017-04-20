@@ -1,7 +1,6 @@
 package dcamj2;
 
 import dcamapi.DCAMCAP_TRANSFERINFO;
-import dcamapi.DcamapiLibrary.DCAMWAIT_EVENT;
 import dcamj2.utils.StopWatch;
 
 /**
@@ -30,47 +29,66 @@ public class DcamSequenceAcquisition extends DcamBase
   /**
    * Acquires a sequence of images
    * 
+   * @param pExposure
+   *          exposure
+   * 
    * @param pImageSequence
    *          image sequence to use
+   * @return true -> success
    */
-  public void acquireSequence(DcamImageSequence pImageSequence)
+  public boolean acquireSequence(double pExposure,
+                                 DcamImageSequence pImageSequence)
   {
     System.out.println("DcamJ(Runnable): mDcamDevice.getStatus()="
                        + mDcamDevice.getStatus());
 
+    System.out.println("setting ROI");
+    mDcamDevice.setCenteredROI(pImageSequence.getWidth()
+                               * mDcamDevice.getBinning(),
+                               pImageSequence.getHeight() * mDcamDevice.getBinning());
+    /*ensureOpenedWithCorrectWidthAndHeight(pImageSequence.getWidth(),
+                                          pImageSequence.getHeight());/**/
+
+    if (mDcamDevice.getWidth() != pImageSequence.getWidth()
+                                  * mDcamDevice.getBinning()
+        || mDcamDevice.getHeight() != pImageSequence.getHeight()
+                                      * mDcamDevice.getBinning())
+    {
+      return false;
+    }
+
+    System.out.println("set exposure");
+    mDcamDevice.setExposure(pExposure);
+
+    System.out.println("attach buffers");
     mDcamDevice.getBufferControl()
                .attachExternalBuffers(pImageSequence);
 
+    System.out.println("start sequence");
     mDcamDevice.startSequence();
 
-    final long lDepth = mDcamDevice.getBufferControl()
-                                   .getAttachedImageSequenceDepth();
+    int lWaitTimeout = (int) (2 * (1000 * pExposure
+                                   * pImageSequence.getDepth()));
+
+    int lCurrentPriority = Thread.currentThread().getPriority();
+    Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
+
+    System.out.println("waiting...");
+    boolean lWaitSuccess =
+                         mDcamDevice.getDcamWait()
+                                    .waitForEventStopped(lWaitTimeout);
+    final long lAcquisitionTimeStampInNanoseconds =
+                                                  StopWatch.absoluteTimeInNanoseconds();
+    Thread.currentThread().setPriority(lCurrentPriority);
 
     DCAMCAP_TRANSFERINFO lTransferinfo =
                                        mDcamDevice.getTransferInfo();
 
     long lFrameCount = lTransferinfo.nFrameCount();
 
-    final DCAMWAIT_EVENT lDcamcapEventToWaitFor =
-                                                DCAMWAIT_EVENT.DCAMCAP_EVENT_FRAMEREADYORSTOPPED;
-
-    int lWaitTimeout = 5;
-
-    int lCurrentPriority = Thread.currentThread().getPriority();
-    Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
-    boolean lWaitSuccess =
-                         mDcamDevice.getDcamWait()
-                                    .waitForEventReadyOrStopped(lWaitTimeout);
-    Thread.currentThread().setPriority(lCurrentPriority);
-
-    final long lDcamWaitEvent = mDcamDevice.getDcamWait()
-                                           .getLastEvent();
-
-    final long lAcquisitionTimeStampInNanoseconds =
-                                                  StopWatch.absoluteTimeInNanoseconds();
-    // System.out.println(System.nanoTime());
-
-    lTransferinfo = mDcamDevice.getTransferInfo();
+    System.out.format("Success: %s with n=%d \n",
+                      lWaitSuccess,
+                      lFrameCount);
 
     final long lNumberOfFramesWrittenByDrivertoBuffers =
                                                        lTransferinfo.nFrameCount();
@@ -78,31 +96,34 @@ public class DcamSequenceAcquisition extends DcamBase
     final long lReceivedFrameIndexInBufferList =
                                                lTransferinfo.nNewestFrameIndex();
 
-    System.out.println("DcamJ(Runnable): lNumberOfFramesWrittenByDrivertoBuffers="
-                       + lNumberOfFramesWrittenByDrivertoBuffers);
-    System.out.println("DcamJ(Runnable): lReceivedFrameIndexInBufferList="
-                       + lReceivedFrameIndexInBufferList);
+    System.out.format("DcamJ(Runnable): Wrote %d frames into external buffers (local frame index=%d) \n",
+                      lNumberOfFramesWrittenByDrivertoBuffers,
+                      lReceivedFrameIndexInBufferList);/**/
+
+    if (lNumberOfFramesWrittenByDrivertoBuffers != pImageSequence.getDepth())
+      return false;
 
     final boolean lReceivedStopEvent =
                                      mDcamDevice.getDcamWait()
                                                 .isLastEventStopped();
     final boolean lReceivedFrameReadyEvent =
                                            mDcamDevice.getDcamWait()
-                                                      .isLastEventStopped();
+                                                      .isLastEventReady();
+
+    System.out.format("stop event: %s, ready event: %s \n",
+                      lReceivedStopEvent,
+                      lReceivedFrameReadyEvent);
 
     DcamImageSequence lDcamFrame = mDcamDevice.getBufferControl()
                                               .getStackDcamFrame();
 
     lDcamFrame.setTimeStampInNs(lAcquisitionTimeStampInNanoseconds);
 
-    System.out.println("DcamJ(Runnable):lNumberOfFramesWrittenByDrivertoBuffers="
-                       + lNumberOfFramesWrittenByDrivertoBuffers);
-    System.out.println("DcamJ(Runnable):lReceivedFrameIndexInBufferList="
-                       + lReceivedFrameIndexInBufferList);
-    System.out.format("DcamJ(Runnable): Wrote %d frames into external buffers (local frame index=%d) \n",
-                      lNumberOfFramesWrittenByDrivertoBuffers,
-                      lReceivedFrameIndexInBufferList);/**/
+    mDcamDevice.stop();
 
+    mDcamDevice.getBufferControl().releaseBuffers();
+
+    return true;
   }
 
   /**
@@ -128,13 +149,15 @@ public class DcamSequenceAcquisition extends DcamBase
         System.out.format("DcamJ: reopening device %d begin \n",
                           mDcamDevice.getDeviceID());
 
-      if (mDcamDevice.getBufferControl() != null)
-        mDcamDevice.getBufferControl().releaseBuffers();
+      if (mDcamDevice.mBufferControl != null)
+        mDcamDevice.mBufferControl.releaseBuffers();
       if (mDcamDevice != null)
         mDcamDevice.close();
+
       mDcamDevice =
                   DcamLibrary.getDeviceForId(mDcamDevice.getDeviceID());
       mDcamDevice.setCenteredROI(pRequestedWidth, pRequestedHeight);
+
       if (mDebug)
         System.out.format("DcamJ: reopening device %d end \n",
                           mDcamDevice.getDeviceID());

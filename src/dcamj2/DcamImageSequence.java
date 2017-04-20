@@ -26,9 +26,40 @@ public class DcamImageSequence implements SizedInBytes, Freeable
   private volatile long mTimeStampInNs;
 
   /**
-   * Initializes a Dcam image sequence given the number of bytes per pixel, and
+   * Initialises a Dcam image sequence given the number of bytes per pixel, and
    * image sequence width, height and depth. The memory allocation is handled by
    * this constructor.
+   * 
+   * @param pDcamDevice
+   *          device to use for acquisition, this is used to adjust height and
+   *          width
+   * 
+   * @param pBytesPerPixel
+   *          bytes per pixel/voxel
+   * @param pWidth
+   *          width
+   * @param pHeight
+   *          height
+   * @param pDepth
+   *          depth
+   */
+  public DcamImageSequence(DcamDevice pDcamDevice,
+                           final long pBytesPerPixel,
+                           final long pWidth,
+                           final long pHeight,
+                           final long pDepth)
+  {
+    this(pDcamDevice, pBytesPerPixel, pWidth, pHeight, pDepth, true);
+  }
+
+  /**
+   * Initialises a Dcam image sequence given the number of bytes per pixel, and
+   * image sequence width, height, depth and binning (1,2 or 4). The memory
+   * allocation is handled by this constructor.
+   * 
+   * @param pDcamDevice
+   *          device to use for acquisition, this is used to adjust height and
+   *          width
    * 
    * @param pBytesPerPixel
    *          bytes per pixel/voxel
@@ -42,23 +73,28 @@ public class DcamImageSequence implements SizedInBytes, Freeable
    *          true-> allocates multiple independent buffers, false -> allocates
    *          a single contiguous buffer
    */
-  public DcamImageSequence(final long pBytesPerPixel,
+  public DcamImageSequence(DcamDevice pDcamDevice,
+                           final long pBytesPerPixel,
                            final long pWidth,
                            final long pHeight,
                            final long pDepth,
                            boolean pFragmented)
   {
     mBytesPerPixel = pBytesPerPixel;
-    mWidth = pWidth;
-    mHeight = pHeight;
+    mWidth =
+           pDcamDevice.adjustWidthHeight(pWidth,
+                                         4 / pDcamDevice.getBinning());
+    mHeight =
+            pDcamDevice.adjustWidthHeight(pHeight,
+                                          4 / pDcamDevice.getBinning());
     mDepth = pDepth;
 
     if (pFragmented)
     {
       mFragmentedMemory = new FragmentedMemory();
-      for (int i = 0; i < pDepth; i++)
+      for (int i = 0; i < mDepth; i++)
       {
-        long lNumberOfBytes = pBytesPerPixel * pWidth * pHeight;
+        long lNumberOfBytes = pBytesPerPixel * mWidth * mHeight;
         OffHeapMemory lAllocatedMemory =
                                        OffHeapMemory.allocateAlignedBytes("DcamImageSequence"
                                                                           + i,
@@ -70,7 +106,7 @@ public class DcamImageSequence implements SizedInBytes, Freeable
     else
     {
       long lNumberOfBytes =
-                          pBytesPerPixel * pWidth * pHeight * pDepth;
+                          pBytesPerPixel * mWidth * mHeight * mDepth;
       OffHeapMemory lAllocatedMemory =
                                      OffHeapMemory.allocateAlignedBytes("DcamImageSequence",
                                                                         lNumberOfBytes,
@@ -264,7 +300,7 @@ public class DcamImageSequence implements SizedInBytes, Freeable
   @Override
   public String toString()
   {
-    return String.format("DcamImageSequence [mBytesPerPixel=%s, mWidth=%s, mHeight=%s, mDepth=%s, mIndex=%s, mTimeStampInNs=%s]",
+    return String.format("DcamImageSequence [mBytesPerPixel=%d, mWidth=%d, mHeight=%d, mDepth=%d, mTimeStampInNs=%d]",
                          mBytesPerPixel,
                          mWidth,
                          mHeight,

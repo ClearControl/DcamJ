@@ -43,8 +43,23 @@ public class DcamDevice extends DcamBase implements AutoCloseable
    */
   public DcamDevice(final long pDeviceID)
   {
+    this(pDeviceID, false);
+  }
+
+  /**
+   * Instantiates a camera device given a device id (index)
+   * 
+   * @param pDeviceID
+   *          device id (index)
+   * @param pOpen
+   *          true -> opens device at construction time
+   */
+  public DcamDevice(final long pDeviceID, boolean pOpen)
+  {
     super();
     mDeviceID = pDeviceID;
+    if (pOpen)
+      open();
   }
 
   /**
@@ -423,6 +438,31 @@ public class DcamDevice extends DcamBase implements AutoCloseable
       return "DcamJ: Could not retreive String for: "
              + pDCAM_IDSTR.toString();
     }
+  }
+
+  /**
+   * Returns the name of this device - the concatenation of the vendor, model
+   * and id.
+   * 
+   * @return device name
+   */
+  public String getCameraName()
+  {
+    final String lVendor =
+                         getDeviceString(DCAM_IDSTR.DCAM_IDSTR_VENDOR);
+    System.out.format("DCAM_IDSTR_VENDOR         = %s\n", lVendor);
+
+    final String lModel =
+                        getDeviceString(DCAM_IDSTR.DCAM_IDSTR_MODEL);
+    System.out.format("DCAM_IDSTR_MODEL          = %s\n", lModel);
+
+    final String lCameraId =
+                           getDeviceString(DCAM_IDSTR.DCAM_IDSTR_CAMERAID);
+    System.out.format("DCAM_IDSTR_CAMERAID       = %s\n", lCameraId);
+
+    String lName = lVendor + " " + lModel + " " + lCameraId;
+
+    return lName;
   }
 
   /**

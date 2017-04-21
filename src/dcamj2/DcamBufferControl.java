@@ -11,6 +11,7 @@ import dcamapi.DCAM_FRAME;
 import dcamapi.DcamapiLibrary;
 import dcamapi.DcamapiLibrary.DCAMERR;
 import dcamapi.DcamapiLibrary.DCAMIDPROP;
+import dcamj2.imgseq.DcamImageSequence;
 
 /**
  * Dcam buffer control

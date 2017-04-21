@@ -1,6 +1,7 @@
 package dcamj2;
 
 import dcamapi.DCAMCAP_TRANSFERINFO;
+import dcamj2.imgseq.DcamImageSequence;
 import dcamj2.utils.StopWatch;
 
 /**

@@ -1,4 +1,4 @@
-package dcamj2;
+package dcamj2.imgseq;
 
 import java.util.ArrayList;
 
@@ -11,14 +11,20 @@ import coremem.fragmented.FragmentedMemory;
 import coremem.fragmented.FragmentedMemoryInterface;
 import coremem.interfaces.SizedInBytes;
 import coremem.offheap.OffHeapMemory;
+import coremem.recycling.RecyclableInterface;
+import coremem.recycling.RecyclerInterface;
 import coremem.rgc.Freeable;
+import dcamj2.DcamDevice;
 
 /**
  * Dcam image sequence
  *
  * @author royer
  */
-public class DcamImageSequence implements SizedInBytes, Freeable
+public class DcamImageSequence implements
+                               RecyclableInterface<DcamImageSequence, DcamImageSequenceRequest>,
+                               SizedInBytes,
+                               Freeable
 {
 
   private static final int cPageAlignment = 4096;
@@ -29,8 +35,12 @@ public class DcamImageSequence implements SizedInBytes, Freeable
   private volatile long mBytesPerPixel, mWidth, mHeight, mDepth;
   private volatile long mTimeStampInNs;
 
+  // Recycling stuff:
+  private RecyclerInterface<DcamImageSequence, DcamImageSequenceRequest> mRecycler;
+  private boolean mIsReleased;
+
   /**
-   * Initialises a Dcam image sequence given the number of bytes per pixel, and
+   * Initializes a Dcam image sequence given the number of bytes per pixel, and
    * image sequence width, height and depth. The memory allocation is handled by
    * this constructor.
    * 
@@ -151,6 +161,16 @@ public class DcamImageSequence implements SizedInBytes, Freeable
     mDepth = pDepth;
 
     mFragmentedMemory = pFragmentedMemory;
+  }
+
+  /**
+   * Returns the parent Dcam device
+   * 
+   * @return parent Dcam device
+   */
+  public DcamDevice getDcamDevice()
+  {
+    return mDcamDevice;
   }
 
   /**
@@ -304,6 +324,17 @@ public class DcamImageSequence implements SizedInBytes, Freeable
     return mFragmentedMemory.getNumberOfFragments();
   }
 
+  /**
+   * Returns whether the data buffer supporting this image sequence is
+   * fragmented
+   * 
+   * @return true -> fragmented, false otherwise
+   */
+  public boolean isFragmented()
+  {
+    return getNumberOfFragments() > 1;
+  }
+
   @Override
   public long getSizeInBytes()
   {
@@ -337,6 +368,43 @@ public class DcamImageSequence implements SizedInBytes, Freeable
                          mHeight,
                          mDepth,
                          mTimeStampInNs);
+  }
+
+  @Override
+  public boolean isCompatible(DcamImageSequenceRequest pRequest)
+  {
+    return pRequest.isCompatible(this);
+  }
+
+  @Override
+  public void recycle(DcamImageSequenceRequest pRequest)
+  {
+    // nothing to do
+  }
+
+  @Override
+  public void setRecycler(RecyclerInterface<DcamImageSequence, DcamImageSequenceRequest> pRecycler)
+  {
+    mRecycler = pRecycler;
+  }
+
+  @Override
+  public void setReleased(boolean pIsReleased)
+  {
+    mIsReleased = pIsReleased;
+  }
+
+  @Override
+  public boolean isReleased()
+  {
+    return mIsReleased;
+  }
+
+  @Override
+  public void release()
+  {
+    if (mRecycler != null)
+      mRecycler.release(this);
   }
 
 }

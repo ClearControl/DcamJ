@@ -115,8 +115,8 @@ public class DcamBufferControl extends DcamBase
    */
   public final boolean attachExternalBuffers(DcamImageSequence pImageSequence)
   {
-    if (mAttachedDcamFrame == pImageSequence)
-      return true;
+    // if (mAttachedDcamFrame == pImageSequence)
+    // return true;
 
     mAttachedDcamFrame = pImageSequence;
 
@@ -124,8 +124,13 @@ public class DcamBufferControl extends DcamBase
 
     if (mPointerToPointerArray == null
         || mPointerToPointerArray.getValidElements() != lNumberOfBuffers)
+    {
+      if (mPointerToPointerArray != null)
+        mPointerToPointerArray.release();
+
       mPointerToPointerArray =
                              Pointer.allocatePointers((int) lNumberOfBuffers);
+    }
 
     for (int i = 0; i < lNumberOfBuffers; i++)
     {

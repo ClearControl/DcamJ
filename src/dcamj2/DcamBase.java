@@ -21,12 +21,12 @@ public class DcamBase
   /**
    * Debug flag
    */
-  public boolean mDebug = true;
+  public boolean mDebug = false;
 
   /**
    * Show errors flag
    */
-  public boolean mShowErrors = true;
+  public boolean mShowErrors = false;
 
   protected final void addError(final IntValuedEnum<DCAMERR> pError)
   {

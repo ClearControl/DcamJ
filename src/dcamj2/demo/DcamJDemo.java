@@ -202,13 +202,13 @@ public class DcamJDemo
                                                                          new BasicRecycler<>(lDcamImageSequenceFactory,
                                                                                              10);
 
-    for (int i = 0; i < 15; i++)
+    for (int i = 0; i < 25; i++)
     {
       System.out.println("SEQUENCE: " + i);
 
-      int lWidth = (int) (512 + Math.random() * 128);
-      int lHeight = (int) (512 + Math.random() * 128);
-      int lDepth = (int) (10 + Math.random() * 10);
+      int lWidth = (int) (512); // + Math.random() * 2
+      int lHeight = (int) (512);
+      int lDepth = (int) (10);
       DcamImageSequenceRequest lRequest =
                                         DcamImageSequenceRequest.build(lDcamDevice,
                                                                        2,
@@ -217,9 +217,13 @@ public class DcamJDemo
                                                                        lDepth,
                                                                        true);
 
+      System.out.println(lRequest);
+
       DcamImageSequence lSequence = lRecycler.getOrWait(1,
                                                         TimeUnit.SECONDS,
                                                         lRequest);
+
+      assertNotNull(lSequence);
 
       System.out.println(lSequence);
 

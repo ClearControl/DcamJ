@@ -107,8 +107,21 @@ public class DcamImageSequenceRequest implements
                                                         mBytesPerPixel,
                                                         mWidth,
                                                         mHeight,
-                                                        mDepth);
+                                                        mDepth,
+                                                        mFragmented);
     return lSequence;
+  }
+
+  @Override
+  public String toString()
+  {
+    return String.format("DcamImageSequenceRequest [mDcamDevice=%s, mBytesPerPixel=%s, mWidth=%s, mHeight=%s, mDepth=%s, mFragmented=%s]",
+                         mDcamDevice,
+                         mBytesPerPixel,
+                         mWidth,
+                         mHeight,
+                         mDepth,
+                         mFragmented);
   }
 
 }

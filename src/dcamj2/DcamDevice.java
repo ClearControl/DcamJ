@@ -99,6 +99,36 @@ public class DcamDevice extends DcamBase implements AutoCloseable
     return lSuccess;
   }
 
+  public boolean isBusy()
+  {
+    return (DCAMCAP_STATUS.DCAMCAP_STATUS_BUSY.value
+            & getStatus().value()) == DCAMCAP_STATUS.DCAMCAP_STATUS_BUSY.value;
+  }
+
+  public boolean isReady()
+  {
+    return (DCAMCAP_STATUS.DCAMCAP_STATUS_READY.value
+            & getStatus().value()) == DCAMCAP_STATUS.DCAMCAP_STATUS_READY.value;
+  }
+
+  public boolean isError()
+  {
+    return (DCAMCAP_STATUS.DCAMCAP_STATUS_ERROR.value
+            & getStatus().value()) == DCAMCAP_STATUS.DCAMCAP_STATUS_ERROR.value;
+  }
+
+  public boolean isStable()
+  {
+    return (DCAMCAP_STATUS.DCAMCAP_STATUS_STABLE.value
+            & getStatus().value()) == DCAMCAP_STATUS.DCAMCAP_STATUS_STABLE.value;
+  }
+
+  public boolean isUnstable()
+  {
+    return (DCAMCAP_STATUS.DCAMCAP_STATUS_UNSTABLE.value
+            & getStatus().value()) == DCAMCAP_STATUS.DCAMCAP_STATUS_UNSTABLE.value;
+  }
+
   /**
    * Returns the camera device current exposure
    * 
@@ -431,7 +461,7 @@ public class DcamDevice extends DcamBase implements AutoCloseable
     if (lSuccess)
     {
       final String lString = new String(lPointerToString.getBytes());
-      return lString;
+      return lString.trim();
     }
     else
     {
@@ -450,15 +480,12 @@ public class DcamDevice extends DcamBase implements AutoCloseable
   {
     final String lVendor =
                          getDeviceString(DCAM_IDSTR.DCAM_IDSTR_VENDOR);
-    System.out.format("DCAM_IDSTR_VENDOR         = %s\n", lVendor);
 
     final String lModel =
                         getDeviceString(DCAM_IDSTR.DCAM_IDSTR_MODEL);
-    System.out.format("DCAM_IDSTR_MODEL          = %s\n", lModel);
 
     final String lCameraId =
                            getDeviceString(DCAM_IDSTR.DCAM_IDSTR_CAMERAID);
-    System.out.format("DCAM_IDSTR_CAMERAID       = %s\n", lCameraId);
 
     String lName = lVendor + " " + lModel + " " + lCameraId;
 

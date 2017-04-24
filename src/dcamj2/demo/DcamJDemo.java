@@ -25,6 +25,53 @@ public class DcamJDemo
 {
 
   /**
+   * Tests single image acquisition
+   * 
+   * @throws InterruptedException
+   *           NA
+   */
+  @Test
+  public void testSingleImageAcquisition() throws InterruptedException
+  {
+    int lWidth = 2048;
+    int lHeight = 2048;
+    int lDepth = 1;
+
+    assertTrue(DcamLibrary.initialize());
+
+    DcamDevice lDcamDevice = new DcamDevice(0);
+    assertNotNull(lDcamDevice);
+
+    assertTrue(lDcamDevice.open());
+
+    System.out.println(lDcamDevice.getStatus());
+
+    lDcamDevice.setInputTriggerToExternalFastEdge();
+
+    lDcamDevice.printDeviceInfo();
+
+    DcamSequenceAcquisition lDcamSequenceAcquisition =
+                                                     new DcamSequenceAcquisition(lDcamDevice);
+    System.out.println("FIRST SEQUENCE");
+    DcamImageSequence lSequence1 = new DcamImageSequence(lDcamDevice,
+                                                         2,
+                                                         lWidth,
+                                                         lHeight,
+                                                         lDepth);
+
+    for (int i = 0; i < 100; i++)
+    {
+      assertTrue(lDcamSequenceAcquisition.acquireSequence(0.01,
+                                                          lSequence1));
+    }
+
+    lDcamDevice.close();
+
+    assertTrue(DcamLibrary.uninitialize());
+
+  }
+
+  /**
    * Tests sequence acquisition
    * 
    * @throws InterruptedException

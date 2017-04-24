@@ -40,8 +40,12 @@ public class DcamSequenceAcquisition extends DcamBase
   public boolean acquireSequence(double pExposure,
                                  DcamImageSequence pImageSequence)
   {
-    System.out.println("DcamJ(Runnable): mDcamDevice.getStatus()="
-                       + mDcamDevice.getStatus());
+    System.out.println("Status=" + mDcamDevice.getStatus());
+
+    if (!mDcamDevice.isReady())
+    {
+      mDcamDevice.stop();
+    }
 
     System.out.println("setting ROI");
     mDcamDevice.setCenteredROI(pImageSequence.getWidth()
@@ -61,17 +65,18 @@ public class DcamSequenceAcquisition extends DcamBase
     System.out.format("set exposure %g seconds", pExposure);
     mDcamDevice.setExposure(pExposure);
 
+    System.out.println("Status=" + mDcamDevice.getStatus());
+
     System.out.println("attach buffers");
     mDcamDevice.getBufferControl()
                .attachExternalBuffers(pImageSequence);
 
+    System.out.println("Status=" + mDcamDevice.getStatus());
+
     System.out.println("start sequence");
     mDcamDevice.startSequence();
 
-    int lWaitTimeoutInSeconds =
-                              (int) (2
-                                     * (1000 * pExposure
-                                        * pImageSequence.getDepth()));
+    int lWaitTimeoutInSeconds = (int) (100000);
 
     int lCurrentPriority = Thread.currentThread().getPriority();
     Thread.currentThread().setPriority(Thread.MAX_PRIORITY);

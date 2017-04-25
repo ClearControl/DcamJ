@@ -65,7 +65,7 @@ public class DcamWait extends DcamBase implements AutoCloseable
    * Waits for a 'stopped' event
    * 
    * @param pTimeOut
-   *          time out
+   *          time out in milliseconds
    * @return true -> success, false otherwise
    */
   final boolean waitForEventStopped(final long pTimeOut)

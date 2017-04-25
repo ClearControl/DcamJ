@@ -21,12 +21,12 @@ public class DcamBase
   /**
    * Debug flag
    */
-  public boolean mDebug = true;
+  public boolean mDebug = false;
 
   /**
    * Show errors flag
    */
-  public boolean mShowErrors = true;
+  public boolean mShowErrors = false;
 
   protected final void addError(final IntValuedEnum<DCAMERR> pError)
   {
@@ -93,6 +93,32 @@ public class DcamBase
       }
     }
     return true;
+  }
+
+  /**
+   * Debug println.
+   * 
+   * @param pString
+   */
+  public void println(String pString)
+  {
+    if (mDebug)
+      System.out.println(pString);
+  }
+
+  /**
+   * Debug format
+   * 
+   * @param format
+   *          format string
+   * @param args
+   *          args
+   * @return printstream
+   */
+  public void format(String format, Object... args)
+  {
+    if (mDebug)
+      System.out.format(format, args);
   }
 
 }

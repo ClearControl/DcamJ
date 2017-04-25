@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.Test;
@@ -29,9 +30,12 @@ public class DcamJDemo
    * 
    * @throws InterruptedException
    *           NA
+   * @throws ExecutionException
+   *           NA
    */
   @Test
-  public void testSingleImageAcquisition() throws InterruptedException
+  public void testSingleImageAcquisition() throws InterruptedException,
+                                           ExecutionException
   {
     int lWidth = 2048;
     int lHeight = 2048;
@@ -46,23 +50,29 @@ public class DcamJDemo
 
     System.out.println(lDcamDevice.getStatus());
 
-    lDcamDevice.setInputTriggerToExternalFastEdge();
+    // lDcamDevice.setInputTriggerToExternalLevel();
+    // lDcamDevice.setInputTriggerToInternal();
 
     lDcamDevice.printDeviceInfo();
 
     DcamSequenceAcquisition lDcamSequenceAcquisition =
                                                      new DcamSequenceAcquisition(lDcamDevice);
-    System.out.println("FIRST SEQUENCE");
+
+    // lDcamSequenceAcquisition.mDebug = true;
+
     DcamImageSequence lSequence1 = new DcamImageSequence(lDcamDevice,
                                                          2,
                                                          lWidth,
                                                          lHeight,
                                                          lDepth);
 
-    for (int i = 0; i < 100; i++)
+    for (int i = 0; i < 15; i++)
     {
-      assertTrue(lDcamSequenceAcquisition.acquireSequence(0.01,
-                                                          lSequence1));
+      System.out.println("Acquiring single image: #" + i);
+      assertTrue(lDcamSequenceAcquisition.acquireSequenceAsync(0.01,
+                                                               100.0,
+                                                               lSequence1)
+                                         .get());
     }
 
     lDcamDevice.close();
@@ -82,11 +92,12 @@ public class DcamJDemo
   {
     int lWidth = 2048;
     int lHeight = 2048;
-    int lDepth = 512;
+    int lDepth = 17;
 
     assertTrue(DcamLibrary.initialize());
 
     DcamDevice lDcamDevice = new DcamDevice(0);
+    lDcamDevice.setInputTriggerToInternal();
     assertNotNull(lDcamDevice);
 
     assertTrue(lDcamDevice.open());
@@ -129,7 +140,7 @@ public class DcamJDemo
    * @throws InterruptedException
    *           NA
    */
-  @Test
+  // @Test
   public void testSequenceAcquisitionWithBinning() throws InterruptedException
   {
     int lWidth = 512;

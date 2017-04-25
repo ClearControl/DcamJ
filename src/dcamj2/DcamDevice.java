@@ -206,14 +206,14 @@ public class DcamDevice extends DcamBase implements AutoCloseable
              getProperties().setDoublePropertyValue(DCAMIDPROP.DCAM_IDPROP_SUBARRAYMODE,
                                                     2);
 
-    System.out.format("DcamJ: ROI: parameters: cwidth=%d, cheight=%d, hpos=%d, vpos=%d, width=%d, height=%d --> success=%s  \n",
-                      pCenteredWidth,
-                      pCenteredHeight,
-                      hpos,
-                      vpos,
-                      lWidth,
-                      lHeight,
-                      lSuccess ? "true" : "false");/**/
+    format("DcamJ: ROI: parameters: cwidth=%d, cheight=%d, hpos=%d, vpos=%d, width=%d, height=%d --> success=%s  \n",
+           pCenteredWidth,
+           pCenteredHeight,
+           hpos,
+           vpos,
+           lWidth,
+           lHeight,
+           lSuccess ? "true" : "false");/**/
 
     return lSuccess;
   }

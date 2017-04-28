@@ -293,7 +293,8 @@ public class DcamImageSequence implements
   public void consolidateTo(ArrayList<Boolean> pKeepPlaneList,
                             final ContiguousMemoryInterface pDestinationMemory)
   {
-    if (pKeepPlaneList == null || pKeepPlaneList.isEmpty())
+    if (pKeepPlaneList == null || pKeepPlaneList.isEmpty()
+        || allPlanesKept(pKeepPlaneList))
       mFragmentedMemory.makeConsolidatedCopy(pDestinationMemory);
     else
     {
@@ -312,6 +313,14 @@ public class DcamImageSequence implements
         }
 
     }
+  }
+
+  private boolean allPlanesKept(ArrayList<Boolean> pKeepPlaneList)
+  {
+    for (Boolean lKeepPlane : pKeepPlaneList)
+      if (!lKeepPlane)
+        return false;
+    return true;
   }
 
   /**

@@ -115,6 +115,12 @@ public class DcamSequenceAcquisition extends DcamBase
       // mDcamDevice.stop();
       // }
 
+      if (pImageSequence.getDepth() == 0)
+      {
+        println("WARNING: acquiring empty stack");
+        return null;
+      }
+
       println("setting ROI");
       if (mDcamDevice.getWidth() != pImageSequence.getWidth()
                                     * mDcamDevice.getBinning()
@@ -203,7 +209,10 @@ public class DcamSequenceAcquisition extends DcamBase
       format("Success: %s with n=%d \n", lWaitSuccess, lFrameCount);
 
       if (!lWaitSuccess)
+      {
+        System.err.println("DCAMJ2: TIMEOUT!");
         return false;
+      }
 
       final long lNumberOfFramesWrittenByDrivertoBuffers =
                                                          lTransferinfo.nFrameCount();

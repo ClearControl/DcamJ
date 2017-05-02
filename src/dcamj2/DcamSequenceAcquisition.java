@@ -89,7 +89,7 @@ public class DcamSequenceAcquisition extends DcamBase
   /**
    * Acquires a sequence of images
    * 
-   * @param pExposure
+   * @param pExposureInSeconds
    *          exposure
    * @param pTimeOutInSeconds
    *          timeout in seconds, if null then the timeout is computed
@@ -100,14 +100,15 @@ public class DcamSequenceAcquisition extends DcamBase
    * 
    * @return future (true -> success)
    */
-  public Future<Boolean> acquireSequenceAsync(double pExposure,
+  public Future<Boolean> acquireSequenceAsync(double pExposureInSeconds,
                                               Double pTimeOutInSeconds,
                                               DcamImageSequence pImageSequence)
   {
-    mLock.lock();
-
     try
     {
+      if (!mLock.tryLock(5, TimeUnit.SECONDS))
+        return null;
+
       println("Status at start=" + mDcamDevice.getStatus());
 
       // if (!mDcamDevice.isReady())
@@ -138,8 +139,8 @@ public class DcamSequenceAcquisition extends DcamBase
         return null;
       }
 
-      format("set exposure %g seconds \n", pExposure);
-      mDcamDevice.setExposure(pExposure);
+      format("set exposure %g seconds \n", pExposureInSeconds);
+      mDcamDevice.setExposure(pExposureInSeconds);
 
       println("Status before attach buffers="
               + mDcamDevice.getStatus());
@@ -153,33 +154,40 @@ public class DcamSequenceAcquisition extends DcamBase
       mDcamDevice.startSequence();
 
       Callable<Boolean> lCallable =
-                                  () -> asyncSection(pExposure,
+                                  () -> asyncSection(pExposureInSeconds,
                                                      pTimeOutInSeconds,
                                                      pImageSequence);
 
       return mSingleThreadExecutor.submit(lCallable);
     }
+    catch (InterruptedException e)
+    {
+
+    }
     finally
     {
       if (mLock.isHeldByCurrentThread())
         mLock.unlock();
+
     }
+    return null;
   }
 
   private boolean asyncSection(double pExposureInSeconds,
                                Double pTimeOutInSeconds,
                                DcamImageSequence pImageSequence)
   {
-    mLock.lock();
     try
     {
+      if (!mLock.tryLock(5, TimeUnit.SECONDS))
+        return false;
 
-      // tiemout default value is at least one second and 2x more than the
+      // tiemout default value is at least one sec and 2x more than the
       // actual estimated acquisition time
-      int lWaitTimeoutInMilliseconds = (int) (1 + 1000
-                                                  * pImageSequence.getDepth()
-                                                  * pExposureInSeconds
-                                                  * 2);
+      int lWaitTimeoutInMilliseconds = (int) (1000 + 1000
+                                                     * pImageSequence.getDepth()
+                                                     * pExposureInSeconds
+                                                     * 2);
       if (pTimeOutInSeconds != null
           && pTimeOutInSeconds * 1000 > lWaitTimeoutInMilliseconds)
       {
@@ -192,9 +200,9 @@ public class DcamSequenceAcquisition extends DcamBase
 
       println("Status before waiting=" + mDcamDevice.getStatus());
       println("!!Waiting... ");
-      boolean lWaitSuccess = mDcamDevice.getDcamWait()
-                                        .waitForEventStopped(lWaitTimeoutInMilliseconds
-                                                             * 1000);
+      boolean lWaitSuccess =
+                           mDcamDevice.getDcamWait()
+                                      .waitForEventStopped(lWaitTimeoutInMilliseconds);
       final long lAcquisitionTimeStampInNanoseconds =
                                                     StopWatch.absoluteTimeInNanoseconds();
       println("    ...done!");
@@ -230,6 +238,10 @@ public class DcamSequenceAcquisition extends DcamBase
                pImageSequence.getDepth(),
                lNumberOfFramesWrittenByDrivertoBuffers);
 
+        System.err.format("Wrong number of images acquired! should be %d but is %d \n",
+                          pImageSequence.getDepth(),
+                          lNumberOfFramesWrittenByDrivertoBuffers);
+
         return false;
       }
 
@@ -257,12 +269,16 @@ public class DcamSequenceAcquisition extends DcamBase
 
       return true;
     }
+    catch (InterruptedException e)
+    {
+
+    }
     finally
     {
       if (mLock.isHeldByCurrentThread())
         mLock.unlock();
     }
-
+    return false;
   }
 
   /**

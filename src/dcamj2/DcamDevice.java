@@ -132,7 +132,7 @@ public class DcamDevice extends DcamBase implements AutoCloseable
   /**
    * Returns the camera device current exposure
    * 
-   * @return current exposure
+   * @return current exposure in seconds
    */
   public double getExposure()
   {
@@ -143,7 +143,7 @@ public class DcamDevice extends DcamBase implements AutoCloseable
    * Sets a new exposure
    * 
    * @param pExposure
-   *          exposure
+   *          exposure in seconds
    */
   public void setExposure(final double pExposure)
   {
@@ -155,7 +155,7 @@ public class DcamDevice extends DcamBase implements AutoCloseable
    * Sets and gets the actual exposure
    * 
    * @param pExposure
-   *          exposure
+   *          exposure in seconds
    * @return actual exposure (camera snaps exposure to specific values that are
    *         different from what is asked for)
    */

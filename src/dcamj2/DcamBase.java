@@ -99,6 +99,7 @@ public class DcamBase
    * Debug println.
    * 
    * @param pString
+   *          string
    */
   public void println(String pString)
   {
@@ -112,8 +113,7 @@ public class DcamBase
    * @param format
    *          format string
    * @param args
-   *          args
-   * @return printstream
+   *          args format arguments
    */
   public void format(String format, Object... args)
   {

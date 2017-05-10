@@ -99,30 +99,50 @@ public class DcamDevice extends DcamBase implements AutoCloseable
     return lSuccess;
   }
 
+  /**
+   * Returns whether this device is busy.
+   * @return true if busy
+   */
   public boolean isBusy()
   {
     return (DCAMCAP_STATUS.DCAMCAP_STATUS_BUSY.value
             & getStatus().value()) == DCAMCAP_STATUS.DCAMCAP_STATUS_BUSY.value;
   }
 
+  /**
+   * Returns whether this device is ready.
+   * @return true if ready
+   */
   public boolean isReady()
   {
     return (DCAMCAP_STATUS.DCAMCAP_STATUS_READY.value
             & getStatus().value()) == DCAMCAP_STATUS.DCAMCAP_STATUS_READY.value;
   }
 
+  /**
+   * Returns whether this device has an error.
+   * @return true if error
+   */
   public boolean isError()
   {
     return (DCAMCAP_STATUS.DCAMCAP_STATUS_ERROR.value
             & getStatus().value()) == DCAMCAP_STATUS.DCAMCAP_STATUS_ERROR.value;
   }
 
+  /**
+   * Returns whether this device is stable
+   * @return true if stable
+   */
   public boolean isStable()
   {
     return (DCAMCAP_STATUS.DCAMCAP_STATUS_STABLE.value
             & getStatus().value()) == DCAMCAP_STATUS.DCAMCAP_STATUS_STABLE.value;
   }
 
+  /**
+   * Returns whether this device is unstable
+   * @return true if unstable
+   */
   public boolean isUnstable()
   {
     return (DCAMCAP_STATUS.DCAMCAP_STATUS_UNSTABLE.value

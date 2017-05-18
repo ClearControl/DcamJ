@@ -115,7 +115,7 @@ public class DcamDevice extends DcamBase implements AutoCloseable
       }
     }
 
-    setInputTriggerToExternalLevel();
+    setInputTriggerToExternalFastEdge();
     setOutputTriggerToExposure();
     setDefectCorectionMode(true);
 

@@ -224,7 +224,7 @@ public class DcamSequenceAcquisition extends DcamBase
 
       long lFrameCount = lTransferinfo.nFrameCount();
 
-      System.out.format("Success: %s with n=%d \n",
+      format("Success: %s with n=%d \n",
                         lWaitSuccess,
                         lFrameCount);
 

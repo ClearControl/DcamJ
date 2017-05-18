@@ -107,14 +107,15 @@ public class DcamSequenceAcquisition extends DcamBase
     try
     {
       if (!mLock.tryLock(5, TimeUnit.SECONDS))
+      {
+        println("WARNING: already locked!");
         return null;
+      }
 
       println("Status at start=" + mDcamDevice.getStatus());
 
-      // if (!mDcamDevice.isReady())
-      // {
-      // mDcamDevice.stop();
-      // }
+      /*if (mDcamDevice.isBusy())
+        mDcamDevice.stop();/**/
 
       if (pImageSequence.getDepth() == 0)
       {
@@ -131,16 +132,20 @@ public class DcamSequenceAcquisition extends DcamBase
                                    * mDcamDevice.getBinning(),
                                    pImageSequence.getHeight() * mDcamDevice.getBinning());
 
+
+
       if (mDcamDevice.getWidth() != pImageSequence.getWidth()
                                     * mDcamDevice.getBinning()
           || mDcamDevice.getHeight() != pImageSequence.getHeight()
                                         * mDcamDevice.getBinning())
       {
+        println("WARNING: Can't set ROI!");
         return null;
       }
 
       format("set exposure %g seconds \n", pExposureInSeconds);
       mDcamDevice.setExposure(pExposureInSeconds);
+      mDcamDevice.setDefectCorectionMode(true);
 
       println("Status before attach buffers="
               + mDcamDevice.getStatus());
@@ -150,6 +155,9 @@ public class DcamSequenceAcquisition extends DcamBase
 
       println("Status before start sequence="
               + mDcamDevice.getStatus());
+
+
+
       println("start sequence... ");
       mDcamDevice.startSequence();
 
@@ -184,7 +192,7 @@ public class DcamSequenceAcquisition extends DcamBase
 
       // tiemout default value is at least one sec and 2x more than the
       // actual estimated acquisition time
-      int lWaitTimeoutInMilliseconds = (int) (1000 + 1000
+      int lWaitTimeoutInMilliseconds = (int) (3000 + 1000
                                                      * pImageSequence.getDepth()
                                                      * pExposureInSeconds
                                                      * 2);
@@ -206,6 +214,8 @@ public class DcamSequenceAcquisition extends DcamBase
       final long lAcquisitionTimeStampInNanoseconds =
                                                     StopWatch.absoluteTimeInNanoseconds();
       println("    ...done!");
+
+
       println("Status after waiting=" + mDcamDevice.getStatus());
       // Thread.currentThread().setPriority(lCurrentPriority);
 
@@ -214,33 +224,39 @@ public class DcamSequenceAcquisition extends DcamBase
 
       long lFrameCount = lTransferinfo.nFrameCount();
 
-      format("Success: %s with n=%d \n", lWaitSuccess, lFrameCount);
+      System.out.format("Success: %s with n=%d \n",
+                        lWaitSuccess,
+                        lFrameCount);
 
       if (!lWaitSuccess)
       {
         System.err.println("DCAMJ2: TIMEOUT!");
+
+        if (lFrameCount != pImageSequence.getDepth())
+          System.err.format("DCAMJ2: WRONG NUMBER OF FRAMES: %d instead of %d \n",
+                            lFrameCount,
+                            pImageSequence.getDepth());
+
         return false;
       }
 
-      final long lNumberOfFramesWrittenByDrivertoBuffers =
-                                                         lTransferinfo.nFrameCount();
 
       final long lReceivedFrameIndexInBufferList =
                                                  lTransferinfo.nNewestFrameIndex();
 
       format("DcamJ(Runnable): Wrote %d frames into external buffers (local frame index=%d) \n",
-             lNumberOfFramesWrittenByDrivertoBuffers,
+             lFrameCount,
              lReceivedFrameIndexInBufferList);/**/
 
-      if (lNumberOfFramesWrittenByDrivertoBuffers != pImageSequence.getDepth())
+      if (lFrameCount != pImageSequence.getDepth())
       {
         format("Wrong number of images acquired! should be %d but is %d \n",
                pImageSequence.getDepth(),
-               lNumberOfFramesWrittenByDrivertoBuffers);
+               lFrameCount);
 
         System.err.format("Wrong number of images acquired! should be %d but is %d \n",
                           pImageSequence.getDepth(),
-                          lNumberOfFramesWrittenByDrivertoBuffers);
+                          lFrameCount);
 
         return false;
       }

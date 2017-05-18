@@ -60,6 +60,7 @@ public class DcamDevice extends DcamBase implements AutoCloseable
     mDeviceID = pDeviceID;
     if (pOpen)
       open();
+
   }
 
   /**
@@ -95,6 +96,28 @@ public class DcamDevice extends DcamBase implements AutoCloseable
     {
       mDevicePeer = lDCAMDEV_OPEN.hdcam().getPeer();
     }
+
+    for (int i = 0; i < 100; i++)
+    {
+
+      if (isReady() || isUnstable())
+        break;
+      try
+      {
+        System.out.println("Waiting for camera to be ready!");
+        System.out.println("Status:" + getStatus());
+        Thread.sleep(100);
+      }
+      catch (InterruptedException e)
+      {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      }
+    }
+
+    setInputTriggerToExternalLevel();
+    setOutputTriggerToExposure();
+    setDefectCorectionMode(true);
 
     return lSuccess;
   }
@@ -203,30 +226,67 @@ public class DcamDevice extends DcamBase implements AutoCloseable
   public boolean setCenteredROI(final long pCenteredWidth,
                                 final long pCenteredHeight)
   {
+    format(getDeviceID()
+                       + "Status before sleep in setCenteredROI "
+                       + getStatus());
+
+
     final long lWidth = adjustWidthHeight(pCenteredWidth, 4);
     final long lHeight = adjustWidthHeight(pCenteredHeight, 4);
 
+    if (getWidth() != lWidth || getHeight() != lHeight)
+    {
+      close();
+      sleep(100);
+      open();
+      sleep(100);
+    }
+
     final long hpos = adjustWidthHeight(1024 - lWidth / 2, 4);
     final long vpos = adjustWidthHeight(1024 - lHeight / 2, 4);
-    boolean lSuccess = true;
-    lSuccess &=
-             getProperties().setDoublePropertyValue(DCAMIDPROP.DCAM_IDPROP_SUBARRAYHPOS,
-                                                    hpos);
-    lSuccess &=
-             getProperties().setDoublePropertyValue(DCAMIDPROP.DCAM_IDPROP_SUBARRAYVPOS,
-                                                    vpos);
-    lSuccess &=
-             getProperties().setDoublePropertyValue(DCAMIDPROP.DCAM_IDPROP_SUBARRAYHSIZE,
-                                                    lWidth);
-    lSuccess &=
+
+
+    boolean lSuccessHsize = getProperties().setDoublePropertyValue(DCAMIDPROP.DCAM_IDPROP_SUBARRAYHSIZE,
+                                                                 lWidth);
+
+    if (!lSuccessHsize)
+      format(getDeviceID() + "could not set hsize\n");
+
+    boolean lSuccessVsize =
              getProperties().setDoublePropertyValue(DCAMIDPROP.DCAM_IDPROP_SUBARRAYVSIZE,
                                                     lHeight);
 
-    lSuccess &=
+    if (!lSuccessVsize)
+      format(getDeviceID() + "could not set vsize\n");
+
+    boolean lSuccessHpos =
+             getProperties().setDoublePropertyValue(DCAMIDPROP.DCAM_IDPROP_SUBARRAYHPOS,
+                                                    hpos);
+    if (!lSuccessHpos)
+      format(getDeviceID() + "could not set hpos\n");
+
+    boolean lSuccessVpos =
+             getProperties().setDoublePropertyValue(DCAMIDPROP.DCAM_IDPROP_SUBARRAYVPOS,
+                                                    vpos);
+
+    if (!lSuccessVpos)
+      format(getDeviceID() + "could not set vpos\n");
+
+
+    boolean lSuccessSubArray =
              getProperties().setDoublePropertyValue(DCAMIDPROP.DCAM_IDPROP_SUBARRAYMODE,
                                                     2);
 
-    format("DcamJ: ROI: parameters: cwidth=%d, cheight=%d, hpos=%d, vpos=%d, width=%d, height=%d --> success=%s  \n",
+    if (!lSuccessSubArray)
+      format(getDeviceID() + "could not set subarray mode");
+
+    boolean lSuccess = lSuccessHsize && lSuccessVsize
+                       && lSuccessHpos
+                       && lSuccessVpos
+                       && lSuccessSubArray;
+
+    format(getDeviceID()
+           + "DcamJ: ROI: parameters: cwidth=%d, cheight=%d, hpos=%d, vpos=%d, width=%d, height=%d --> success=%s  \n",
            pCenteredWidth,
            pCenteredHeight,
            hpos,
@@ -236,6 +296,19 @@ public class DcamDevice extends DcamBase implements AutoCloseable
            lSuccess ? "true" : "false");/**/
 
     return lSuccess;
+  }
+
+  private void sleep(int lSteepTime)
+  {
+    try
+    {
+      Thread.sleep(lSteepTime);
+    }
+    catch (InterruptedException e)
+    {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
   }
 
   /**
@@ -614,18 +687,33 @@ public class DcamDevice extends DcamBase implements AutoCloseable
     return lSuccess;
   }
 
+
   @Override
   public final void close()
   {
     if (mBufferControl != null)
+    {
       mBufferControl.releaseBuffers();
+      mBufferControl = null;
+    }
 
     if (mDcamWait != null)
+    {
       mDcamWait.close();
+      mDcamWait = null;
+    }
+
+    if (mDcamProperties != null)
+    {
+      mDcamProperties = null;
+    }
+
 
     final IntValuedEnum<DCAMERR> lError =
                                         DcamapiLibrary.dcamdevClose(getHDCAMPointer());
     addErrorToListAndCheckHasSucceeded(lError);
+
+    mDevicePeer = -1;
 
   }
 
@@ -665,9 +753,7 @@ public class DcamDevice extends DcamBase implements AutoCloseable
   public final DcamWait getDcamWait()
   {
     if (mDcamWait == null)
-    {
-      mDcamWait = new DcamWait(this);
-    }
+    mDcamWait = new DcamWait(this);
     return mDcamWait;
   }
 

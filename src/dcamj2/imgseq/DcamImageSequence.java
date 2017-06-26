@@ -84,8 +84,8 @@ public class DcamImageSequence implements
    * @param pDepth
    *          depth
    * @param pFragmented
-   *          true-> allocates multiple independent buffers, false -> allocates
-   *          a single contiguous buffer
+   *          true: allocates multiple independent buffers, false: allocates a
+   *          single contiguous buffer
    */
   public DcamImageSequence(DcamDevice pDcamDevice,
                            final long pBytesPerPixel,
@@ -337,7 +337,7 @@ public class DcamImageSequence implements
    * Returns whether the data buffer supporting this image sequence is
    * fragmented
    * 
-   * @return true -> fragmented, false otherwise
+   * @return true: fragmented, false otherwise
    */
   public boolean isFragmented()
   {

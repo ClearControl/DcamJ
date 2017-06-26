@@ -52,7 +52,7 @@ public class DcamDevice extends DcamBase implements AutoCloseable
    * @param pDeviceID
    *          device id (index)
    * @param pOpen
-   *          true -> opens device at construction time
+   *          true: opens device at construction time
    */
   public DcamDevice(final long pDeviceID, boolean pOpen)
   {
@@ -76,7 +76,7 @@ public class DcamDevice extends DcamBase implements AutoCloseable
   /**
    * Opens camera device
    * 
-   * @return true -> success
+   * @return true: success
    */
   public final boolean open()
   {
@@ -364,7 +364,7 @@ public class DcamDevice extends DcamBase implements AutoCloseable
    * 
    * @param pBinSize
    *          bin size
-   * @return true -> success
+   * @return true: success
    */
   public boolean setBinning(final int pBinSize)
   {
@@ -629,7 +629,7 @@ public class DcamDevice extends DcamBase implements AutoCloseable
   /**
    * Starts continuous acquisition
    * 
-   * @return true -> success, false otherwise
+   * @return true: success, false otherwise
    */
   public final boolean startContinuous()
   {
@@ -644,7 +644,7 @@ public class DcamDevice extends DcamBase implements AutoCloseable
   /**
    * Starts sequence acquisition
    * 
-   * @return true -> success, false otherwise
+   * @return true: success, false otherwise
    */
   public final boolean startSequence()
   {
@@ -659,7 +659,7 @@ public class DcamDevice extends DcamBase implements AutoCloseable
   /**
    * triggers in software one acquisition
    * 
-   * @return true -> success, false otherwise
+   * @return true: success, false otherwise
    */
   public final boolean triggerOneAcquisition()
   {
@@ -676,7 +676,7 @@ public class DcamDevice extends DcamBase implements AutoCloseable
   /**
    * Stops acquisition
    * 
-   * @return true -> success, false otherwise
+   * @return true: success, false otherwise
    */
   public final boolean stop()
   {
@@ -760,7 +760,7 @@ public class DcamDevice extends DcamBase implements AutoCloseable
   /**
    * Shows a panel for this device
    * 
-   * @return true -> success, false otherwise
+   * @return true: success, false otherwise
    */
   public final boolean showPanel()
   {

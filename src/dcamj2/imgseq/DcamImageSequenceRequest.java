@@ -84,7 +84,7 @@ public class DcamImageSequenceRequest implements
    * 
    * @param pDcamImageSequence
    *          image sequence
-   * @return true -> compatible, false otherwise
+   * @return true: compatible, false otherwise
    */
   public boolean isCompatible(DcamImageSequence pDcamImageSequence)
   {

@@ -51,7 +51,7 @@ public class DcamSequenceAcquisition extends DcamBase
    * 
    * @param pImageSequence
    *          image sequence to use
-   * @return future (true -> success)
+   * @return future (true: success)
    */
   public Boolean acquireSequence(double pExposure,
                                  DcamImageSequence pImageSequence)
@@ -78,7 +78,7 @@ public class DcamSequenceAcquisition extends DcamBase
    * 
    * @param pImageSequence
    *          image sequence to use
-   * @return future (true -> success)
+   * @return future (true: success)
    */
   public Future<Boolean> acquireSequenceAsync(double pExposure,
                                               DcamImageSequence pImageSequence)
@@ -98,7 +98,7 @@ public class DcamSequenceAcquisition extends DcamBase
    * @param pImageSequence
    *          image sequence to use
    * 
-   * @return future (true -> success)
+   * @return future (true: success)
    */
   public Future<Boolean> acquireSequenceAsync(double pExposureInSeconds,
                                               Double pTimeOutInSeconds,

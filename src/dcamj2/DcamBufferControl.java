@@ -44,7 +44,7 @@ public class DcamBufferControl extends DcamBase
    * 
    * @param pNumberOfBuffers
    *          number of internal buffers to allocate
-   * @return true -> success, false otherwise
+   * @return true: success, false otherwise
    */
   public final boolean allocateInternalBuffers(final int pNumberOfBuffers)
   {
@@ -111,7 +111,7 @@ public class DcamBufferControl extends DcamBase
    * 
    * @param pImageSequence
    *          Dcam frame
-   * @return true -> success, false otherwise.
+   * @return true: success, false otherwise.
    */
   public final boolean attachExternalBuffers(DcamImageSequence pImageSequence)
   {
@@ -208,7 +208,7 @@ public class DcamBufferControl extends DcamBase
   /**
    * Releases buffers
    * 
-   * @return true -> success, false otherwise
+   * @return true: success, false otherwise
    */
   public final boolean releaseBuffers()
   {

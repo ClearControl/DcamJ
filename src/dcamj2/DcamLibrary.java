@@ -29,7 +29,7 @@ public class DcamLibrary
   /**
    * Initializes the library
    * 
-   * @return true -> success
+   * @return true: success
    */
   public static final boolean initialize()
   {
@@ -78,7 +78,7 @@ public class DcamLibrary
   /**
    * Returns true if library successfully initialized
    * 
-   * @return true-> success, false otherwise
+   * @return true: success, false otherwise
    */
   public static final boolean isInitialized()
   {
@@ -114,7 +114,7 @@ public class DcamLibrary
   /**
    * Uninitialized library
    * 
-   * @return true -> success, false otherwise
+   * @return true: success, false otherwise
    */
   public static final boolean uninitialize()
   {
@@ -132,7 +132,7 @@ public class DcamLibrary
    * 
    * @param pDcamReturnCode
    *          Dcam return code
-   * @return true -> success, false otherwise
+   * @return true: success, false otherwise
    */
   public static boolean hasSucceeded(final IntValuedEnum<DCAMERR> pDcamReturnCode)
   {

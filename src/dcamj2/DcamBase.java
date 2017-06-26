@@ -80,7 +80,7 @@ public class DcamBase
    * well errors ... :-) != error list empty, since one type of error is success
    *
    * 
-   * @return true -> all successes
+   * @return true: all successes
    */
   public final boolean haveAllSucceeded()
   {

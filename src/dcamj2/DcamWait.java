@@ -66,7 +66,7 @@ public class DcamWait extends DcamBase implements AutoCloseable
    * 
    * @param pTimeOut
    *          time out in milliseconds
-   * @return true -> success, false otherwise
+   * @return true: success, false otherwise
    */
   final boolean waitForEventStopped(final long pTimeOut)
   {
@@ -79,7 +79,7 @@ public class DcamWait extends DcamBase implements AutoCloseable
    * 
    * @param pTimeOut
    *          timeout
-   * @return true -> success, false otherwise
+   * @return true: success, false otherwise
    */
   final boolean waitForEventReady(final long pTimeOut)
   {
@@ -92,7 +92,7 @@ public class DcamWait extends DcamBase implements AutoCloseable
    * 
    * @param pTimeOut
    *          timeout
-   * @return true -> success, false otherwise
+   * @return true: success, false otherwise
    */
   final boolean waitForEventReadyOrStopped(final long pTimeOut)
   {
@@ -172,7 +172,7 @@ public class DcamWait extends DcamBase implements AutoCloseable
   /**
    * Aborts wait.
    * 
-   * @return true -> success, false otherwise
+   * @return true: success, false otherwise
    */
   public final boolean abort()
   {

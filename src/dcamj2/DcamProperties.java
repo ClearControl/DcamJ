@@ -61,7 +61,7 @@ public class DcamProperties extends DcamBase
   /**
    * Updates property list
    * 
-   * @return true -> success, false otherwise
+   * @return true: success, false otherwise
    */
   public final boolean updatePropertyList()
   {
@@ -256,7 +256,7 @@ public class DcamProperties extends DcamBase
    * 
    * @param pPropertyName
    *          property name
-   * @return true -> writable
+   * @return true: writable
    */
   public final boolean isPropertyWritable(final String pPropertyName)
   {
@@ -268,7 +268,7 @@ public class DcamProperties extends DcamBase
    * 
    * @param pPropertyName
    *          property name
-   * @return true -> readable
+   * @return true: readable
    */
   public final boolean isPropertyReadable(final String pPropertyName)
   {
@@ -280,7 +280,7 @@ public class DcamProperties extends DcamBase
    * 
    * @param pPropertyName
    *          property name
-   * @return true -> double type
+   * @return true: double type
    */
   public final boolean isPropertyReal(final String pPropertyName)
   {
@@ -292,7 +292,7 @@ public class DcamProperties extends DcamBase
    * 
    * @param pPropertyName
    *          property name
-   * @return true -> long type
+   * @return true: long type
    */
   public final boolean isPropertyLong(final String pPropertyName)
   {
@@ -336,7 +336,7 @@ public class DcamProperties extends DcamBase
    *          property name
    * @param pValue
    *          value
-   * @return true -> success, false otherwise
+   * @return true: success, false otherwise
    */
   public final boolean setDoublePropertyValue(final String pPropertyName,
                                               final double pValue)

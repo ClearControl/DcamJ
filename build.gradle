@@ -111,7 +111,7 @@ def getVersionName = {
     return stdout.toString().trim()
 }
 
-group = 'net.rtlib'
+group = 'net.clearcontrol'
 version = getVersionName()
 
 artifacts

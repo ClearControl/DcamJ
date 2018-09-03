@@ -4,10 +4,6 @@ import static org.bridj.Pointer.allocateBytes;
 import static org.bridj.Pointer.pointerTo;
 import static org.junit.Assert.assertTrue;
 
-import org.bridj.BridJ;
-import org.bridj.IntValuedEnum;
-import org.bridj.Pointer;
-
 import dcamapi.DCAMCAP_TRANSFERINFO;
 import dcamapi.DCAMDEV_OPEN;
 import dcamapi.DCAMDEV_STRING;
@@ -19,6 +15,10 @@ import dcamapi.DcamapiLibrary.DCAMIDPROP;
 import dcamapi.DcamapiLibrary.DCAMPROPMODEVALUE;
 import dcamapi.DcamapiLibrary.DCAM_IDSTR;
 import dcamapi.HDCAM_struct;
+
+import org.bridj.BridJ;
+import org.bridj.IntValuedEnum;
+import org.bridj.Pointer;
 
 /**
  * Dcam device
@@ -124,6 +124,7 @@ public class DcamDevice extends DcamBase implements AutoCloseable
 
   /**
    * Returns whether this device is busy.
+   * 
    * @return true if busy
    */
   public boolean isBusy()
@@ -134,6 +135,7 @@ public class DcamDevice extends DcamBase implements AutoCloseable
 
   /**
    * Returns whether this device is ready.
+   * 
    * @return true if ready
    */
   public boolean isReady()
@@ -144,6 +146,7 @@ public class DcamDevice extends DcamBase implements AutoCloseable
 
   /**
    * Returns whether this device has an error.
+   * 
    * @return true if error
    */
   public boolean isError()
@@ -154,6 +157,7 @@ public class DcamDevice extends DcamBase implements AutoCloseable
 
   /**
    * Returns whether this device is stable
+   * 
    * @return true if stable
    */
   public boolean isStable()
@@ -164,6 +168,7 @@ public class DcamDevice extends DcamBase implements AutoCloseable
 
   /**
    * Returns whether this device is unstable
+   * 
    * @return true if unstable
    */
   public boolean isUnstable()
@@ -226,10 +231,8 @@ public class DcamDevice extends DcamBase implements AutoCloseable
   public boolean setCenteredROI(final long pCenteredWidth,
                                 final long pCenteredHeight)
   {
-    format(getDeviceID()
-                       + "Status before sleep in setCenteredROI "
-                       + getStatus());
-
+    format(getDeviceID() + "Status before sleep in setCenteredROI "
+           + getStatus());
 
     final long lWidth = adjustWidthHeight(pCenteredWidth, 4);
     final long lHeight = adjustWidthHeight(pCenteredHeight, 4);
@@ -245,37 +248,36 @@ public class DcamDevice extends DcamBase implements AutoCloseable
     final long hpos = adjustWidthHeight(1024 - lWidth / 2, 4);
     final long vpos = adjustWidthHeight(1024 - lHeight / 2, 4);
 
-
-    boolean lSuccessHsize = getProperties().setDoublePropertyValue(DCAMIDPROP.DCAM_IDPROP_SUBARRAYHSIZE,
+    boolean lSuccessHsize =
+                          getProperties().setDoublePropertyValue(DCAMIDPROP.DCAM_IDPROP_SUBARRAYHSIZE,
                                                                  lWidth);
 
     if (!lSuccessHsize)
       format(getDeviceID() + "could not set hsize\n");
 
     boolean lSuccessVsize =
-             getProperties().setDoublePropertyValue(DCAMIDPROP.DCAM_IDPROP_SUBARRAYVSIZE,
-                                                    lHeight);
+                          getProperties().setDoublePropertyValue(DCAMIDPROP.DCAM_IDPROP_SUBARRAYVSIZE,
+                                                                 lHeight);
 
     if (!lSuccessVsize)
       format(getDeviceID() + "could not set vsize\n");
 
     boolean lSuccessHpos =
-             getProperties().setDoublePropertyValue(DCAMIDPROP.DCAM_IDPROP_SUBARRAYHPOS,
-                                                    hpos);
+                         getProperties().setDoublePropertyValue(DCAMIDPROP.DCAM_IDPROP_SUBARRAYHPOS,
+                                                                hpos);
     if (!lSuccessHpos)
       format(getDeviceID() + "could not set hpos\n");
 
     boolean lSuccessVpos =
-             getProperties().setDoublePropertyValue(DCAMIDPROP.DCAM_IDPROP_SUBARRAYVPOS,
-                                                    vpos);
+                         getProperties().setDoublePropertyValue(DCAMIDPROP.DCAM_IDPROP_SUBARRAYVPOS,
+                                                                vpos);
 
     if (!lSuccessVpos)
       format(getDeviceID() + "could not set vpos\n");
 
-
     boolean lSuccessSubArray =
-             getProperties().setDoublePropertyValue(DCAMIDPROP.DCAM_IDPROP_SUBARRAYMODE,
-                                                    2);
+                             getProperties().setDoublePropertyValue(DCAMIDPROP.DCAM_IDPROP_SUBARRAYMODE,
+                                                                    2);
 
     if (!lSuccessSubArray)
       format(getDeviceID() + "could not set subarray mode");
@@ -687,7 +689,6 @@ public class DcamDevice extends DcamBase implements AutoCloseable
     return lSuccess;
   }
 
-
   @Override
   public final void close()
   {
@@ -707,7 +708,6 @@ public class DcamDevice extends DcamBase implements AutoCloseable
     {
       mDcamProperties = null;
     }
-
 
     final IntValuedEnum<DCAMERR> lError =
                                         DcamapiLibrary.dcamdevClose(getHDCAMPointer());
@@ -753,7 +753,7 @@ public class DcamDevice extends DcamBase implements AutoCloseable
   public final DcamWait getDcamWait()
   {
     if (mDcamWait == null)
-    mDcamWait = new DcamWait(this);
+      mDcamWait = new DcamWait(this);
     return mDcamWait;
   }
 

@@ -15,14 +15,14 @@ public class DcamException extends RuntimeException
    * 
    * @param pMessage
    *          error message
-
+   * 
    */
   public DcamException(String pMessage)
   {
     super(pMessage);
 
   }
-  
+
   /**
    * Instantiates a Dcam exception given a message and cause
    * 

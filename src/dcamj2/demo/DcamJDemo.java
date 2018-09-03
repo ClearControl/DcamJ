@@ -7,8 +7,6 @@ import static org.junit.Assert.assertTrue;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
-import org.junit.Test;
-
 import coremem.recycling.BasicRecycler;
 import dcamj2.DcamDevice;
 import dcamj2.DcamLibrary;
@@ -16,6 +14,8 @@ import dcamj2.DcamSequenceAcquisition;
 import dcamj2.imgseq.DcamImageSequence;
 import dcamj2.imgseq.DcamImageSequenceFactory;
 import dcamj2.imgseq.DcamImageSequenceRequest;
+
+import org.junit.Test;
 
 /**
  * DcamJ demo

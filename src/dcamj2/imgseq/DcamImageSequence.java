@@ -2,8 +2,6 @@ package dcamj2.imgseq;
 
 import java.util.ArrayList;
 
-import org.bridj.Pointer;
-
 import coremem.ContiguousMemoryInterface;
 import coremem.buffers.ContiguousBuffer;
 import coremem.exceptions.FreedException;
@@ -15,6 +13,8 @@ import coremem.recycling.RecyclableInterface;
 import coremem.recycling.RecyclerInterface;
 import coremem.rgc.Freeable;
 import dcamj2.DcamDevice;
+
+import org.bridj.Pointer;
 
 /**
  * Dcam image sequence

@@ -1,12 +1,21 @@
 plugins {
-	id "com.jfrog.bintray" version "1.2"
+    id "com.jfrog.bintray" version "1.2"
+    id "com.diffplug.gradle.spotless" version "3.1.0"
+    id "de.undercouch.download" version "3.4.3"
 }
 
 apply plugin: 'java'
-apply plugin: 'idea'
 apply plugin: 'eclipse'
+apply plugin: 'idea'
 apply plugin: 'maven'
 apply plugin: 'maven-publish'
+
+
+// Master gradle file:
+apply from: 'https://github.com/ClearControl/master/blob/master/master.gradle?raw=true'
+
+//***********************************************************************************
+// JAVA CODE BUILDING
 
 sourceSets 
 {
@@ -36,15 +45,14 @@ sourceSets
 
 
 sourceCompatibility = 1.8
+targetCompatibility = 1.8
 
 
-test 
+test
 {
-    testLogging.showStandardStreams = true 
-    testLogging 
-    {
-        events "passed", "skipped", "failed"
-    }
+    testLogging.showStandardStreams = true
+    testLogging
+            { events "passed", "skipped", "failed" }
 
     exclude '**/demo/**'
     exclude '**/run/**'
@@ -60,10 +68,10 @@ dependencies
     //compile 'org.apache.commons:commons-math3:3.4.1'
     //compile 'org.apache.logging.log4j:log4j-api:2.1'
     //compile 'org.apache.logging.log4j:log4j-core:2.1'
-    compile 'com.nativelibs4java:bridj:0.7.0'
+    //compile 'com.nativelibs4java:bridj:0.7.0'
     
     // CoreMem:
-    compile ('net.coremem:coremem:0.4.4')  {transitive= true; changing= true}
+    compile ('net.coremem:coremem:'+depver('coremem'))  {transitive= true; changing= true}
 
 
     compile group: 'junit', name: 'junit', version: '4.11'
@@ -72,11 +80,10 @@ dependencies
 
 repositories 
 {
+    // Main repos:
+    mavenLocal()
     mavenCentral()
-    maven 
-    {
-        url "http://oss.sonatype.org/content/groups/public"
-    } 
+    jcenter()
 
     // ClearControl:
     maven { url  "http://dl.bintray.com/clearcontrol/ClearControl"  }
@@ -94,95 +101,35 @@ task javadocJar(type: Jar, dependsOn:javadoc) {
     from javadoc.destinationDir
 }
 
-
-///***********************************************************************************
-// PUBLISHING
-
-/*
- * Gets the version name from the latest Git tag
- */
-def getVersionName = {
-    ->
-    def stdout = new ByteArrayOutputStream()
-    exec {
-        commandLine 'git', 'describe', '--tags'
-        standardOutput = stdout
+if (JavaVersion.current().isJava8Compatible()) {
+    allprojects {
+        tasks.withType(Javadoc) {
+            options.addStringOption('Xdoclint:none', '-quiet')
+        }
     }
-    return stdout.toString().trim()
 }
 
-group = 'net.clearcontrol'
-version = "2.1.6" //getVersionName()
+
+//***********************************************************************************
+// PUBLISHING
+
+group   = project.ext.groupname
+version = project.ext.versionsMap[project.name]
 
 artifacts
 {
-	archives sourcesJar
-	archives javadocJar
+    archives sourcesJar
+    archives javadocJar
 }
 
 publishing {
-	publications {
-		maven(MavenPublication) {
-			from components.java
-			artifact sourcesJar { classifier "sources" }
-		}
-	}
+    publications {
+        maven(MavenPublication) {
+            from components.java
+            artifact sourcesJar { classifier "sources" }
+        }
+    }
 }
-
-if(hasProperty('bintray_user') && hasProperty('bintray_key') )
-{
-	bintray {
-
-		// property must be set in ~/.gradle/gradle.properties
-		user = bintray_user
-		key =  bintray_key
-
-		publications = [
-			'maven'] //When uploading configuration files
-		dryRun = false //Whether to run this as dry-run, without deploying
-		publish = true //If version should be auto published after an upload
-		pkg {
-			repo = 'snapshots'
-			userOrg = 'haesleinhuepf' //An optional organization name when the repo belongs to one of the user's orgs
-			name = project.name
-			desc = project.name
-			websiteUrl = 'https://github.com/ClearControl/DcamJ'
-			issueTrackerUrl = 'https://github.com/ClearControl/DcamJ/issues'
-			vcsUrl = 'https://github.com/ClearControl/DcamJ.git'
-			licenses = ['GPL-3.0']
-			labels = [
-				'ClearControl',
-				'Drivers',
-				'Devices',
-				'Hardware',
-				'Microscopy',
-				'Real-time'
-			]
-			publicDownloadNumbers = true
-			//attributes= ['a': ['ay1', 'ay2'], 'b': ['bee'], c: 'cee'] //Optional package-level attributes
-			//Optional version descriptor
-			version {
-				name = project.version //Bintray logical version name
-				desc = '.'
-				released  = new java.util.Date()
-				vcsTag = project.version
-				/*attributes = ['gradle-plugin': 'com.use.less:com.use.less.gradle:gradle-useless-plugin'] //Optional version-level attributes
-				 gpg {
-				 sign = false //Determines whether to GPG sign the files. The default is false
-				 passphrase = 'passphrase' //Optional. The passphrase for GPG signing'
-				 }
-				 mavenCentralSync {
-				 sync = false //Optional (true by default). Determines whether to sync the version to Maven Central.
-				 user = 'userToken' //OSS user token
-				 password = 'paasword' //OSS user password
-				 close = '1' //Optional property. By default the staging repository is closed and artifacts are released to Maven Central. You can optionally turn this behaviour off (by puting 0 as value) and release the version manually.
-				 }  /**/          
-			}
-		}
-	}
-	/**/
-}
-
 
 
 

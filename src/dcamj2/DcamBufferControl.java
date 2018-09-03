@@ -2,16 +2,16 @@ package dcamj2;
 
 import static org.bridj.Pointer.pointerTo;
 
-import org.bridj.BridJ;
-import org.bridj.IntValuedEnum;
-import org.bridj.Pointer;
-
 import dcamapi.DCAMBUF_ATTACH;
 import dcamapi.DCAM_FRAME;
 import dcamapi.DcamapiLibrary;
 import dcamapi.DcamapiLibrary.DCAMERR;
 import dcamapi.DcamapiLibrary.DCAMIDPROP;
 import dcamj2.imgseq.DcamImageSequence;
+
+import org.bridj.BridJ;
+import org.bridj.IntValuedEnum;
+import org.bridj.Pointer;
 
 /**
  * Dcam buffer control

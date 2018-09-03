@@ -4,38 +4,38 @@ import java.util.concurrent.TimeUnit;
 
 public class StopWatch
 {
-	volatile long mStartingTime;
+  volatile long mStartingTime;
 
-	public static StopWatch start()
-	{
-		return new StopWatch();
-	}
+  public static StopWatch start()
+  {
+    return new StopWatch();
+  }
 
-	private StopWatch()
-	{
-		reset();
-	}
+  private StopWatch()
+  {
+    reset();
+  }
 
-	public StopWatch reset()
-	{
-		mStartingTime = System.nanoTime();
-		return this;
-	}
+  public StopWatch reset()
+  {
+    mStartingTime = System.nanoTime();
+    return this;
+  }
 
-	public long timeInNanoseconds()
-	{
-		final long mEndingTime =  System.nanoTime();
-		return mEndingTime - mStartingTime;
-	}
+  public long timeInNanoseconds()
+  {
+    final long mEndingTime = System.nanoTime();
+    return mEndingTime - mStartingTime;
+  }
 
-	public long time(final TimeUnit unit)
-	{
-		return unit.convert(timeInNanoseconds(), TimeUnit.NANOSECONDS);
-	}
+  public long time(final TimeUnit unit)
+  {
+    return unit.convert(timeInNanoseconds(), TimeUnit.NANOSECONDS);
+  }
 
-	public static long absoluteTimeInNanoseconds()
-	{
-		return System.nanoTime();
-	}
+  public static long absoluteTimeInNanoseconds()
+  {
+    return System.nanoTime();
+  }
 
 }

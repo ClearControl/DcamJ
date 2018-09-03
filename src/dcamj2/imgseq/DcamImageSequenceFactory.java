@@ -14,7 +14,7 @@ public class DcamImageSequenceFactory implements
   @Override
   public DcamImageSequence create(DcamImageSequenceRequest pRequest)
   {
- 
+
     return pRequest.newImageSequence();
   }
 

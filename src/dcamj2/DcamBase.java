@@ -3,9 +3,9 @@ package dcamj2;
 import java.util.Collection;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-import org.bridj.IntValuedEnum;
-
 import dcamapi.DcamapiLibrary.DCAMERR;
+
+import org.bridj.IntValuedEnum;
 
 /**
  *

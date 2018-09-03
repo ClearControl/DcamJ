@@ -2,12 +2,12 @@ package dcamj2;
 
 import static org.bridj.Pointer.pointerTo;
 
-import org.bridj.BridJ;
-import org.bridj.IntValuedEnum;
-
 import dcamapi.DCAMAPI_INIT;
 import dcamapi.DcamapiLibrary;
 import dcamapi.DcamapiLibrary.DCAMERR;
+
+import org.bridj.BridJ;
+import org.bridj.IntValuedEnum;
 
 /**
  * Dcam Library

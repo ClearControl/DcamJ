@@ -2,16 +2,16 @@ package dcamj2;
 
 import static org.bridj.Pointer.pointerTo;
 
-import org.bridj.BridJ;
-import org.bridj.IntValuedEnum;
-import org.bridj.Pointer;
-
 import dcamapi.DCAMWAIT_OPEN;
 import dcamapi.DCAMWAIT_START;
 import dcamapi.DcamapiLibrary;
 import dcamapi.DcamapiLibrary.DCAMERR;
 import dcamapi.DcamapiLibrary.DCAMWAIT_EVENT;
 import dcamapi.HDCAMWAIT_struct;
+
+import org.bridj.BridJ;
+import org.bridj.IntValuedEnum;
+import org.bridj.Pointer;
 
 /**
  * Dcam wait object

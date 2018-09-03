@@ -132,8 +132,6 @@ public class DcamSequenceAcquisition extends DcamBase
                                    * mDcamDevice.getBinning(),
                                    pImageSequence.getHeight() * mDcamDevice.getBinning());
 
-
-
       if (mDcamDevice.getWidth() != pImageSequence.getWidth()
                                     * mDcamDevice.getBinning()
           || mDcamDevice.getHeight() != pImageSequence.getHeight()
@@ -155,8 +153,6 @@ public class DcamSequenceAcquisition extends DcamBase
 
       println("Status before start sequence="
               + mDcamDevice.getStatus());
-
-
 
       println("start sequence... ");
       mDcamDevice.startSequence();
@@ -215,7 +211,6 @@ public class DcamSequenceAcquisition extends DcamBase
                                                     StopWatch.absoluteTimeInNanoseconds();
       println("    ...done!");
 
-
       println("Status after waiting=" + mDcamDevice.getStatus());
       // Thread.currentThread().setPriority(lCurrentPriority);
 
@@ -224,9 +219,7 @@ public class DcamSequenceAcquisition extends DcamBase
 
       long lFrameCount = lTransferinfo.nFrameCount();
 
-      format("Success: %s with n=%d \n",
-                        lWaitSuccess,
-                        lFrameCount);
+      format("Success: %s with n=%d \n", lWaitSuccess, lFrameCount);
 
       if (!lWaitSuccess)
       {
@@ -239,7 +232,6 @@ public class DcamSequenceAcquisition extends DcamBase
 
         return false;
       }
-
 
       final long lReceivedFrameIndexInBufferList =
                                                  lTransferinfo.nNewestFrameIndex();

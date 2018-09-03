@@ -5,12 +5,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map.Entry;
 
-import org.bridj.BridJ;
-import org.bridj.FlagSet;
-import org.bridj.IntValuedEnum;
-import org.bridj.Pointer;
-import org.bridj.Pointer.StringType;
-
 import dcamapi.DCAM_PROPERTYATTR;
 import dcamapi.DcamapiLibrary;
 import dcamapi.DcamapiLibrary.DCAMERR;
@@ -18,6 +12,12 @@ import dcamapi.DcamapiLibrary.DCAMIDPROP;
 import dcamapi.DcamapiLibrary.DCAMPROPATTRIBUTE;
 import dcamapi.DcamapiLibrary.DCAMPROPMODEVALUE;
 import dcamapi.DcamapiLibrary.DCAMPROPUNIT;
+
+import org.bridj.BridJ;
+import org.bridj.FlagSet;
+import org.bridj.IntValuedEnum;
+import org.bridj.Pointer;
+import org.bridj.Pointer.StringType;
 
 /**
  * Dcam properties
@@ -403,7 +403,7 @@ public class DcamProperties extends DcamBase
   }
 
   double setAndGetDoublePropertyValue(final DCAMIDPROP pDCAMIDPROP,
-                                final double pValue)
+                                      final double pValue)
   {
     final Pointer<Double> lPointerToDouble = Pointer.allocateDouble();
     lPointerToDouble.set(pValue);
